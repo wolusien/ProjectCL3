@@ -5,4 +5,8 @@
 typedef struct disk{
     int disk_id;
     char* path;
-}disk
+}disk;
+
+typedef struct block{
+    int deb;
+}block;
