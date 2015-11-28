@@ -7,6 +7,7 @@ error read_physical_block(disk_id id,block b,uint32_t num){
   for(i=0; i<1024; i++){
       b.b[i]=fgetc(f);
   }
+  fclose(f);
   error e;
   return e;
 }
