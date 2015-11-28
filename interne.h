@@ -1,3 +1,4 @@
+#include "error.h"
 
 typedef struct{
   char *name;
