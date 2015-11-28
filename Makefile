@@ -15,3 +15,4 @@ $(EXEC): $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(EXEC)
+	rm disk.tfs
