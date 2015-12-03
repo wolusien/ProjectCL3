@@ -16,6 +16,7 @@ error write_physical_block(disk_id id,block b,uint32_t num){
   FILE *f = fopen(id.name,"w+");
   fseek(f,num*1024,SEEK_SET);
   fputs(b.b,f);
+  fclose(f);
   error e;
   return e;
 }
