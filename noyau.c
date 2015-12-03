@@ -16,7 +16,7 @@ int main (int argc, char * argv[]){
     b.b[i]='A';
   }
   for(i=1016;i<1024;i++){
-    b.b[i]='0';
+    b.b[i]='1';
   }
   write_physical_block(disk,b,00000000000000000000000000000001);
   block bl;
