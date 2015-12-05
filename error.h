@@ -1,3 +1,4 @@
 typedef struct{
-  char *e;
+  char *erreason;
+  int errnb;
 }error;

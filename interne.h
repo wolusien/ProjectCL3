@@ -8,6 +8,13 @@
 #include <sys/stat.h>
 #include "error.h"
 
+#define SIZEBLOCK 1024
+#define MINBLOCK 3;
+#define BUFSIZE 256;
+#define MAX_DISQUE 100
+
+const char *disque_ouvert[MAX_DISQUE];
+
 typedef struct{
   char *name;
   int id;
