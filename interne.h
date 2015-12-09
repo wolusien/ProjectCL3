@@ -16,9 +16,7 @@
 const char *disque_ouvert[MAX_DISQUE];
 
 typedef struct{
-  char *name;
   int id;
-  char* buffer;
 }disk_id;
 
 typedef struct{
