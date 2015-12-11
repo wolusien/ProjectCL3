@@ -1,12 +1,14 @@
 #include "interne.h"
 
 int main (int argc, char * argv[]){
-  string_to_uint("00000000000000000000000000002246");
+  uint32_t u;
+  string_to_uint("00000000000000000000000000002246",u);
+  printf("%d",u);
 
-    int i;
-    disk_id disk;
-  disk.name="disk.tfs";
-  FILE *f=fopen(disk.name,"w+");
+  int i;
+  disk_id disk;
+  //disk.id="disk.tfs";
+  FILE *f=fopen(disk.id,"w+");
   printf("nombre de bloc que vous voulez creez :\n");
   int d;
   scanf("%d",&d);

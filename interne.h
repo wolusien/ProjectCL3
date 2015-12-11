@@ -13,7 +13,7 @@
 #define BUFSIZE 256;
 #define MAX_DISQUE 100
 
-const char *disque_ouvert[MAX_DISQUE];
+char *disque_ouvert[MAX_DISQUE];
 
 typedef struct{
   int id;

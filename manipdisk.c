@@ -5,8 +5,8 @@ error start_disk(char *name,disk_id *id){
   if(name != NULL){
     char *type = strchr(name,'.');
     if(strcmp(type,".tfs")!=-1){
-      int e = fopen(name,"w+");
-      if(e!=-1){
+      FILE* f = fopen(name,"w+");
+      if(f!=NULL){
 	disque_ouvert[id->id]= malloc(sizeof(char)*strlen(name));
 	disque_ouvert[id->id]= name;
       }
@@ -14,7 +14,7 @@ error start_disk(char *name,disk_id *id){
 	error erreur;
 	return erreur;
       }  
-    }  
+    }
   }
   else{
     error erreur;
@@ -36,10 +36,11 @@ error sync_disk(disk_id id){
 
 error stop_disk(disk_id id){
   if(disque_ouvert[id.id]!=NULL){
-    int e = fclose(disque_ouvert[id]);
+    char *nom=disque_ouvert[id.id];
+    int e = fclose(disque_ouvert[id.id]);
     if(e != -1){
       disque_ouvert[id.id]=NULL;
-      free(disque_ouvert[id.id]);
+      free(nom);
     }
   }
   error er;
