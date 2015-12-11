@@ -1,5 +1,5 @@
 #include "interne.h"
-int e = fopen(name,+w);
+
 
 error start_disk(char *name,disk_id *id){
   if(name != NULL){
