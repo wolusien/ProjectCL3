@@ -5,7 +5,7 @@ error start_disk(char *name,disk_id *id){
   if(name != NULL){
     char *type = strchr(name,'.');
     if(strcmp(type,".tfs")!=-1){
-      int e = fopen(name,"w+");
+       = fopen(name,"w+");
       if(e!=-1){
 	disque_ouvert[id->id]= malloc(sizeof(char)*strlen(name));
 	disque_ouvert[id->id]= name;
@@ -13,8 +13,7 @@ error start_disk(char *name,disk_id *id){
       else{
 	error erreur;
 	return erreur;
-      }  
-    }  
+      }
   }
   else{
     error erreur;
