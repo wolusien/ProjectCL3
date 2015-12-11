@@ -1,5 +1,5 @@
 #include "interne.h"
-int e = fopen(name,+w);
+
 
 error start_disk(char *name,disk_id *id){
   if(name != NULL){
@@ -25,7 +25,7 @@ error read_block(disk_id id,block b,uint32_t num){
   return read_physical_block(id,b,num);
 }
 
-error write_bloc(disk_id id,block b,unint32_t num){
+error write_bloc(disk_id id,block b,uint32_t num){
   return write_physical_block(id,b,num);
 }
 

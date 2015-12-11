@@ -1,6 +1,8 @@
 #include "interne.h"
 
 int main (int argc, char * argv[]){
+  string_to_uint("00000000000000000000000000002246");
+
     int i;
     disk_id disk;
   disk.name="disk.tfs";

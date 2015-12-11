@@ -25,3 +25,4 @@ typedef struct{
 }block;
 error read_physical_block(disk_id id,block b,uint32_t num);
 error write_physical_block(disk_id id,block b,uint32_t num);
+error string_to_uint (char *s, uint32_t u);
