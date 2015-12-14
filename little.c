@@ -1,7 +1,6 @@
 #include <little.h>
 
 uint32_t int_to_little(int x){
-    int v=x;
     uint32_t r;
     unsigned char *t =(unsigned char*)&r;
     t[0]=x%256;
@@ -16,3 +15,4 @@ int little_to_int(uint32_t x){
     int b=(buf[0] + 256*buf[1] +(256*256)*buf[2] +(256*256*256)*buf[3]);
     return b;
 }
+
