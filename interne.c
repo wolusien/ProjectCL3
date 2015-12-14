@@ -77,7 +77,7 @@ error write_physical_block(disk_id id,block b,uint32_t num){
     }
   }
   error e;
-  printf("no disk with id %d \n", id.id);
+  printf("no disk with id %d open \n", id.id);
   e.errnb=-1;
   return e;
 }
