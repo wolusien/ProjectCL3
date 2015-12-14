@@ -56,15 +56,17 @@ error write_physical_block(disk_id id,block b,uint32_t num){
 	  e.errnb=0;
 	  return e;
 	}
-	error e;
-	printf("wrong argument num : %d \n", num ) ;
-	e.errnb=-1;
-	return e;
+	else{
+	  error e;
+	  printf("wrong argument num : %d \n", num ) ;
+	  e.errnb=-1;
+	  return e;
+	}
       }
     }
   }
   error e;
-  printf("no disk with id %d \n", id.id);
+  printf("no disk with id %d open \n", id.id);
   e.errnb=-1;
   return e;
 }
