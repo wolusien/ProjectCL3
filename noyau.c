@@ -8,7 +8,7 @@ int main (int argc, char * argv[]){
   int i;
   disk_id disk;
   //disk.id="disk.tfs";
-  FILE *f=fopen(disk.id,"w+");
+  FILE *f=fopen(dis,"w+");
   printf("nombre de bloc que vous voulez creez :\n");
   int d;
   scanf("%d",&d);
