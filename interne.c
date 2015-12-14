@@ -16,7 +16,13 @@ error read_physical_block(disk_id id,block b,uint32_t num){
     if(disque_ouvert[id.id]!=NULL){
       FILE *f = fopen(disque_ouvert[id.id],"r");
       if (f!=NULL){
-	uint32_t nb_block=(fgetc(f)|fgetc(f)|fgetc(f)|fgetc(f)); // !!! CONVERSION LITTLE INDIAN
+	uint32_t nb_block;
+	unsigned char* u=(unsigned char*)(&nb_block);
+	fseek(f,0,SEEK_SET);
+	u[0]=fgetc(f);
+	u[1]=fgetc(f);
+	u[2]=fgetc(f);
+	u[3]=fgetc(f);
 	if(num<nb_block){
 	  fseek(f,num*1024,SEEK_SET);
 	  int i;
