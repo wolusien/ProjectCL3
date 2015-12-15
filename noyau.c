@@ -1,4 +1,4 @@
-#include "interne.h"
+/*#include "interne.h"
 
 int main (int argc, char * argv[]){
   uint32_t u;
@@ -8,7 +8,7 @@ int main (int argc, char * argv[]){
   int i;
   disk_id disk;
   //disk.id="disk.tfs";
-  FILE *f=fopen(dis,"w+");
+  FILE *f=fopen(disk,"w+");
   printf("nombre de bloc que vous voulez creez :\n");
   int d;
   scanf("%d",&d);
@@ -29,3 +29,4 @@ int main (int argc, char * argv[]){
 }
 
 
+*/

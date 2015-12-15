@@ -14,7 +14,7 @@ error string_to_uint (char *s, uint32_t u){
 error read_physical_block(disk_id id,block b,uint32_t num){
   if(id.id>0 && id.id<MAX_DISQUE){
     if(disque_ouvert[id.id]!=NULL){
-      FILE *f = fopen(disque_ouvert[id.id],"r");
+      FILE *f = disque_ouvert[id.id];
       if (f!=NULL){
 	uint32_t nb_block;
 	unsigned char* u=(unsigned char*)(&nb_block);
@@ -29,7 +29,6 @@ error read_physical_block(disk_id id,block b,uint32_t num){
 	  for(i=0; i<1024; i++){
 	    b.b[i]=fgetc(f);
 	  }
-	  fclose(f);
 	  error e;
 	  e.errnb=0;
 	  return e;
@@ -51,7 +50,7 @@ error read_physical_block(disk_id id,block b,uint32_t num){
 error write_physical_block(disk_id id,block b,uint32_t num){
   if(id.id>0 && id.id<MAX_DISQUE){
     if(disque_ouvert[id.id]!=NULL){
-      FILE *f = fopen(disque_ouvert[id.id],"w+");
+      FILE *f = disque_ouvert[id.id];
       if (f!=NULL){
           //Recupère le nb de block dans le disk
           uint32_t nb_block;
@@ -64,7 +63,6 @@ error write_physical_block(disk_id id,block b,uint32_t num){
           if(num<nb_block){
               fseek(f,num*1024,SEEK_SET);
               fputs(b.b,f);
-              fclose(f);
               error e;
               e.errnb=0;
               return e;
