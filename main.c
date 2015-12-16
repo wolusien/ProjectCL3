@@ -3,8 +3,13 @@
 int main (int argc, char * argv[]){
     printf("Je suis au début du code du main\n");
     disk_id *id;
+<<<<<<< HEAD
     char *path = "disk.tfs";
     printf("Je vais exécuter startdisk\n");
+=======
+    id = malloc(sizeof(disk_id));
+    char *path = "disk.tfs"; 
+>>>>>>> modif
     error start=start_disk(path,id);
     block b;
     uint32_t num = int_to_little(0);
