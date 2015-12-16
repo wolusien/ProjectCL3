@@ -1,4 +1,4 @@
-include "interne.h"
+/*#include "interne.h"
 
 int main(argc ,argv *[]){
   if(argc == 3 || argc == 4){
@@ -14,3 +14,4 @@ int main(argc ,argv *[]){
     }
   }
 }
+*/

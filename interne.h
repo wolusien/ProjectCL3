@@ -7,16 +7,18 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include "error.h"
+#include "little.h"
 
 #define SIZEBLOCK 1024
 #define MINBLOCK 3;
 #define BUFSIZE 256;
 #define MAX_DISQUE 100
 
-char *disque_ouvert[MAX_DISQUE];
+FILE *disque_ouvert[MAX_DISQUE];
 
 typedef struct{
   int id;
+  char *name;
 }disk_id;
 
 typedef struct{
