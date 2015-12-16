@@ -5,7 +5,8 @@ error start_disk(char *name,disk_id *id) {
   error e;
   if(name != NULL){
     int boolean =0;
-    for(int i=0;i<MAX_DISQUE;i++){
+    int i;
+    for(i=0;i<MAX_DISQUE;i++){
       if(disque_ouvert[i]!=NULL){
 	if(strcmp(disque_ouvert[i]->name,name)==0){
 	  boolean =1;
