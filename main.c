@@ -1,32 +1,22 @@
-/*#include "interne.h"
+#include "interne.h"
 
 int main (int argc, char * argv[]){
-  uint32_t u;
-  string_to_uint("00000000000000000000000000002246",u);
-  printf("%d",u);
-
-  int i;
-  disk_id disk;
-  //disk.id="disk.tfs";
-  FILE *f=fopen(disk,"w+");
-  printf("nombre de bloc que vous voulez creez :\n");
-  int d;
-  scanf("%d",&d);
-  for(i=0;i<d*1024;i++){
-    fputc('0',f);
-  }
-  block b;
-  for(i=0;i<1016;i++){
-    b.b[i]='A';
-  }
-  for(i=1016;i<1024;i++){
-    b.b[i]='1';
-  }
-  write_physical_block(disk,b,00000000000000000000000000000001);
-  block bl;
-  read_physical_block(disk,bl,00000000000000000000000000000001);
-  exit(0);
+    printf("Je suis au début du codedu main\n");
+    disk_id *id;
+    char *path = "disk.tfs"; 
+    error start=start_disk(path,id);
+    block b;
+    uint32_t num = int_to_little(0);
+    uint32_t n = int_to_little(17);
+    unsigned char* o = (&num);
+    int i;
+    for(i=0; i<4; i++){
+        b.b[i]=o[i];
+    }
+    b.id=0;
+    printf("Je vais exécuter write_physical\n");
+    write_physical_block((*id),b,num);
+    //error stop=stop_disk((*id));
+    exit(0);
 }
 
-
-*/
