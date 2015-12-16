@@ -12,45 +12,45 @@ error string_to_uint (char *s, uint32_t u){
 }
 
 error read_physical_block(disk_id id,block b,uint32_t num){
-    if(id.id>0 && id.id<MAX_DISQUE){
-      if(disque_ouvert[id.id]!=NULL){
-        FILE *f = disque_ouvert[id.id];
-        if (f!=NULL){
-            uint32_t nb_block;
-            unsigned char* u=(unsigned char*)(&nb_block);
-            fseek(f,0,SEEK_SET);
-            u[0]=fgetc(f);
-            u[1]=fgetc(f);
-            u[2]=fgetc(f);
-            u[3]=fgetc(f);
-            if(num<nb_block){
-                fseek(f,num*1024,SEEK_SET);
-                int i;
-                for(i=0; i<1024; i++){
-                    b.b[i]=fgetc(f);
+    if(id.id>=0 && id.id<MAX_DISQUE){
+        if(disque_ouvert[id.id]!=NULL){
+            FILE *f = disque_ouvert[id.id]->fd;
+            if (f!=NULL){
+                uint32_t nb_block;
+                unsigned char* u=(unsigned char*)(&nb_block);
+                fseek(f,0,SEEK_SET);
+                u[0]=fgetc(f);
+                u[1]=fgetc(f);
+                u[2]=fgetc(f);
+                u[3]=fgetc(f);
+                if(num<nb_block){
+                    fseek(f,num*1024,SEEK_SET);
+                    int i;
+                    for(i=0; i<1024; i++){
+                        b.b[i]=fgetc(f);
+                    }
+                    error e;
+                    e.errnb=0;
+                    return e;
                 }
                 error e;
-                e.errnb=0;
+                printf("wrong argument num : %d \n", num ) ;
+                e.errnb=-1;
                 return e;
             }
-            error e;
-            printf("wrong argument num : %d \n", num ) ;
-            e.errnb=-1;
-            return e;
         }
     }
-  }
-  error e;
-  printf("no disk with id %d \n", id.id);
-  e.errnb=-1;
-  return e;
+    error e;
+    printf("no disk with id %d \n", id.id);
+    e.errnb=-1;
+    return e;
 }
 
 
 error write_physical_block(disk_id id,block b,uint32_t num){
-    if(id.id>0 && id.id<MAX_DISQUE){
+    if(id.id>=0 && id.id<MAX_DISQUE){
         if(disque_ouvert[id.id]!=NULL){
-            FILE *f = disque_ouvert[id.id];
+            FILE *f = disque_ouvert[id.id]->fd;
             if (f!=NULL){
                 //Recupère le nb de block dans le disk
                 uint32_t nb_block;
@@ -73,9 +73,9 @@ error write_physical_block(disk_id id,block b,uint32_t num){
                 return e;
             }
         }
+        error e;
+        printf("no disk with id %d open \n", id.id);
+        e.errnb=-1;
+        return e;
     }
-    error e;
-    printf("no disk with id %d open \n", id.id);
-    e.errnb=-1;
-    return e;
 }
