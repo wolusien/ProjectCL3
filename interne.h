@@ -20,7 +20,7 @@ typedef struct{
   FILE* fd;
 }disk_id;
 
-disk_id* disque_ouvert[MAX_DISQUE];
+disk_id *disque_ouvert[MAX_DISQUE];
 
 typedef struct{
   char b[1024];

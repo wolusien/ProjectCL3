@@ -1,16 +1,17 @@
 /*#include "interne.h"
 
-int main(argc ,argv *[]){
-  if(argc == 3 || argc == 4){
-    if(strcmp(argv[1],"-s")){
-      if(argc == 3){
-	
-      }
+int main(int argc,char *argv[]){
+  int fichier;
+  switch(argc){
+  case 1 :
+    int err = open("disk.tfs",O_CREAT | O_EXCL);
+    if(err !=-1){
+      fichier =err;
+      
     }
     else{
-      error e;
-      e.id = -1;
-      printf("add option -s");
+      printf("le nom par défaut existe déjà veuillez preciser un nouveau nom de fichier");
+      exit(0);
     }
   }
 }

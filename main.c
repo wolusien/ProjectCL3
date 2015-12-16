@@ -3,6 +3,7 @@
 int main (int argc, char * argv[]){
     printf("Je suis au début du codedu main\n");
     disk_id *id;
+    id = malloc(sizeof(disk_id));
     char *path = "disk.tfs"; 
     error start=start_disk(path,id);
     block b;

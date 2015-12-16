@@ -14,7 +14,7 @@ error string_to_uint (char *s, uint32_t u){
 error read_physical_block(disk_id id,block b,uint32_t num){
   if(id.id>0 && id.id<MAX_DISQUE){
     if(disque_ouvert[id.id]!=NULL){
-      FILE *f = disque_ouvert[id.id];
+      FILE *f = disque_ouvert[id.id]->fd;
       if (f!=NULL){
 	uint32_t nb_block;
 	unsigned char* u=(unsigned char*)(&nb_block);
@@ -48,9 +48,9 @@ error read_physical_block(disk_id id,block b,uint32_t num){
 
 
 error write_physical_block(disk_id id,block b,uint32_t num){
-  if(id.id>0 && id.id<MAX_DISQUE){
+  if(id.id>=0 && id.id<MAX_DISQUE){
     if(disque_ouvert[id.id]!=NULL){
-      FILE *f = disque_ouvert[id.id];
+      FILE *f = disque_ouvert[id.id]->fd;
       if (f!=NULL){
           //Recupère le nb de block dans le disk
           uint32_t nb_block;
