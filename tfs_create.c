@@ -1,7 +1,7 @@
 #include "interne.h"
 
-int main(int argc,char *argv[]){
-    /*int fichier;
+/*int main(int argc,char *argv[]){
+    int fichier;
     switch(argc){
     case 1 :
         int err = open("disk.tfs",O_CREAT | O_EXCL);
@@ -16,7 +16,7 @@ int main(int argc,char *argv[]){
         error e;
         e.id = -1;
         printf("wrong numbre of arguments : %d aguments", argc);
-        }*/
+        }
     exit(0);
-}
+}*/
 
