@@ -16,15 +16,16 @@
 #define DEFAULT_SIZE_TFS 50
 
 typedef struct{
-  int id;
-  char *name;
-  FILE* fd;
+    int id;
+    char *name;
+    int fd;
+  //FILE* fd;
 }disk_id;
 
-disk_id *disque_ouvert[MAX_DISQUE];
+disk_id* disque_ouvert[MAX_DISQUE];
 
 typedef struct{
-  char b[1024];
+  char buff[1024];
   int id;
 }block;
 error read_physical_block(disk_id id,block b,uint32_t num);
