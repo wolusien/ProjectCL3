@@ -63,8 +63,14 @@ error write_physical_block(disk_id id,block b,uint32_t num){
                 read(f,o,4);
                 if(num<=50//nb_block
                     ){
+            printf("test1\n");
                     lseek(f,num*1024,SEEK_SET);
-                    write(f,b.buff,f);
+                    size_t taille =1024;
+                    int i;
+                    for(i=0; i<1024; i++){
+                        printf("buff[%d] contient %c\n",i,b.buff[i]);
+                    }
+                    printf("Je write %df\n",write(f,b.buff,taille));
                     e.errnb=0;
                     return e;
                 }else{

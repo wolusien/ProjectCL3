@@ -16,27 +16,19 @@ error start_disk(char *name,disk_id *id) {
     }
     printf("checkpoint1\n");
     if(boolean==0){
-        //FILE *f =fopen(name,"r+");
-        int f = open(name,O_CREAT,0744);
-        printf("checkpoint2\n");
+        int f = open(name,O_RDWR);
         if(f != -1){
             int nbrcurs =0;
             while(disque_ouvert[nbrcurs]!=NULL && nbrcurs!=MAX_DISQUE){
                 nbrcurs++;
             }
-            printf("checkpoint3 nbrcurs %d\n",nbrcurs);
             if(nbrcurs!=MAX_DISQUE){
                 if(id !=NULL){
-                    printf("Je suis dans la boucle d'allocation d'id\n");
                     id->name = malloc(strlen(name)*sizeof(char));
                     id->id = nbrcurs;
-                    printf("Je suis dans la boucle d'allocation d'id id  %d\n",id->id);
                     id->fd = f;
-                    printf("Je suis dans la boucle d'allocation d'id fd %d\n",id->fd);
                     id->name= name;
-                    printf("Je suis dans la boucle d'allocation d'id name %s\n",id->name);
                     disque_ouvert[nbrcurs]=id;
-                    printf("disque_ouvert[nbrcurs] -> fd %d\n",(*disque_ouvert[nbrcurs]).fd);
                     e.errnb = 0;
                 }
                 else{
