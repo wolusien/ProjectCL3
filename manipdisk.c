@@ -14,7 +14,6 @@ error start_disk(char *name,disk_id *id) {
           }
       }
     }
-    printf("checkpoint1\n");
     if(boolean==0){
       int f = open(name,O_RDWR);
       if(f != -1){
