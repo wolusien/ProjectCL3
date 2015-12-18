@@ -56,7 +56,7 @@ error start_disk(char *name,disk_id *id) {
   }
   return e;
 }
-error read_block(disk_id id,block b,uint32_t num){
+error read_block(disk_id id,block* b,uint32_t num){
   return read_physical_block(id,b,num);
 }
 
