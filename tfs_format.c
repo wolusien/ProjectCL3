@@ -1,6 +1,5 @@
 #include "interne.h"
 
-/*
 int main(int argc, char *argv[]){
   if(argc==6){
     if(strcmp(argv[1], "-p")==0){
@@ -9,10 +8,17 @@ int main(int argc, char *argv[]){
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]);
-	  if(0<partition && partition<=id.nb_part){
-	    
+	  if(0<partition && partition<=id->nbPart){
+	    int file_count=atoi(argv[4]);
+	    int taille=id->taillePart[file_count-1];
+	    if(0<file_count && taille>(1+(file_count/16)+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
+	      
+
+	    }else{
+	      printf("tfs format : wrong arguments, too much files : %d", file_count);
+	    }
 	  }else{
-	    printf("tfs format : wrong arguments, no partition %d", atoi(argv[2]));
+	    printf("tfs format : wrong arguments, no partition %d", partition);
 	  }
 	}
       }else{
@@ -26,10 +32,3 @@ int main(int argc, char *argv[]){
 
   }
 }
-*/
-   
-
-
-
-
->>>>>>> f004c25f5714695341320196ba5678eaf2ecbb87
