@@ -1,6 +1,7 @@
-#include "interne.h"
+/*#include "interne.h"
 
-/*int main(int argc, char *argv[]){
+/*
+int main(int argc, char *argv[]){
   if(argc==6){
     if(strcmp(argv[1], "-p")==0){
       if(strcmp(argv[1], "-mf")==0){
@@ -22,6 +23,13 @@
     }
   }else{
     printf("tfs format : wrong arguments number %d", (argc-1));
+
   }
 }
 */
+   
+
+
+
+
+>>>>>>> f004c25f5714695341320196ba5678eaf2ecbb87
