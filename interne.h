@@ -14,11 +14,14 @@
 #define BUFSIZE 256
 #define MAX_DISQUE 100
 #define DEFAULT_SIZE_TFS 50
-
+#define MAX_PART 254
 typedef struct{
     int id;
     char *name;
     int fd;
+    int nbBlock;
+    int nbPart;
+    int taillePart[MAX_PART];
   //FILE* fd;
 }disk_id;
 
