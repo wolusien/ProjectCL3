@@ -1,4 +1,4 @@
-#include "interne.h"
+/*#include "interne.h"
 
 int main(int argc, char *argv[]){
   if(argc==6){
@@ -8,7 +8,7 @@ int main(int argc, char *argv[]){
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]);
-	  if(0<partition && partition<=disk_id.nb_part){
+	  if(0<partition && partition<=id.nb_part){
 	    
 	  }else{
 	    printf("tfs format : wrong arguments, no partition %d", atoi(argv[2]));
@@ -24,5 +24,5 @@ int main(int argc, char *argv[]){
     printf("tfs format : wrong arguments number %d", (argc-1));
   }
 }
-
+*/
 
