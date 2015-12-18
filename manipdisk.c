@@ -23,6 +23,27 @@ error start_disk(char *name,disk_id *id) {
 	}
 	if(nbrcurs!=MAX_DISQUE){
 	  if(id !=NULL){
+	    block first;
+	    read_physical_block(*id,first,0);
+	    uint32_t n;
+	    unsigned char *tab=(unsigned char *)(&n);
+	    for(i=0;i<4;i++){
+	      tab[i]=first.buff[i];
+	    }
+	    id->nbBlock = little_to_int(n);
+	    for(i=0;i<4;i++){
+	      tab[i]=first.buff[i+4];
+	    }
+	    id->nbPart=little_to_int(n);
+	    if(id->nbPart !=0){
+	      for(i=0;i<id->nbPart;i++){
+		int j;
+		for(j=0;j<4;j++){
+		  tab[i]=first.buff[j+8+4*id->nbPart];
+		}
+		id->taillePart[i]=little_to_int(n);
+	      }
+	    }
 	    id->name = malloc(strlen(name)*sizeof(char));
 	    id->id = nbrcurs;
 	    id->fd = f;
@@ -30,14 +51,14 @@ error start_disk(char *name,disk_id *id) {
 	    disque_ouvert[nbrcurs]=id;
 	    e.errnb = 0;
 	  }
-                else{
-		  e.errnb = -1;
-		  printf("le pointeur de disk_id passé en argument est NULL\n");
-                }
+	  else{
+	    e.errnb = -1;
+	    printf("le pointeur de disk_id passé en argument est NULL\n");
+	  }
 	}
 	else{
-                e.errnb =-1;
-                printf("il y a trop de disque ouvert\n");
+	  e.errnb =-1;
+	  printf("il y a trop de disque ouvert\n");
 	}
       }
       else{
@@ -52,7 +73,7 @@ error start_disk(char *name,disk_id *id) {
   }
   else{
     e.errnb = -1;
-      printf("ajouter un nom de disque\n");
+    printf("ajouter un nom de disque\n");
   }
   return e;
 }
