@@ -3,7 +3,7 @@
 
 
 
-int main(int argc,char *argv[]){
+/*int main(int argc,char *argv[]){
   int fichier;
   //switch(argc){
     //case 1 :
@@ -19,5 +19,5 @@ int main(int argc,char *argv[]){
    
     //}
 }
-
+*/
 
