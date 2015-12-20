@@ -1,8 +1,5 @@
 #include "interne.h"
 
-
-
-
 int main(int argc,char *argv[]){
     int fichier;
     int size;
@@ -34,7 +31,7 @@ int main(int argc,char *argv[]){
   if(fichier != -1){
       block first;
       uint32_t u = int_to_little(size);
-      unsigned char* tab =&u;
+      unsigned char* tab =(unsigned char*)(&u);
       int i;
       for(i=0;i<4;i++){
           first.buff[i]=tab[i];
