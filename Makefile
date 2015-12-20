@@ -4,6 +4,8 @@ EXEC= main tfs_create tfs_format tfs_analyse tfs_partition
 HEADERS= $(wildcard *.h)
 OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 
+.SECONDARY : $(OBJECTS)
+
 all: $(EXEC)
 
 $(EXEC): $(OBJECTS)

@@ -4,8 +4,10 @@
 #include <errno.h>
 #include <stdint.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
 #include "error.h"
 #include "little.h"
 
@@ -22,7 +24,6 @@ typedef struct{
     int nbBlock;
     int nbPart;
     int taillePart[MAX_PART];
-  //FILE* fd;
 }disk_id;
 
 disk_id* disque_ouvert[MAX_DISQUE];
