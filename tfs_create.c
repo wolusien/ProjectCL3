@@ -19,7 +19,7 @@ int main(int argc,char *argv[]){
   case 4 :
     if(strcmp(argv[1],"-s")==0){
       name = argv[3];
-      size = argv[2];
+      size = atoi(argv[2]);
     }
     else{
       printf("option %s inconnue changez pour -s",argv[1]);
@@ -29,12 +29,13 @@ int main(int argc,char *argv[]){
   default:
     printf("mauvais nombre d'argument");
     exit(-1);
+    break;
   }
-  int fichier = open("disk.tfs",O_CREAT | O_EXCL);
+  fichier = open("disk.tfs",O_CREAT | O_EXCL);
   if(fichier != -1){
     block first;
-    unint32_t u = int_to_little(size);
-    unsigned *char tab =&u;
+    uint32_t u = int_to_little(size);
+    unsigned char *tab =(unsigned char *)&u;
     int i;
     for(i=0;i<4;i++){
       first.buff[i]=tab[i];
@@ -42,8 +43,22 @@ int main(int argc,char *argv[]){
     for(i=4;i<1024;i++){
       first.buff[i]='0';
     }
-    unint32_t position = int_to_little(0);
-    
+    uint32_t position = int_to_little(0);
+    disk_id disk;
+    disk.id=0;
+    disk.fd=fichier;
+    disque_ouvert[0]=&disk;
+    write_physical_block(disk,first,position);
+    block rest;
+    for(i=0;i<1024;i++){
+      rest.buff[i]='0';
+    }
+    for(i=1;i<size;i++){
+      position=int_to_little(i);
+      write_physical_block(disk,rest,position);
+    }
+    disque_ouvert[0]=NULL;
+    close(fichier);
   }
   else{
     printf("le nom choisi existe déjà veuillez en entrez un nouveau");
