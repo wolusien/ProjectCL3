@@ -1,29 +1,26 @@
 #include "interne.h"
 
-
-
-
 int main(int argc,char *argv[]){
-  int fichier;
-  int size;
-  char *name;
+    int fichier;
+    int size;
+    char *name;
   switch(argc){
   case 1 :
-    name = "disk.tfs";
-    size = DEFAULT_SIZE_TFS;
-    break;
+      name = "disk.tfs";
+      size = DEFAULT_SIZE_TFS;
+      break;
   case 2 :
-    name = argv[1];
-    size = DEFAULT_SIZE_TFS;
-    break;
+      name = argv[1];
+      size = DEFAULT_SIZE_TFS;
+      break;
   case 4 :
     if(strcmp(argv[1],"-s")==0){
       name = argv[3];
       size = atoi(argv[2]);
     }
     else{
-      printf("option %s inconnue changez pour -s",argv[1]);
-      exit(-1);
+        printf("option %s inconnue changez pour -s",argv[1]);
+        exit(-1);
     }
     break;
   default:
@@ -59,9 +56,10 @@ int main(int argc,char *argv[]){
     }
     disque_ouvert[0]=NULL;
     close(fichier);
+
   }
   else{
-    printf("le nom choisi existe déjà veuillez en entrez un nouveau");
+      printf("le nom choisi existe déjà veuillez en entrez un nouveau");
   }
 }
 
