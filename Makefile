@@ -20,5 +20,6 @@ tfs_partition : $(OBJECTS) tfs_partition.o
 
 clean:
 	rm -f *.o
+	rm -f *~
 proper:	
 	rm disk.tfs
