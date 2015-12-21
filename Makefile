@@ -19,8 +19,6 @@ tfs_partition : $(OBJECTS) tfs_partition.o
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f $(OBJECTS)
-	rm -f $(EXEC)
-
+	rm -f *.o
 proper:	
 	rm disk.tfs

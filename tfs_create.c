@@ -4,6 +4,7 @@ int main(int argc,char *argv[]){
     int fichier;
     int size;
     char *name;
+    printf("%d",argc);
   switch(argc){
   case 1 :
       name = "disk.tfs";
@@ -28,7 +29,7 @@ int main(int argc,char *argv[]){
     exit(-1);
     break;
   }
-  fichier = open("disk.tfs",O_CREAT | O_EXCL);
+  fichier = open(name,O_CREAT | O_EXCL | O_RDWR);
   if(fichier != -1){
     block first;
     uint32_t u = int_to_little(size);
