@@ -17,6 +17,8 @@
 #define MAX_DISQUE 100
 #define DEFAULT_SIZE_TFS 50
 #define MAX_PART 254
+#define MAGIC_NUMBER 31534654
+
 typedef struct{
     int id;
     char *name;
