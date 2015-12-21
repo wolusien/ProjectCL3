@@ -1,5 +1,23 @@
 #include "interne.h"
 
+error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
+  if(loc>0 && loc<1020){
+    uint32_t p=int_to_little(a);
+    unsigned char *c=(unsigned char *)(&p);
+    int i;
+    for(i=0; i<4; i++){
+      b->buff[i+loc]=c[i];
+    }
+    error e;
+    e.errnb=0;
+    return e;
+  }else{
+    error e;
+    e.errnb=-1;
+    printf("fill_block : wrong argument loc : %d", loc);
+    return e;
+  }
+}
 
 error start_disk(char *name,disk_id *id) {
   error e;
@@ -77,7 +95,7 @@ error start_disk(char *name,disk_id *id) {
   }
   return e;
 }
-error read_block(disk_id id,block b,uint32_t num){
+error read_block(disk_id id,block *b,uint32_t num){
   return read_physical_block(id,b,num);
 }
 

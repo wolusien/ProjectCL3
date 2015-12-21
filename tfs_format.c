@@ -11,9 +11,21 @@ int main(int argc, char *argv[]){
 	  if(0<partition && partition<=id->nbPart){
 	    int file_count=atoi(argv[4]);
 	    int taille=id->taillePart[file_count-1];
-	    if(0<file_count && taille>(1+(file_count/16)+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
-	      
-
+	    int taille_descripteur=file_count/16;
+	    if(0<file_count && taille>(1+taille_descripteur+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
+	      block b;
+	      b.id=0;
+	     
+	      fill_block(&b, 31534654, 0);
+	      fill_block(&b, SIZEBLOCK, 4);
+	      fill_block(&b, taille, 8);
+	      fill_block(&b,taille-1-taille_descripteur , 12);
+	      fill_block(&b, taille_descripteur+1, 16);
+	      fill_block(&b, taille, 20);
+	      fill_block(&b, file_count, 24);
+	      //   fill_block(&b, , 28);
+	 
+  // todo chainage blocs libres. Chainage files libres. dossier racine
 	    }else{
 	      printf("tfs format : wrong arguments, too much files : %d", file_count);
 	    }
@@ -31,4 +43,5 @@ int main(int argc, char *argv[]){
     printf("tfs format : wrong arguments number %d", (argc-1));
 
   }
+  return 0;
 }

@@ -1,6 +1,6 @@
 #include "interne.h"
 
-error read_physical_block(disk_id id,block b,uint32_t num){
+error read_physical_block(disk_id id,block *b,uint32_t num){
     error e;
     if(id.id>=0 && id.id<MAX_DISQUE){
         if(disque_ouvert[id.id]!=NULL){
@@ -13,7 +13,7 @@ error read_physical_block(disk_id id,block b,uint32_t num){
                 read(f,u,4);
                 if(num<=nb_block){
                     lseek(f,num*1024,SEEK_SET);
-                    read(f,b.buff,1024);
+                    read(f,b->buff,1024);
                     e.errnb=0;
                     return e;
                 }else{
