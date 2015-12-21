@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
                             //Read the first block of the disk
                             block b;
                             uint32_t num = int_to_little(0);
-                            read_physical_block((*disk), b, num);
+                            read_physical_block((*disk),&b, num);
                             //Get size of partitions and fill the tab partition
                             for (i = 3; i < argc - 1; i++) {
                                 int psize = atoi(argv[i]);
