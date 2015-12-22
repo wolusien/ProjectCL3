@@ -1,5 +1,6 @@
 #include "interne.h"
 
+/*
 int main(int argc,char *argv[]){
     int fichier;
     int size;
@@ -63,4 +64,4 @@ int main(int argc,char *argv[]){
       printf("le nom choisi existe déjà veuillez en entrez un nouveau");
   }
 }
-
+*/

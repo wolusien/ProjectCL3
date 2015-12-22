@@ -112,9 +112,7 @@ error stop_disk(disk_id id){
   error er;
   if(disque_ouvert[id.id]!=NULL){
         //id.file = disque_ouvert[id.id]->file;
-    printf("Je vais close\n");
     er.errnb = close(id.fd);
-    printf("J'ai close\n");
     if(er.errnb != -1){
       /*printf("Je vais free name\n");
       //free(id.name);

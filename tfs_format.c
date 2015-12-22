@@ -1,5 +1,6 @@
 #include "interne.h"
 
+/*
 int main(int argc, char *argv[]){
   int i; // i pour les for
   if(argc==6){
@@ -107,3 +108,4 @@ int main(int argc, char *argv[]){
   }
   return 0;
 }
+*/

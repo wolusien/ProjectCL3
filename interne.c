@@ -23,9 +23,10 @@ error read_physical_block(disk_id id,block *b,uint32_t num){
                 }
             }
         }
+    }else{
+      printf("no disk with id %d \n", id.id);
+      e.errnb=-1;
     }
-    printf("no disk with id %d \n", id.id);
-    e.errnb=-1;
     return e;
 }
 
