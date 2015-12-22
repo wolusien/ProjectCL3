@@ -49,6 +49,7 @@ error start_disk(char *name,disk_id *id) {
 	      tab[i]=first.buff[i];
 	    }
 	    id->nbBlock = little_to_int(n);
+		printf("Val ds manipdisk vrail va %d et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
 	    for(i=0;i<4;i++){
 	      tab[i]=first.buff[i+4];
 	    }

@@ -23,23 +23,29 @@ int main(int argc, char* argv[]) {
           read_physical_block((*disk), b, num);
           //Get size of partitions and fill the tab partition
           
-	  for (i = 2; i < argc - 1; i++) {
+	  for (i = 1; i < argc - 1; i++) {
+			printf("boolean %d\n",boolean);
             if(strcmp("-p",argv[i])==0){
               boolean = 1;
             }else{
-              if(boolean = 1){
+              if(boolean == 1){
+				printf("test 2\n");
                 int psize = atoi(argv[i]);
+				printf("Val de psize %d Val de nbBlock %d\n",psize,(*disk).nbBlock-1);
                 if (psize != 0 && psize > 4 && psize < ((*disk).nbBlock-1) && nbBlock < ((*disk).nbBlock-1)){
                   nbBlock = nbBlock + psize; 
                   partition[count] = psize;
                   count++;
                   boolean=0;
                 }else{
-                  fprintf(stderr,"Wrong arguments for partition(s) size(s) %d\n",psize);
+                  fprintf(stderr,"tfs_partition : Wrong size for partition size %d\n",psize);
                   exit(-1);
                 }
 				
-              }
+              }else{
+				fprintf(stderr,"tfs_partition : Wrong arguments for partition(s) size(s) %s\n",argv[i]);
+                  exit(-1);
+				}	
             }
           }
           if (count > 0) {
@@ -67,13 +73,13 @@ int main(int argc, char* argv[]) {
             write_physical_block((*disk), b, num);
             stop_disk(*disk);
           } else {
-            fprintf(stderr,"Aucun partitionnage du disque possible, mauvaise dimension de partition!\n");
+            fprintf(stderr,"tfs_partition : No size for partition \n");
             exit(-1);
           }
         } else {
           exit(-1);
         }
-      } else {
+    } else {
       fprintf(stderr,"tfs_partition : Wrong syntax\n");
       exit(-1);
     }
