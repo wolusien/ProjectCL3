@@ -58,6 +58,7 @@ int main(int argc,char *argv[]){
     disk_id disk;
     disk.id=0;
     disk.fd=fichier;
+    disk.nbBlock = size;
     disque_ouvert[0]=&disk;
     write_physical_block(disk,first,position);
     block rest;

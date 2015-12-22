@@ -9,11 +9,10 @@ int main(int argc, char* argv[]) {
   int count = 0;
   int partition[argc - 4];
   
-  if (argc >= 5) {
+  if (argc >= 4 && argc%2==0) {
     //Test the argument of the cmd tfs_partition
     if (strcmp("-p", argv[1]) == 0) {
-      if (strcmp("size", argv[2]) == 0) {          
-        //Search if the disk given by argv[argc-1] is open or not
+      //Search if the disk given by argv[argc-1] is open or not
         disk_id* disk = malloc(sizeof (disk_id));
         //Test if the disk given by argv[argc-1] is open or not
         e = start_disk(argv[argc - 1], disk);
@@ -23,7 +22,8 @@ int main(int argc, char* argv[]) {
           uint32_t num = int_to_little(0);
           read_physical_block((*disk), (&b), num);
           //Get size of partitions and fill the tab partition
-          for (i = 2; i < argc - 1; i++) {
+          
+	  for (i = 2; i < argc - 1; i++) {
             if(strcmp("-p",argv[i])==0){
               boolean = 1;
             }else{
@@ -74,10 +74,6 @@ int main(int argc, char* argv[]) {
           exit(-1);
         }
       } else {
-        fprintf(stderr,"tfs_partition : Wrong syntax\n");
-        exit(-1);
-      }
-    } else {
       fprintf(stderr,"tfs_partition : Wrong syntax\n");
       exit(-1);
     }
