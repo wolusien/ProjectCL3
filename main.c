@@ -1,5 +1,5 @@
 #include "interne.h"
-/*
+
 int main (int argc, char * argv[]){
     disk_id *id;
     int i;
@@ -29,4 +29,4 @@ int main (int argc, char * argv[]){
     stop_disk((*id));
     exit(0);
 }
-*/
+
