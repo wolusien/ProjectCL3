@@ -1,4 +1,4 @@
-#include "interne.h"
+#include "manip.h"
 
 
 int main(int argc,char *argv[]){
@@ -8,16 +8,29 @@ int main(int argc,char *argv[]){
   switch(argc){
   case 1 :
     name = "disk.tfs";
-      size = DEFAULT_SIZE_TFS;
-      break;
+    size = DEFAULT_SIZE_TFS;
+    break;
   case 2 :
     name = argv[1];
     size = DEFAULT_SIZE_TFS;
     break;
+  case 3:
+    if(strcmp(argv[1],"-s")==0){
+      size = atoi(argv[2]);
+      name = "disk.tfs";
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
+    }
   case 4 :
     if(strcmp(argv[1],"-s")==0){
       name = argv[3];
       size = atoi(argv[2]);
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
     }
     else{
       printf("option %s inconnue changez pour -s\n",argv[1]);
@@ -29,7 +42,7 @@ int main(int argc,char *argv[]){
     exit(-1);
     break;
   }
-  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,S_IREAD);
+  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
     uint32_t u = int_to_little(size);
@@ -41,10 +54,12 @@ int main(int argc,char *argv[]){
     for(i=4;i<1024;i++){
       first.buff[i]='0';
     }
+    printf("%d\n",little_to_int(u));
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
     disk.fd=fichier;
+    disk.nbBlock = size;
     disque_ouvert[0]=&disk;
     write_physical_block(disk,first,position);
     block rest;
