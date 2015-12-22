@@ -55,11 +55,7 @@ int main(int argc,char *argv[]){
     disk_id disk;
     disk.id=0;
     disk.fd=fichier;
-<<<<<<< HEAD
     disk.nbBlock = size;
-=======
-    disk.nbBlock=size;
->>>>>>> modif
     disque_ouvert[0]=&disk;
     write_physical_block(disk,first,0);
     block rest;
@@ -77,6 +73,8 @@ int main(int argc,char *argv[]){
   }
   else{
     printf("le nom choisi existe déjà veuillez en entrez un nouveau\n");
+    exit(-1);
   }
+  exit(0);
 }
 
