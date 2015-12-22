@@ -23,8 +23,9 @@ clean:
 	rm -f *~
 
 proper:	
-	rm disk.tf
 	rm -f $(EXEC)
+	rm disk.tfs
+
 
 
 
