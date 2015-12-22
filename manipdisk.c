@@ -1,5 +1,23 @@
 #include "interne.h"
 
+error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
+  if(loc>0 && loc<1020){
+    uint32_t p=int_to_little(a);
+    unsigned char *c=(unsigned char *)(&p);
+    int i;
+    for(i=0; i<4; i++){
+      b->buff[i+loc]=c[i];
+    }
+    error e;
+    e.errnb=0;
+    return e;
+  }else{
+    error e;
+    e.errnb=-1;
+    printf("fill_block : wrong argument loc : %d", loc);
+    return e;
+  }
+}
 
 error start_disk(char *name,disk_id *id) {
   error e;
@@ -24,7 +42,7 @@ error start_disk(char *name,disk_id *id) {
 	if(nbrcurs!=MAX_DISQUE){
 	  if(id !=NULL){
 	    block first;
-	    read_physical_block((*id),first,0);
+	    read_physical_block((*id),(&first),0);
 	    uint32_t n;
 	    unsigned char *tab=(unsigned char *)(&n);
 	    for(i=0;i<4;i++){
@@ -77,7 +95,7 @@ error start_disk(char *name,disk_id *id) {
   }
   return e;
 }
-error read_block(disk_id id,block b,uint32_t num){
+error read_block(disk_id id,block *b,uint32_t num){
   return read_physical_block(id,b,num);
 }
 
@@ -94,9 +112,7 @@ error stop_disk(disk_id id){
   error er;
   if(disque_ouvert[id.id]!=NULL){
         //id.file = disque_ouvert[id.id]->file;
-    printf("Je vais close\n");
     er.errnb = close(id.fd);
-    printf("J'ai close\n");
     if(er.errnb != -1){
       /*printf("Je vais free name\n");
       //free(id.name);
