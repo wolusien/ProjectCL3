@@ -1,7 +1,7 @@
 #include "interne.h"
 
 error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
-  if(loc>0 && loc<1020){
+  if(loc>=0 && loc<1020){
     uint32_t p=int_to_little(a);
     unsigned char *c=(unsigned char *)(&p);
     int i;
