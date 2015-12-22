@@ -8,16 +8,29 @@ int main(int argc,char *argv[]){
   switch(argc){
   case 1 :
     name = "disk.tfs";
-      size = DEFAULT_SIZE_TFS;
-      break;
+    size = DEFAULT_SIZE_TFS;
+    break;
   case 2 :
     name = argv[1];
     size = DEFAULT_SIZE_TFS;
     break;
+  case 3:
+    if(strcmp(argv[1],"-s")==0){
+      size = atoi(argv[2]);
+      name = "disk.tfs";
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
+    }
   case 4 :
     if(strcmp(argv[1],"-s")==0){
       name = argv[3];
       size = atoi(argv[2]);
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
     }
     else{
       printf("option %s inconnue changez pour -s\n",argv[1]);
@@ -29,7 +42,7 @@ int main(int argc,char *argv[]){
     exit(-1);
     break;
   }
-  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,S_IREAD);
+  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
     uint32_t u = int_to_little(size);
