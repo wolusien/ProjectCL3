@@ -1,4 +1,4 @@
-#include "interne.h"
+#include "manip.h"
 
 
 int main(int argc,char *argv[]){
@@ -54,6 +54,7 @@ int main(int argc,char *argv[]){
     for(i=4;i<1024;i++){
       first.buff[i]='0';
     }
+    printf("%d\n",little_to_int(u));
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
