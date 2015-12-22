@@ -42,7 +42,7 @@ int main(int argc,char *argv[]){
     exit(-1);
     break;
   }
-  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,S_IREAD);
+  fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
     uint32_t u = int_to_little(size);
