@@ -1,7 +1,7 @@
 #include "manip.h"
 
 error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
-  if(loc>0 && loc<1020){
+  if(loc>=0 && loc<1020){
     uint32_t p=int_to_little(a);
     unsigned char *c=(unsigned char *)(&p);
     int i;
@@ -41,6 +41,7 @@ error start_disk(char *name,disk_id *id) {
 	}
 	if(nbrcurs!=MAX_DISQUE){
 	  if(id !=NULL){
+	    id->id = nbrcurs;
 	    block first;
 	    read_physical_block((*id),first,0);
 	    uint32_t n;
@@ -64,7 +65,6 @@ error start_disk(char *name,disk_id *id) {
 	      }
 	    }
 	    id->name = malloc(strlen(name)*sizeof(char));
-	    id->id = nbrcurs;
 	    id->fd = f;
 	    id->name= name;
 	    disque_ouvert[nbrcurs]=id;

@@ -7,6 +7,7 @@ error read_physical_block(disk_id id,block b,uint32_t num){
             int f = disque_ouvert[id.id]->fd;
             if (f!=-1){
 	      if(num<=id.nbBlock){
+		printf("ddddd");
                     lseek(f,num*1024,SEEK_SET);
                     read(f,b.buff,1024);
                     e.errnb=0;

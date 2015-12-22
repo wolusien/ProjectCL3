@@ -88,8 +88,7 @@ int main(int argc, char *argv[]){
 		fill_block(&reste,0, 1020);
 	      }
 
-  // todo chainage blocs libres. Chainage files libres. dossier racine
-	    }else{
+ 	    }else{
 	      printf("tfs format : wrong arguments, too much files : %d", file_count);
 	    }
 	  }else{
