@@ -16,14 +16,15 @@ int main(int argc, char* argv[]) {
         disk_id* disk = malloc(sizeof (disk_id));
         //Test if the disk given by argv[argc-1] is open or not
         e = start_disk(argv[argc - 1], disk);
+	printf("nb %d \n",disk->nbBlock);
         if (e.errnb == 0) {
           //Read the first block of the disk
           block b;
           uint32_t num = int_to_little(0);
           read_physical_block((*disk), b, num);
           //Get size of partitions and fill the tab partition
-          
-	  for (i = 2; i < argc - 1; i++) {
+
+          for (i = 3; i < argc - 1; i++) {
             if(strcmp("-p",argv[i])==0){
               boolean = 1;
             }else{

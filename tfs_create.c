@@ -45,29 +45,30 @@ int main(int argc,char *argv[]){
   fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
-    uint32_t u = int_to_little(size);
-    unsigned char *tab = (unsigned char *)&u;
+    fill_block(&first, size, 0);
+    printf("size %d \n", size);
     int i;
-    for(i=0;i<4;i++){
-      first.buff[i]=tab[i];
-    }
     for(i=4;i<1024;i++){
       first.buff[i]='0';
     }
-    printf("%d\n",little_to_int(u));
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
     disk.fd=fichier;
+<<<<<<< HEAD
     disk.nbBlock = size;
+=======
+    disk.nbBlock=size;
+>>>>>>> modif
     disque_ouvert[0]=&disk;
-    write_physical_block(disk,first,position);
+    write_physical_block(disk,first,0);
     block rest;
     for(i=0;i<1024;i++){
       rest.buff[i]='0';
     }
     for(i=1;i<size;i++){
       position=int_to_little(i);
+      printf("part %d \n", position);
       write_physical_block(disk,rest,position);
     }
     disque_ouvert[0]=NULL;
