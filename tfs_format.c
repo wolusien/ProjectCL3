@@ -1,4 +1,4 @@
-#include "interne.h"
+#include "manip.h"
 
 
 int main(int argc, char *argv[]){
