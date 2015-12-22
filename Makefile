@@ -7,7 +7,7 @@ OBJECTS = little.o manipdisk.o interne.o
 
 all: $(EXEC)
 
-main: $(OBJECTS) main.o
+main : $(OBJECTS) main.o
 
 tfs_create :$(OBJECTS) tfs_create.o
 
@@ -21,5 +21,13 @@ tfs_partition : $(OBJECTS) tfs_partition.o
 clean:
 	rm -f *.o
 	rm -f *~
+
 proper:	
-	rm disk.tfs
+	rm disk.tf
+	rm -f $(EXEC)
+
+
+
+
+
+
