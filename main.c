@@ -1,7 +1,7 @@
 #include "interne.h"
 
 int main (int argc, char * argv[]){
-  /*disk_id *id;
+  disk_id *id;
   int i;
   char *path = "disk.tfs";
   id = malloc(sizeof(disk_id)); 
@@ -28,4 +28,5 @@ int main (int argc, char * argv[]){
   printf("Je vais exécuter stopdisk\n");
   stop_disk((*id));
   exit(0);
-  }*/
+  }
+
