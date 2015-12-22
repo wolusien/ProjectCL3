@@ -20,12 +20,12 @@ int main(int argc,char *argv[]){
       size = atoi(argv[2]);
     }
     else{
-      printf("option %s inconnue changez pour -s",argv[1]);
+      printf("option %s inconnue changez pour -s\n",argv[1]);
       exit(-1);
     }
     break;
   default:
-    printf("mauvais nombre d'argument");
+    printf("mauvais nombre d'argument\n");
     exit(-1);
     break;
   }
@@ -39,7 +39,7 @@ int main(int argc,char *argv[]){
       first.buff[i]=tab[i];
     }
     for(i=4;i<1024;i++){
-      first.buff[i]='f';
+      first.buff[i]='0';
     }
     uint32_t position = int_to_little(0);
     disk_id disk;
@@ -53,7 +53,6 @@ int main(int argc,char *argv[]){
     }
     for(i=1;i<size;i++){
       position=int_to_little(i);
-      printf("%d\n",position);
       write_physical_block(disk,rest,position);
     }
     disque_ouvert[0]=NULL;

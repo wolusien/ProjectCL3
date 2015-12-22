@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 		id_first+=id->taillePart[i];
 	      }
 	      
-	      write_block(*id, b,id_first); 
+	      write_physical_block(*id, b,id_first); 
 	      
 	      //initialisation file table
 	      block file_table;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]){
 		    }
 		  }
 		}
-		write_block(*id, file_table,i+id_first);
+		write_physical_block(*id, file_table,i+id_first);
 		fill_block(&file_table,0,0);
 		fill_block(&file_table,0,4);  //on réinitialise le bloc file_table à 0
 		fill_block(&file_table,0,8);
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]){
 	      racine.buff[36]='.';
 	      racine.buff[37]='.';
 	      racine.buff[38]='0';
-	      write_block(*id, racine,id_first+taille_descripteur+1);
+	      write_physical_block(*id, racine,id_first+taille_descripteur+1);
 
 	      //initialisation des blocs restants (chainage)
 	      block reste;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
 		} else{
 		  fill_block(&reste,i, 1020);
 		}
-		write_block(*id, reste,id_first+i);
+		write_physical_block(*id, reste,id_first+i);
 		fill_block(&reste,0, 1020);
 	      }
 
