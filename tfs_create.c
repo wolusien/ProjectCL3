@@ -14,10 +14,22 @@ int main(int argc,char *argv[]){
     name = argv[1];
     size = DEFAULT_SIZE_TFS;
     break;
+  case 3:
+    if(strcmp(argv[1],"-s")==0){
+      size = atoi(argv[2]);
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
+    }
   case 4 :
     if(strcmp(argv[1],"-s")==0){
       name = argv[3];
       size = atoi(argv[2]);
+      if(size==0){
+	printf("%s n'est pas un entier\n",argv[2]);
+	exit(-1);
+      }
     }
     else{
       printf("option %s inconnue changez pour -s\n",argv[1]);
