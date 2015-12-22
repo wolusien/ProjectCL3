@@ -8,8 +8,8 @@ int main(int argc,char *argv[]){
   switch(argc){
   case 1 :
     name = "disk.tfs";
-      size = DEFAULT_SIZE_TFS;
-      break;
+    size = DEFAULT_SIZE_TFS;
+    break;
   case 2 :
     name = argv[1];
     size = DEFAULT_SIZE_TFS;
@@ -17,6 +17,7 @@ int main(int argc,char *argv[]){
   case 3:
     if(strcmp(argv[1],"-s")==0){
       size = atoi(argv[2]);
+      name = "disk.tfs";
       if(size==0){
 	printf("%s n'est pas un entier\n",argv[2]);
 	exit(-1);
