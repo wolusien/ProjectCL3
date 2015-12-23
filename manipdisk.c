@@ -41,16 +41,19 @@ error start_disk(char *name,disk_id *id) {
 	}
 	if(nbrcurs!=MAX_DISQUE){
 	  if(id !=NULL){
+	    disque_ouvert[nbrcurs]=id;
 	    id->id = nbrcurs;
+	    id->fd=f;
+	    id->nbBlock=1;
 	    block first;
-	    read_physical_block((*id),first,0);
+	    read_physical_block((*id),&first,0);
 	    uint32_t n;
 	    unsigned char *tab=(unsigned char *)(&n);
 	    for(i=0;i<4;i++){
 	      tab[i]=first.buff[i];
 	    }
 	    id->nbBlock = little_to_int(n);
-		printf("Val ds manipdisk vrail va %d et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
+	    printf("Val ds manipdisk vrail va %u et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
 	    for(i=0;i<4;i++){
 	      tab[i]=first.buff[i+4];
 	    }
@@ -65,7 +68,6 @@ error start_disk(char *name,disk_id *id) {
 	      }
 	    }
 	    id->name = malloc(strlen(name)*sizeof(char));
-	    id->fd = f;
 	    id->name= name;
 	    disque_ouvert[nbrcurs]=id;
 	    e.errnb = 0;
@@ -96,7 +98,7 @@ error start_disk(char *name,disk_id *id) {
   }
   return e;
 }
-error read_block(disk_id id,block b,uint32_t num){
+error read_block(disk_id id,block *b,uint32_t num){
   return read_physical_block(id,b,num);
 }
 

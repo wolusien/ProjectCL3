@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
   int count = 0;
   int partition[argc - 4];
   
-  if (argc >= 4 && argc%2==0) {
+  if (argc >= 3 && argc%2==0) {
     //Test the argument of the cmd tfs_partition
     if (strcmp("-p", argv[1]) == 0) {
       //Search if the disk given by argv[argc-1] is open or not
@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
           //Read the first block of the disk
           block b;
           uint32_t num = int_to_little(0);
-          read_physical_block((*disk), b, num);
+          read_physical_block((*disk),&b, num);
           //Get size of partitions and fill the tab partition
 	  for (i = 1; i < argc - 1; i++) {
             if(strcmp("-p",argv[i])==0){

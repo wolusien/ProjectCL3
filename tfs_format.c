@@ -5,8 +5,10 @@ int main(int argc, char *argv[]){
   int i; // i pour les for
   if(argc==6){
     if(strcmp(argv[1], "-p")==0){
-      if(strcmp(argv[1], "-mf")==0){
+      if(strcmp(argv[3], "-mf")==0){
 	disk_id *id=malloc(sizeof(disk_id));
+	printf(" fd : %d \n", id->fd);
+ 	printf(" taille : %d \n", id->fd);
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]);
@@ -89,20 +91,20 @@ int main(int argc, char *argv[]){
 	      }
 
  	    }else{
-	      printf("tfs format : wrong arguments, too much files : %d", file_count);
+	      printf("tfs format : wrong arguments, too much files : %d \n", file_count);
 	    }
 	  }else{
-	    printf("tfs format : wrong arguments, no partition %d", partition);
+	    printf("tfs format : wrong arguments, no partition %d \n", partition);
 	  }
 	}
       }else{
-	printf("tfs format : wrong arguments, miss -mf");
+	printf("tfs format : wrong arguments, miss -mf \n");
       }
     }else{
-      printf("tfs format : wrong arguments, miss -p");
+      printf("tfs format : wrong arguments, miss -p \n");
     }
   }else{
-    printf("tfs format : wrong arguments number %d", (argc-1));
+    printf("tfs format : wrong arguments number %d \n", (argc-1));
 
   }
   return 0;
