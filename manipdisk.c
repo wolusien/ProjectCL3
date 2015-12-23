@@ -41,19 +41,26 @@ error start_disk(char *name,disk_id *id) {
 	}
 	if(nbrcurs!=MAX_DISQUE){
 	  if(id !=NULL){
+	    disque_ouvert[nbrcurs]=id;
 	    id->id = nbrcurs;
+	    id->name = malloc(strlen(name)*sizeof(char));
+	    id->fd = f;
+	    id->name= name;
 	    block first;
-	    read_physical_block((*id),first,0);
+	    printf("%d e\n",read_block((*id),first,int_to_little(0)).errnb);
+	    char buf[4];
+	    for(i=0;i<4;i++){
+	      buf[i]=first.buff[i];
+	    }
+	    uint32_t u ;
+	    u=(*buf);
+	    id->nbBlock = little_to_int(u);
 	    uint32_t n;
 	    unsigned char *tab=(unsigned char *)(&n);
 	    for(i=0;i<4;i++){
-	      tab[i]=first.buff[i];
-	    }
-	    id->nbBlock = little_to_int(n);
-		printf("Val ds manipdisk vrail va %d et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
-	    for(i=0;i<4;i++){
 	      tab[i]=first.buff[i+4];
 	    }
+	    printf("le num %d",id->nbBlock);
 	    id->nbPart=little_to_int(n);
 	    if(id->nbPart !=0){
 	      for(i=0;i<id->nbPart;i++){
@@ -63,12 +70,8 @@ error start_disk(char *name,disk_id *id) {
 		}
 		id->taillePart[i]=little_to_int(n);
 	      }
+	      e.errnb = 0;
 	    }
-	    id->name = malloc(strlen(name)*sizeof(char));
-	    id->fd = f;
-	    id->name= name;
-	    disque_ouvert[nbrcurs]=id;
-	    e.errnb = 0;
 	  }
 	  else{
 	    e.errnb = -1;
@@ -115,11 +118,8 @@ error stop_disk(disk_id id){
         //id.file = disque_ouvert[id.id]->file;
     er.errnb = close(id.fd);
     if(er.errnb != -1){
-      /*printf("Je vais free name\n");
-      //free(id.name);
-      printf("Je vais free disque_ouvert[id.id]\n");
+      free(id.name);
       free(disque_ouvert[id.id]);
-      printf("Je vais disque_ouvert[id.id]=NULL\n");*/
       disque_ouvert[id.id]=NULL;
     }
   }

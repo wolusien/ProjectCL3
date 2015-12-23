@@ -1,11 +1,13 @@
 CC=gcc
 CFLAGS=-Wall
-EXEC= tfs_create tfs_format tfs_partition
+EXEC= main tfs_create tfs_format tfs_partition
 HEADERS= $(wildcard *.h)
 OBJECTS = little.o manipdisk.o interne.o
 
 
 all: $(EXEC)
+
+main :$(OBJECTS) main.o
 
 tfs_create :$(OBJECTS) tfs_create.o
 

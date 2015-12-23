@@ -1,4 +1,4 @@
-#include "interne.h"
+#include "manip.h"
 
 int main (int argc, char * argv[]){
   disk_id *id;
@@ -18,7 +18,7 @@ int main (int argc, char * argv[]){
   write_physical_block((*id),b,num);
   block bis;
   bis.id=1;
-  read_physical_block((*id),&bis,num);
+  read_physical_block((*id),bis,num);
   uint32_t nread;
   unsigned char* oread = (unsigned char*)(&nread);
   for(i=0; i<4; i++){

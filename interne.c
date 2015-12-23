@@ -6,19 +6,18 @@ error read_physical_block(disk_id id,block b,uint32_t num){
         if(disque_ouvert[id.id]!=NULL){
             int f = disque_ouvert[id.id]->fd;
             if (f!=-1){
-	      if(num<=id.nbBlock){
-		printf("ddddd");
-                    lseek(f,num*1024,SEEK_SET);
-                    read(f,b.buff,1024);
-                    e.errnb=0;
-                    return e;
-                }else{
-                    printf("wrong argument num : %d \n", num ) ;
-                    e.errnb=-1;
-                    return e;
-                }
-            }
-        }
+	      int n = little_to_int(num);
+	      lseek(f,n*1024,SEEK_SET);
+	      read(f,b.buff,1024);
+	      e.errnb=0;
+	      return e;
+	    }else{
+	      printf("wrong argument num : %d \n", num ) ;
+	      e.errnb=-1;
+	      return e;
+	    }
+	}
+    
     }else{
       printf("no disk with id %d \n", id.id);
       e.errnb=-1;
