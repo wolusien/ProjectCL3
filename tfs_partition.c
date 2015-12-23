@@ -16,7 +16,6 @@ int main(int argc, char* argv[]) {
         disk_id* disk = malloc(sizeof (disk_id));
         //Test if the disk given by argv[argc-1] is open or not
         e = start_disk(argv[argc - 1], disk);
-	printf("nb %d \n",disk->nbBlock);
         if (e.errnb == 0) {
           //Read the first block of the disk
           block b;
@@ -24,14 +23,11 @@ int main(int argc, char* argv[]) {
           read_physical_block((*disk), b, num);
           //Get size of partitions and fill the tab partition
 	  for (i = 1; i < argc - 1; i++) {
-			printf("boolean %d\n",boolean);
             if(strcmp("-p",argv[i])==0){
               boolean = 1;
             }else{
               if(boolean == 1){
-				printf("test 2\n");
                 int psize = atoi(argv[i]);
-				printf("Val de psize %d Val de nbBlock %d\n",psize,(*disk).nbBlock-1);
                 if (psize != 0 && psize > 4 && psize < ((*disk).nbBlock-1) && nbBlock < ((*disk).nbBlock-1)){
                   nbBlock = nbBlock + psize; 
                   partition[count] = psize;
