@@ -50,20 +50,16 @@ error start_disk(char *name,disk_id *id) {
 	    uint32_t n;
 	    unsigned char *tab=(unsigned char *)(&n);
 	    for(i=0;i<4;i++){
-	      buf[i]=first.buff[i];
+	      tab[i]=first.buff[i];
 	    }
-	    uint32_t u ;
-	    u=(*buf);
-	    id->nbBlock = little_to_int(u);
-	    uint32_t n;
-	    unsigned char *tab=(unsigned char *)(&n);
 	    id->nbBlock = little_to_int(n);
 	    printf("Val ds manipdisk vrail va %u et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
+	    unsigned char *tab2=(unsigned char *)(&n);
 	    for(i=0;i<4;i++){
-	      tab[i]=first.buff[i+4];
+	      tab2[i]=first.buff[i+4];
 	    }
-	    printf("le num %d",id->nbBlock);
 	    id->nbPart=little_to_int(n);
+	    printf("%d au calme \n ",id->nbPart);
 	    if(id->nbPart !=0){
 	      for(i=0;i<id->nbPart;i++){
 		int j;

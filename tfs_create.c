@@ -52,8 +52,11 @@ int main(int argc,char *argv[]){
     for(i=0;i<4;i++){
       first.buff[i]=tab[i];
     }
-    for(i=4;i<1024;i++){
-      first.buff[i]=' ';
+    uint32_t u2 = int_to_little(0);
+    printf("%d\n",little_to_int(u2));
+    unsigned char *tab2 = (unsigned char *)(&u2);
+    for(i=4;i<8;i++){
+      first.buff[i]=tab2[i];
     }
     uint32_t t = u;
     printf("%d/n",little_to_int(t));
