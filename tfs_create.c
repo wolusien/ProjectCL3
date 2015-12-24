@@ -60,6 +60,13 @@ int main(int argc,char *argv[]){
     }
     uint32_t t = u;
     printf("%d/n",little_to_int(t));
+    int i;
+    for(i=4;i<1024;i++){
+      first.buff[i]='\0';
+    }
+    fill_block(&first, size, 0);
+    printf("size %d \n", size);
+
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
@@ -69,7 +76,7 @@ int main(int argc,char *argv[]){
     write_physical_block(disk,first,position);
     block rest;
     for(i=0;i<1024;i++){
-      rest.buff[i]=' ';
+      rest.buff[i]='\0';
     }
     for(i=1;i<size;i++){
       position=int_to_little(i);
