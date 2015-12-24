@@ -69,6 +69,7 @@ error start_disk(char *name,disk_id *id) {
 	    id->nbPart=little_to_int(n2);
 	    printf("%d au calme \n ",id->nbPart);
 	    if(id->nbPart !=0){
+	      printf("nbPart : %d \n",little_to_int(n) );
 	      for(i=0;i<id->nbPart;i++){
 		int j;
 		for(j=0;j<4;j++){
