@@ -1,7 +1,7 @@
 #include "manip.h"
 
 error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
-  if(loc>=0 && loc<1020){
+  if(loc>=0 && loc<=1020){
     uint32_t p=int_to_little(a);
     unsigned char *c=(unsigned char *)(&p);
     int i;
@@ -63,7 +63,7 @@ error start_disk(char *name,disk_id *id) {
 	      for(i=0;i<id->nbPart;i++){
 		int j;
 		for(j=0;j<4;j++){
-		  tab[i]=first.buff[j+8+4*id->nbPart];
+		  tab[j]=first.buff[j+8+4*i];
 		}
 		id->taillePart[i]=little_to_int(n);
 	      }

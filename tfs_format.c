@@ -11,10 +11,8 @@ int main(int argc, char *argv[]){
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]);
 	  if(0<partition && partition<=id->nbPart){
-	    printf(" nbpart : %d \n", id->nbPart);
 	    int file_count=atoi(argv[4]);
 	    int taille=id->taillePart[partition-1];
-	    printf(" taille : %d \n", taille);
 	    int taille_descripteur=(file_count/16)+1;
 	    if(0<file_count && taille>(1+taille_descripteur+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
 	      //tout les tests sont faits, on commence a initialiser le premier bloc de la partition.
@@ -51,10 +49,12 @@ int main(int argc, char *argv[]){
 		int j;
 		for(j=1; j<=15; j++){
 		  if((16*(i-1)+j)<file_count){
-		  fill_block(&file_table, (i-1)*16+j+1, j*64+63);
+		       printf("ujh \n");
+		  fill_block(&file_table, (i-1)*16+j+1, j*64+60);
 		  }else{
 		    if(16*(i-1)+j==file_count){
-		       fill_block(&file_table, (i-1)*16+j, j*64+63);
+		       fill_block(&file_table, (i-1)*16+j, j*64+60);
+		       printf("uu \n");
 		    }
 		  }
 		}
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 		fill_block(&file_table,0,8);
 		fill_block(&file_table,0,12);
 		for(i=0; i<16; i++){
-		  fill_block(&file_table,0,i*64+63);
+		  fill_block(&file_table,0,i*64+60);
 		}
 	      }
 	      //initialisation du dossier racine
