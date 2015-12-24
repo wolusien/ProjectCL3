@@ -53,21 +53,32 @@ error start_disk(char *name,disk_id *id) {
 	      tab[i]=first.buff[i];
 	    }
 	    id->nbBlock = little_to_int(n);
+
 	    printf("Val ds manipdisk vrail va %u et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
 	    uint32_t n2;
-	    unsigned char *tab2=(unsigned char *)(&n2);
+	     uint32_t n3 = int_to_little(0);
+	     unsigned char *tab3=(unsigned char *)(&n3);
+	     unsigned char *tab2=(unsigned char *)(&n2);
 	    for(i=0;i<4;i++){
+			if(tab3[i]==tab2[i]){
+				printf("Ceci est une bonne valeurd'indice i %d\n",i);
+			}else{
+				printf("Val de tab2[%d] %u et tab3[%d] %u\n",i,tab2[i],i,tab3[i]);
+			}		
 	      tab2[i]=first.buff[i+4];
 	    }
 	    id->nbPart=little_to_int(n2);
+
 	    printf("%u au calme \n ",id->nbPart);
 	    if(id->nbPart !=0){
+	      printf("nbPart : %d \n",little_to_int(n) );
 	      for(i=0;i<id->nbPart;i++){
 		int j;
 		for(j=0;j<4;j++){
 		  tab[i]=first.buff[j+8+4*id->nbPart];
 		}
 		id->taillePart[i]=little_to_int(n);
+		printf("L'escro val de id->taillePart[%d] vaut %d\n",i,id->taillePart[i]); 
 	      }
 	      e.errnb = 0;
 	    }

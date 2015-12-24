@@ -52,13 +52,13 @@ int main(int argc,char *argv[]){
     for(i=0;i<4;i++){
       first.buff[i]=tab[i];
     }
-    uint32_t u2 = int_to_little(\0);
+    uint32_t u2 = int_to_little(0);
     unsigned char *tab2 = (unsigned char *)(&u2);
     for(i=4;i<8;i++){
       first.buff[i]=tab2[i];
     }
     for(i=8;i<1024;i++){
-      first.buff[i]=' ';
+      first.buff[i]='\0 ';
     }
     uint32_t position = int_to_little(0);
     disk_id disk;
@@ -70,7 +70,7 @@ int main(int argc,char *argv[]){
     write_physical_block(disk,first,position);
     block rest;
     for(i=0;i<1024;i++){
-      rest.buff[i]=' ';
+      rest.buff[i]='\0';
     }
     for(i=1;i<size;i++){
       position=int_to_little(i);
