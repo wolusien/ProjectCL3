@@ -7,14 +7,14 @@ int main(int argc, char *argv[]){
     if(strcmp(argv[1], "-p")==0){
       if(strcmp(argv[3], "-mf")==0){
 	disk_id *id=malloc(sizeof(disk_id));
-	printf(" fd : %d \n", id->fd);
- 	printf(" taille : %d \n", id->fd);
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]);
 	  if(0<partition && partition<=id->nbPart){
+	    printf(" nbpart : %d \n", id->nbPart);
 	    int file_count=atoi(argv[4]);
-	    int taille=id->taillePart[partition];
+	    int taille=id->taillePart[partition-1];
+	    printf(" taille : %d \n", taille);
 	    int taille_descripteur=(file_count/16)+1;
 	    if(0<file_count && taille>(1+taille_descripteur+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
 	      //tout les tests sont faits, on commence a initialiser le premier bloc de la partition.
