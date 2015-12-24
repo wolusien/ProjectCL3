@@ -54,12 +54,13 @@ error start_disk(char *name,disk_id *id) {
 	    }
 	    id->nbBlock = little_to_int(n);
 	    printf("Val ds manipdisk vrail va %u et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
-	    unsigned char *tab2=(unsigned char *)(&n);
+	    uint32_t n2;
+	    unsigned char *tab2=(unsigned char *)(&n2);
 	    for(i=0;i<4;i++){
 	      tab2[i]=first.buff[i+4];
 	    }
-	    id->nbPart=little_to_int(n);
-	    printf("%d au calme \n ",id->nbPart);
+	    id->nbPart=little_to_int(n2);
+	    printf("%u au calme \n ",id->nbPart);
 	    if(id->nbPart !=0){
 	      for(i=0;i<id->nbPart;i++){
 		int j;
