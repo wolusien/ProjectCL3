@@ -1,7 +1,12 @@
 #include "interne.h"
 
 int main (int argc, char * argv[]){
-  disk_id *id;
+  block *b;
+  int f = open("tii.tfs",O_RDWR);
+  read(f,b->buff,1024);
+  printf("kjb %d \n", b->buff[0]);
+  printf("kjb %d \n", b->buff[0]);
+  /*disk_id *id;
   int i;
   char *path = "disk.tfs";
   id = malloc(sizeof(disk_id)); 
@@ -27,6 +32,6 @@ int main (int argc, char * argv[]){
   printf("Voici votre nombre %d\n",int_to_little(nread));
   printf("Je vais exécuter stopdisk\n");
   stop_disk((*id));
-  exit(0);
+  exit(0);*/
   }
    

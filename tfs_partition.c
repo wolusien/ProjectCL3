@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
         disk_id* disk = malloc(sizeof (disk_id));
         //Test if the disk given by argv[argc-1] is open or not
         e = start_disk(argv[argc - 1], disk);
+		   printf("ojk \n");
         if (e.errnb == 0) {
           //Read the first block of the disk
           block b;
