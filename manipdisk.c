@@ -67,6 +67,7 @@ error start_disk(char *name,disk_id *id) {
 		  tab[i]=first.buff[j+8+4*id->nbPart];
 		}
 		id->taillePart[i]=little_to_int(n);
+		printf("L'escro val de id->taillePart[%d] vaut %d\n",i,id->taillePart[i]); 
 	      }
 	      e.errnb = 0;
 	    }
