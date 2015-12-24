@@ -9,7 +9,6 @@ error read_physical_block(disk_id id,block *b,uint32_t num){
 	      if(num<=id.nbBlock){
                     lseek(f,num*1024,SEEK_SET);
                     read(f,b->buff,1024);
-		    printf("Val %d \n", b->buff[0]);
                     e.errnb=0;
                     return e;
                 }else{
