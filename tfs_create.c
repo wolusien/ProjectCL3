@@ -45,12 +45,12 @@ int main(int argc,char *argv[]){
   fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
-    fill_block(&first, size, 0);
-    printf("size %d \n", size);
     int i;
     for(i=4;i<1024;i++){
-      first.buff[i]='0';
+      first.buff[i]='\0';
     }
+    fill_block(&first, size, 0);
+    printf("size %d \n", size);
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
@@ -60,7 +60,7 @@ int main(int argc,char *argv[]){
     write_physical_block(disk,first,0);
     block rest;
     for(i=0;i<1024;i++){
-      rest.buff[i]='0';
+      rest.buff[i]='\0';
     }
     for(i=1;i<size;i++){
       position=int_to_little(i);
