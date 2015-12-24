@@ -53,25 +53,19 @@ int main(int argc,char *argv[]){
       first.buff[i]=tab[i];
     }
     uint32_t u2 = int_to_little(0);
-    printf("%d\n",little_to_int(u2));
     unsigned char *tab2 = (unsigned char *)(&u2);
     for(i=4;i<8;i++){
       first.buff[i]=tab2[i];
     }
-    uint32_t t = u;
-    printf("%d/n",little_to_int(t));
-    int i;
-    for(i=4;i<1024;i++){
-      first.buff[i]='\0';
+    for(i=8;i<1024;i++){
+      first.buff[i]='\0 ';
     }
-    fill_block(&first, size, 0);
-    printf("size %d \n", size);
-
     uint32_t position = int_to_little(0);
     disk_id disk;
     disk.id=0;
     disk.fd=fichier;
     disk.nbBlock = size;
+    disk.nbPart=0;
     disque_ouvert[0]=&disk;
     write_physical_block(disk,first,position);
     block rest;
