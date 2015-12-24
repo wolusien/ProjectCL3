@@ -65,9 +65,9 @@ error start_disk(char *name,disk_id *id) {
 			}else{
 				printf("Val de tab2[%d] %u et tab3[%d] %u\n",i,tab2[i],i,tab3[i]);
 			}		
-	      tab2[i]=first.buff[i+4];
+	      tab3[i]=first.buff[i+4];
 	    }
-	    id->nbPart=little_to_int(n2);
+	    id->nbPart=little_to_int(n3);
 
 	    printf("%u au calme \n ",id->nbPart);
 	    if(id->nbPart !=0){
