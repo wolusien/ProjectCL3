@@ -19,8 +19,8 @@ int main(int argc,char *argv[]){
       size = atoi(argv[2]);
       name = "disk.tfs";
       if(size==0){
-	printf("%s n'est pas un entier\n",argv[2]);
-	exit(-1);
+        fprintf(stderr,"%s n'est pas un entier\n",argv[2]);
+        exit(-1);
       }
     }
   case 4 :
@@ -28,39 +28,34 @@ int main(int argc,char *argv[]){
       name = argv[3];
       size = atoi(argv[2]);
       if(size==0){
-	printf("%s n'est pas un entier\n",argv[2]);
-	exit(-1);
+        fprintf(stderr,"%s n'est pas un entier\n",argv[2]);
+        exit(-1);
       }
     }
     else{
-      printf("option %s inconnue changez pour -s\n",argv[1]);
+      fprintf(stderr,"option %s inconnue changez pour -s\n",argv[1]);
       exit(-1);
     }
     break;
   default:
-    printf("mauvais nombre d'argument\n");
+    fprintf(stderr,"mauvais nombre d'argument\n");
     exit(-1);
     break;
   }
   fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
-    uint32_t u;
-    u =int_to_little(size);
+    uint32_t u = int_to_little(size);
     unsigned char *tab = (unsigned char *)(&u);
     int i;
     for(i=0;i<4;i++){
       first.buff[i]=tab[i];
     }
     uint32_t u2 = int_to_little(0);
-    printf("%d\n",little_to_int(u2));
     unsigned char *tab2 = (unsigned char *)(&u2);
     for(i=4;i<8;i++){
       first.buff[i]=tab2[i];
     }
-    uint32_t t = u;
-    printf("%d/n",little_to_int(t));
-    // int i;
     for(i=4;i<1024;i++){
       first.buff[i]='\0';
     }
@@ -86,7 +81,7 @@ int main(int argc,char *argv[]){
     
   }
   else{
-    printf("le nom choisi existe déjà veuillez en entrez un nouveau\n");
+    fprintf(stderr,"le nom choisi existe déjà veuillez en entrez un nouveau\n");
     exit(-1);
   }
   exit(0);

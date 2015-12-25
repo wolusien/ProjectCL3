@@ -14,7 +14,7 @@ error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veu
   }else{
     error e;
     e.errnb=-1;
-    printf("fill_block : wrong argument loc : %d", loc);
+    fprintf(stderr,"fill_block : wrong argument loc : %d", loc);
     return e;
   }
 }
@@ -26,8 +26,8 @@ error start_disk(char *name,disk_id *id) {
     int i;
     for(i=0;i<MAX_DISQUE;i++){
       if(disque_ouvert[i]!=NULL){
-          if(strcmp((disque_ouvert[i])->name,name)==0){
-              boolean =1;
+        if(strcmp((disque_ouvert[i])->name,name)==0){
+            boolean =1;
               break;
           }
       }
@@ -35,67 +35,66 @@ error start_disk(char *name,disk_id *id) {
     if(boolean==0){
       int f = open(name,O_RDWR);
       if(f != -1){
-	int nbrcurs =0;
-	while(disque_ouvert[nbrcurs]!=NULL && nbrcurs!=MAX_DISQUE){
-	  nbrcurs++;
-	}
-	if(nbrcurs!=MAX_DISQUE){
-	  if(id !=NULL){
-	    disque_ouvert[nbrcurs]=id;
-	    id->id = nbrcurs;
-	    id->fd=f;
-	    id->nbBlock=1;
-	    block first;
-	    read_block((*id),&first,0);
-	    uint32_t n;
-	    unsigned char *tab=(unsigned char *)(&n);
-	    for(i=0;i<4;i++){
-	      tab[i]=first.buff[i];
-	    }
-	    id->nbBlock = little_to_int(n);
-	    for(i=0;i<4;i++){
-	      tab[i]=first.buff[i+4];
-	    }
-	    id->nbPart=little_to_int(n);
-	    if(id->nbPart !=0){
-	      printf("nbPart : %d \n",little_to_int(n) );
-	      for(i=0;i<id->nbPart;i++){
-		int j;
-		for(j=0;j<4;j++){
-		  tab[j]=first.buff[j+8+4*i];
-		}
-		id->taillePart[i]=little_to_int(n);
-	      }
-	    }
-	    id->name = malloc(strlen(name)*sizeof(char));
-	    printf("j'alloue name\n");
-	    id->name= name;
-	    disque_ouvert[nbrcurs]=id;
-	    e.errnb = 0;
-	  }
-	  else{
-	    e.errnb = -1;
-	    printf("le pointeur de disk_id passé en argument est NULL\n");
-	  }
-	}
-	else{
-	  e.errnb =-1;
-	  printf("il y a trop de disque ouvert\n");
-	}
+        int nbrcurs =0;
+        while(disque_ouvert[nbrcurs]!=NULL && nbrcurs!=MAX_DISQUE){
+          nbrcurs++;
+        }
+        if(nbrcurs!=MAX_DISQUE){
+          if(id !=NULL){
+            disque_ouvert[nbrcurs]=id;
+            id->id = nbrcurs;
+            id->fd=f;
+            id->nbBlock=1;
+            block first;
+            read_physical_block((*id),&first,0);
+            uint32_t n;
+            unsigned char *tab=(unsigned char *)(&n);
+            for(i=0;i<4;i++){
+              tab[i]=first.buff[i];
+            }
+            id->nbBlock = little_to_int(n);
+            for(i=0;i<4;i++){
+              tab[i]=first.buff[i+4];
+            }
+            id->nbPart=little_to_int(n);
+            if(id->nbPart !=0){
+              for(i=0;i<id->nbPart;i++){
+                int j;
+                for(j=0;j<4;j++){
+                  tab[j]=first.buff[j+8+4*i];
+                }
+                id->taillePart[i]=little_to_int(n);
+              }
+            }
+            id->name = malloc(strlen(name)*sizeof(char));
+            printf("j'alloue name\n");
+            id->name= name;
+            disque_ouvert[nbrcurs]=id;
+            e.errnb = 0;
+          }
+          else{
+            e.errnb = -1;
+            fprintf(stderr,"le pointeur de disk_id passé en argument est NULL\n");
+          }
+        }
+        else{
+          e.errnb =-1;
+          fprintf(stderr,"il y a trop de disque ouvert\n");
+        }
       }
       else{
-	e.errnb = -1;
-	printf("le disque ne peut pas s'ouvrir\n");
+        e.errnb = -1;
+        fprintf(stderr,"le disque ne peut pas s'ouvrir\n");
       }
     }
     else{
       e.errnb = -1;
-      printf("le disque est déjà ouvert\n");
+      fprintf(stderr,"le disque est déjà ouvert\n");
     }
   }
   else{
     e.errnb = -1;
-    printf("ajouter un nom de disque\n");
+    fprintf(stderr,"ajouter un nom de disque\n");
   }
   return e;
 }
