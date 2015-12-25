@@ -26,8 +26,8 @@ error start_disk(char *name,disk_id *id) {
     int i;
     for(i=0;i<MAX_DISQUE;i++){
       if(disque_ouvert[i]!=NULL){
-          if(strcmp((disque_ouvert[i])->name,name)==0){
-              boolean =1;
+        if(strcmp((disque_ouvert[i])->name,name)==0){
+            boolean =1;
               break;
           }
       }
@@ -35,37 +35,35 @@ error start_disk(char *name,disk_id *id) {
     if(boolean==0){
       int f = open(name,O_RDWR);
       if(f != -1){
-	int nbrcurs =0;
-	while(disque_ouvert[nbrcurs]!=NULL && nbrcurs!=MAX_DISQUE){
-	  nbrcurs++;
-	}
-	if(nbrcurs!=MAX_DISQUE){
-	  if(id !=NULL){
-	    disque_ouvert[nbrcurs]=id;
-	    id->id = nbrcurs;
-	    id->fd=f;
-	    id->nbBlock=1;
-	    block first;
-	    read_physical_block((*id),&first,0);
-	    uint32_t n;
-	    unsigned char *tab=(unsigned char *)(&n);
-	    for(i=0;i<4;i++){
-	      tab[i]=first.buff[i];
-	    }
-	    id->nbBlock = little_to_int(n);
-	    printf("Val ds manipdisk vrail va %u et val de nbBlock %d\n",little_to_int(n),id->nbBlock);
+        int nbrcurs =0;
+        while(disque_ouvert[nbrcurs]!=NULL && nbrcurs!=MAX_DISQUE){
+          nbrcurs++;
+        }
+        if(nbrcurs!=MAX_DISQUE){
+          if(id !=NULL){
+            disque_ouvert[nbrcurs]=id;
+            id->id = nbrcurs;
+            id->fd=f;
+            id->nbBlock=1;
+            block first;
+            read_physical_block((*id),&first,0);
+            uint32_t n;
+            unsigned char *tab=(unsigned char *)(&n);
+            for(i=0;i<4;i++){
+              tab[i]=first.buff[i];
+            }
+            id->nbBlock = little_to_int(n);
 	    for(i=0;i<4;i++){
 	      tab[i]=first.buff[i+4];
 	    }
 	    id->nbPart=little_to_int(n);
 	    if(id->nbPart !=0){
-	      printf("nbPart : %d \n",little_to_int(n) );
 	      for(i=0;i<id->nbPart;i++){
-		int j;
-		for(j=0;j<4;j++){
-		  tab[j]=first.buff[j+8+4*i];
-		}
-		id->taillePart[i]=little_to_int(n);
+            int j;
+            for(j=0;j<4;j++){
+              tab[j]=first.buff[j+8+4*i];
+            }
+            id->taillePart[i]=little_to_int(n);
 	      }
 	    }
 	    id->name = malloc(strlen(name)*sizeof(char));
@@ -84,8 +82,8 @@ error start_disk(char *name,disk_id *id) {
 	}
       }
       else{
-	e.errnb = -1;
-	printf("le disque ne peut pas s'ouvrir\n");
+        e.errnb = -1;
+        printf("le disque ne peut pas s'ouvrir\n");
       }
     }
     else{
