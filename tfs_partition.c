@@ -69,7 +69,8 @@ int main(int argc, char* argv[]) {
             }
             write_physical_block((*disk), b, num);
             stop_disk(*disk);
-          } else {
+	    free(disk);
+	  } else {
             fprintf(stderr,"tfs_partition : No size for partition \n");
             exit(-1);
           }

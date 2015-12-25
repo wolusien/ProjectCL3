@@ -69,6 +69,7 @@ error start_disk(char *name,disk_id *id) {
 	      }
 	    }
 	    id->name = malloc(strlen(name)*sizeof(char));
+	    printf("j'alloue name\n");
 	    id->name= name;
 	    disque_ouvert[nbrcurs]=id;
 	    e.errnb = 0;
@@ -115,14 +116,12 @@ error sync_disk(disk_id id){
 error stop_disk(disk_id id){
   error er;
   if(disque_ouvert[id.id]!=NULL){
-        //id.file = disque_ouvert[id.id]->file;
     er.errnb = close(id.fd);
     if(er.errnb != -1){
-      /*printf("Je vais free name\n");
-      //free(id.name);
-      printf("Je vais free disque_ouvert[id.id]\n");
-      free(disque_ouvert[id.id]);
-      printf("Je vais disque_ouvert[id.id]=NULL\n");*/
+      printf("Je vais free name\n");
+      id.name = NULL;
+      free(id.name);
+      printf("Je vais disque_ouvert[id.id]=NULL\n");
       disque_ouvert[id.id]=NULL;
     }
   }

@@ -2,10 +2,13 @@
 
 int main (int argc, char * argv[]){
   block *b;
-  int f = open("tii.tfs",O_RDWR);
-  read(f,b->buff,1024);
-  printf("kjb %d \n", b->buff[0]);
-  printf("kjb %d \n", b->buff[0]);
+  // int f = open("tii.tfs",O_RDWR);
+  // read(f,b->buff,1024);
+  //printf("kjb %d \n", b->buff[0]);
+  // printf("kjb %d \n", b->buff[0]);
+  disk_id *id = malloc(sizeof(disk_id));
+  start_disk("jean.tfs",id);
+  stop_disk(*id);
   /*disk_id *id;
   int i;
   char *path = "disk.tfs";
