@@ -50,11 +50,13 @@ int main(int argc, char* argv[]) {
           //Case where we have good partition
           (*disk).nbPart = count + ininbPart;
           for (i = 0; i < count; i++) {
-            (*disk).taillePart[i + ininbPart] = partition[i];
+	    Part p;
+	    p.taille=partition[i];
+            (*disk).taillePart[i + ininbPart] = p;
           }
           nbBlock = 0;
           for (i = 0; i < (*disk).nbPart; i++) {
-            nbBlock += (*disk).taillePart[i];
+            nbBlock += (*disk).taillePart[i].taille;
           }
           if(nbBlock < (*disk).nbBlock-1){
             uint32_t nbPart = int_to_little(count + ininbPart);

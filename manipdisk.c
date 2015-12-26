@@ -19,6 +19,26 @@ error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veu
   }
 }
 
+error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on veut lire l'entier que l'on écritdans a.
+  int i;
+  if(loc>=0 && loc<=1020){
+    uint32_t n;
+    unsigned char *tab=(unsigned char *)(&n);
+    for(i=0;i<4;i++){
+      tab[i]=b->buff[i+loc];
+    }
+    *a = little_to_int(n); 
+    error e;
+    e.errnb=0;
+    return e;
+  }else{
+    error e;
+    e.errnb=-1;
+    fprintf(stderr,"fill_block : wrong argument loc : %d", loc);
+    return e;
+  }
+}
+
 error start_disk(char *name,disk_id *id) {
   error e;
   if(name != NULL){
@@ -58,12 +78,35 @@ error start_disk(char *name,disk_id *id) {
             }
             id->nbPart=little_to_int(n);
             if(id->nbPart !=0){
+	      uint32_t id_first=1;
               for(i=0;i<id->nbPart;i++){
                 int j;
                 for(j=0;j<4;j++){
                   tab[j]=first.buff[j+8+4*i];
                 }
-                id->taillePart[i]=little_to_int(n);
+		Part p;
+		p.taille=little_to_int(n);
+		id_first+=p.taille;
+		p.num_first_block=id_first;
+		block firstPart;
+		read_block(*id,&firstPart,id_first);
+		int free_block_count;
+		readint_block(&firstPart,&free_block_count,12);
+		p.free_block_count=free_block_count;
+		int first_free_block;
+		readint_block(&firstPart,&first_free_block,16);
+		p.first_free_block= first_free_block;
+		int max_file_count;
+		readint_block(&firstPart,&max_file_count,20);
+		p.max_file_count=max_file_count;
+		int free_file_count;
+		readint_block(&firstPart,&free_file_count,24);
+		p.free_file_count=free_file_count;
+		int first_free_file;
+		readint_block(&firstPart,&first_free_file,28);
+		p.first_free_file=first_free_file;
+
+                id->taillePart[i]=p;
               }
             }
             id->name = malloc(strlen(name)*sizeof(char));
