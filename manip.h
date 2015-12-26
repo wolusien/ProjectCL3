@@ -20,12 +20,22 @@
 #define MAGIC_NUMBER 31534654
 
 typedef struct{
+    int taille;
+    int num_first_block;
+    int free_block_count;
+    int first_free_block;
+    int max_file_count;
+    int free_file_count;
+    int first_free_file;
+}Part;
+
+typedef struct{
     int id;
     char *name;
     int fd;
     int nbBlock;
     int nbPart;
-    int taillePart[MAX_PART];
+    Part taillePart[MAX_PART];
 }disk_id;
 
 disk_id* disque_ouvert[MAX_DISQUE];
@@ -42,7 +52,7 @@ error stop_disk(disk_id id);
 error read_block(disk_id id,block *b,uint32_t num);
 error write_block(disk_id id,block b,uint32_t num);
 error fill_block(block *b, int a,int loc);
-
+error readint_block(block *b, int *a,int loc);
 
 
 
