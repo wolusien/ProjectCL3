@@ -21,7 +21,7 @@
 
 typedef struct{
     int taille;
-    int num_first_block;
+    int num_first_block;//number of the first block in the disk
     int free_block_count;
     int first_free_block;
     int max_file_count;
