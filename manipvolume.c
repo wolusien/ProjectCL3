@@ -28,13 +28,13 @@ error add_free_file(disk_id id,int volume,int file){
 	  int current = id.taillePart[volume].first_free_file;
 	  int pos_bloc = ((current/16)+1);
 	  read_block(id,&filetable,int_to_little(pos_bloc+position));
-	  readint_block(&filetable,&next,(((file*64)%1024)-4));
+	  readint_block(&filetable,&next,(((current*64)%1024)-4));
 	  while(next==current){
 	    if(current !=file){
 	      current = next;
 	      pos_bloc = ((next/16)+1);
 	      read_block(id,&filetable,int_to_little(pos_bloc+position));
-	      readint_block(&filetable,&next,(((file*64)%1024)-4));
+	      readint_block(&filetable,&next,(((current*64)%1024)-4));
 	    }
 	    else{
 	      e.errnb = -1;
@@ -71,9 +71,67 @@ error add_free_file(disk_id id,int volume,int file){
     e.errnb = -1;
     return e;
   }
-  e.errnb = 0;
   return e;
 }
+/*
+error remove_free_file(disk_id id,int volume,int file){
+  error e;
+  block filetable;
+  block description_block;
+  if(volume<id.nbPart){
+    int position = id.taillePart[volume].num_first_block;
+    if(id.taillePart[volume].free_file_count != 0){
+      if(id.taillePart[volume].free_file_count !=1){
+	int current =  id.taillePart[volume].first_free_bloc;
+	int past;
+	int pos_bloc=((current/16)+1);
+	while(current !=file && current != past){
+	  past=current;
+	  read_block(id,&filetable,int_to_little(pos_bloc+position));
+	  readint_block(&filetable,&current,(((past*64)%1024)-4));
+	  pos_bloc=((current/16)+1);
+	}
+	if(current == file){
+	  int next;
+	  readint_block(&filetable,&next,(((current*64)%1024)-4));
+	  if(past==0){
+	    fill_block(&description_block,file,28);
+	    write_bloc(id,description_block,int_to_little(pos_bloc+position);
+	    e.errnb = 0;
+	  }
+	  else {
+	    
+	  }
+	}
+	else{
+	  e.errnb = -1;
+	  printf("file number %d isn't free",file);
+	}
+      }
+      else{
+	read_block(id,&description_block,int_to_little(position));
+	fill_block(&description_block,0,28);
+	fill_block(&description_block,0,24);
+	id.taillePart[volume].free_file_count=1;
+	id.taillePart[volume].first_free_file=file;
+	write_block(id,description_block,int_to_little(position));
+	e.rrnb = 0;
+      }
+    }
+    else{
+      e.errnb = -1;
+      printf("there is no free files");
+      return e;
+    }
+  }
+  else{
+    e.errnb =-1;
+    printf("volume %d doesn't exist on %s",volume,id.name);
+    return e;
+  }
+  return e;
+}
+*/
 /*name: name of the disk wich will be used
   id_f : number file on file Table  
   id_block : id of the block
