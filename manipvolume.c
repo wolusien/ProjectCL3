@@ -3,46 +3,76 @@
 error add_free_file(disk_id id,int volume,int file){
   error e;
   block filetable;
+  block description_block;
   if(volume<id.nbPart){
-    int position = id.taillePart[volume].num_first_block;
-    if(id.taillePart[volume].first_free_file==0){
-      block description_block;
-      read_block(id,&description_block,int_to_little(position));
-      fill_block(&description_block,file,28);
-      write_block(id,description_block,int_to_little(position));
-      position=position+(file)/16+1;
-      read_block(id,&filetable,int_to_little(position));
-      id.taillePart[volume].first_free_file = file;
-      fill_block(&filetable,file,(((file*64)%1024)-4));
-      write_block(id,filetable,position);		 
+    if(file != 0){
+      if(id.taillePart[volume].free_file_count != id.taillePart[volume].max_file_count){
+	int position = id.taillePart[volume].num_first_block;
+	if(id.taillePart[volume].first_free_file==0){
+	  read_block(id,&description_block,int_to_little(position));
+	  fill_block(&description_block,file,28);
+	  fill_block(&description_block,1,24);
+	  id.taillePart[volume].free_file_count=1;
+	  id.taillePart[volume].first_free_file=file;
+	  write_block(id,description_block,int_to_little(position));
+	  position=position+(file)/16+1;
+	  read_block(id,&filetable,int_to_little(position));
+	  id.taillePart[volume].first_free_file = file;
+	  fill_block(&filetable,file,(((file*64)%1024)-4));
+	  write_block(id,filetable,position);		 
+	  e.errnb = 0;
+	  return e;
+	}
+	else{
+	  int next;
+	  int current = id.taillePart[volume].first_free_file;
+	  int pos_bloc = ((current/16)+1);
+	  read_block(id,&filetable,int_to_little(pos_bloc+position));
+	  readint_block(&filetable,&next,(((file*64)%1024)-4));
+	  while(next==current){
+	    if(current !=file){
+	      current = next;
+	      pos_bloc = ((next/16)+1);
+	      read_block(id,&filetable,int_to_little(pos_bloc+position));
+	      readint_block(&filetable,&next,(((file*64)%1024)-4));
+	    }
+	    else{
+	      e.errnb = -1;
+	      printf("this file are already free");
+	      return e;
+	    }
+	  }
+	  fill_block(&filetable,current,(((file*64)%1024)-4));
+	  write_block(id,filetable,position);
+	  pos_bloc = ((file/16)+1);
+	  read_block(id,&filetable,int_to_little(pos_bloc+position));
+	  fill_block(&filetable,file,(((file*64)%1024)-4));
+	  write_block(id,filetable,int_to_little(pos_bloc+position));
+	  read_block(id,&description_block,int_to_little(position));
+	  id.taillePart[volume].free_file_count++;
+	  fill_block(&description_block,id.taillePart[volume].free_file_count,24);
+	  e.errnb = 0;
+	}
+      }
+      else{
+	e.errnb = -1;
+	printf("all the files in this volume are already free");
+	return e;
+      }
     }
     else{
-      int next;
-      int current = id.taillePart[volume].first_free_file;
-      int pos_bloc = ((current/16)+1);
-      read_block(id,&filetable,int_to_little(pos_bloc+position));
-      readint_block(&filetable,&next,(((file*64)%1024)-4));
-      while(next==current){
-	current = next;
-	pos_bloc = ((next/16)+1);
-	read_block(id,&filetable,int_to_little(pos_bloc+position));
-	readint_block(&filetable,&next,(((file*64)%1024)-4));
-      }
-      fill_block(&filetable,current,(((file*64)%1024)-4));
-      write_block(id,filetable,position);
-      pos_bloc = ((file/16)+1);
-      read_block(id,&filetable,int_to_little(pos_bloc+position));
-      fill_block(&filetable,file,(((file*64)%1024)-4));
-      write_block(id,filetable,int_to_little(pos_bloc+position));
+      e.errnb = -1;
+      printf("vous ne pouvez pas liberez le repertoire racine");
+      return e;
     }
-    e.errnb = 0;
-    return e;
   }
   else{
     printf("volume %d doesn't exist on %s",volume,id.name);
     e.errnb = -1;
     return e;
   }
+  e.errnb = 0;
+  return e;
 }
 /*name: name of the disk wich will be used
   id_f : number file on file Table  
