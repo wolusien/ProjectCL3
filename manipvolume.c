@@ -1,6 +1,49 @@
 #include "manip.h"
 
-
+error add_free_file(disk_id id,int volume,int file){
+  error e;
+  block filetable;
+  if(volume<id.nbPart){
+    int position = id.taillePart[volume].num_first_block;
+    if(id.taillePart[volume].first_free_file==0){
+      block description_block;
+      read_block(id,&description_block,int_to_little(position));
+      fill_block(&description_block,file,28);
+      write_block(id,description_block,int_to_little(position));
+      position=position+(file)/16+1;
+      read_block(id,&filetable,int_to_little(position));
+      id.taillePart[volume].first_free_file = file;
+      fill_block(&filetable,file,(((file*64)%1024)-4));
+      write_block(id,filetable,position);		 
+    }
+    else{
+      int next;
+      int current = id.taillePart[volume].first_free_file;
+      int pos_bloc = ((current/16)+1);
+      read_block(id,&filetable,int_to_little(pos_bloc+position));
+      readint_block(&filetable,&next,(((file*64)%1024)-4));
+      while(next==current){
+	current = next;
+	pos_bloc = ((next/16)+1);
+	read_block(id,&filetable,int_to_little(pos_bloc+position));
+	readint_block(&filetable,&next,(((file*64)%1024)-4));
+      }
+      fill_block(&filetable,current,(((file*64)%1024)-4));
+      write_block(id,filetable,position);
+      pos_bloc = ((file/16)+1);
+      read_block(id,&filetable,int_to_little(pos_bloc+position));
+      fill_block(&filetable,file,(((file*64)%1024)-4));
+      write_block(id,filetable,int_to_little(pos_bloc+position));
+    }
+    e.errnb = 0;
+    return e;
+  }
+  else{
+    printf("volume %d doesn't exist on %s",volume,id.name);
+    e.errnb = -1;
+    return e;
+  }
+}
 /*name: name of the disk wich will be used
   id_f : number file on file Table  
   id_block : id of the block

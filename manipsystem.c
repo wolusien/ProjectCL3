@@ -35,6 +35,14 @@ int tfs_mkdir(const char *path, mode_t mode){
 		  for(i=0;i<=volume;i++){
 		    pos = pos+id->taillePart[i];
 		  }
+		  block *b;
+		  read_block(*id,b,int_to_little(pos));
+		  uint32_t n;
+		  unsigned char *tab=(unsigned char *)(&n);
+		  for(i=0;i<4;i++){
+		    tab[i]=first.buff[i];
+		  }
+		  
 		}
 		else{
 		  printf("volume %d doesn't exist on %s",volume,id->name);

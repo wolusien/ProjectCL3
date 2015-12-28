@@ -66,7 +66,7 @@ error start_disk(char *name,disk_id *id) {
             id->fd=f;
             id->nbBlock=1;
             block first;
-            read_physical_block((*id),&first,0);
+            read_block((*id),&first,0);
             uint32_t n;
             unsigned char *tab=(unsigned char *)(&n);
             for(i=0;i<4;i++){
@@ -102,6 +102,7 @@ error start_disk(char *name,disk_id *id) {
 		int free_file_count;
 		readint_block(&firstPart,&free_file_count,24);
 		p.free_file_count=free_file_count;
+		p.taille_descripteur = ((max_file_count-1)/16)+1;
 		int first_free_file;
 		readint_block(&firstPart,&first_free_file,28);
 		p.first_free_file=first_free_file;
