@@ -1,23 +1,97 @@
 #include "manip.h"
 
+error free_block(disk_id *id, int numblock, int volume){
+  error e;
+  if(id!=NULL){
+    if(0<=volume && volume<id->nbPart){
+      Part here=id->tabPart[volume];
+      if(here.file_table_size!=0){
+	if(numblock>1+here.file_table_size && numblock<here.taille){
+	  int prec=here.first_free_block;                   //on va chercher le dernier block du chainage pour le racorder.
+	  if(prec!=0){ // si first_free_block vaut 0 alors il n'y a plus de block libres.
+	    block b;
+	    read_block(*id, &b, prec+here.num_first_block);
+	    int suiv;
+	    readint_block(&b,&suiv, 1020); 
+	    
+	    while(prec!=suiv){
+	      if (prec==numblock){
+		e.errnb=-1;
+		printf("free_block : block déja libre \n");
+		return e;
+	      }
+	      prec=suiv;
+	      read_block(*id, &b, prec+here.num_first_block);
+	      readint_block(&b,&suiv, 1020); 
+	    }                                                // on a trouvé le dernier block du chainage
+	    fill_block(&b, numblock, 1020);
+	    write_block((*id), b, prec+here.num_first_block);
+	    write_block(*id, b, numblock+here.num_first_block);
+	    here.free_block_count+=1;
+	    block first;
+	    read_block(*id,&first,here.num_first_block);
+	    fill_block(&first, here.free_block_count,12);
+	    write_block((*id),first,here.num_first_block);
+	  }else{  // cas ou il n'y avait plus de blocks libres; on doit réinitialiser le chainage. 
+	    block libre;
+	    int i;
+	    for(i=0; i<1020; i++){
+	      libre.buff[i]='\0';
+	    }
+	    fill_block(&libre, numblock, 1020);
+	    write_block(*id, libre, numblock+here.num_first_block);
+	    here.free_block_count+=1;
+	    here.first_free_block=numblock;
+	    block first;
+	    read_block(*id,&first,here.num_first_block);
+	    fill_block(&first, here.free_block_count,12);
+	    fill_block(&first, here.first_free_block,16);
+	    write_block((*id),first,here.num_first_block);
+	  }
+	  e.errnb=0;
+	  return e;
+	}else{
+	  e.errnb=-1;
+	  printf("free_block : wrong numblock : %d \n", numblock);
+	  return e;
+	}
+      }else{
+	e.errnb=-1;
+	printf("free_block : volume hasn't been format  \n");
+	return e;
+      }
+    }else{
+      e.errnb=-1;
+      printf("free_block : no volume  : %d \n", volume);
+      return e;
+    }
+  }else{
+    e.errnb=-1;
+    printf("free_block : id NULL \n");
+    return e;
+  }
+}
+
+
+
 error add_free_file(disk_id id,int volume,int file){
   error e;
   block filetable;
   block description_block;
   if(volume<id.nbPart){
     if(file != 0){
-      if(id.taillePart[volume].free_file_count != id.taillePart[volume].max_file_count){
-	int position = id.taillePart[volume].num_first_block;
-	if(id.taillePart[volume].first_free_file==0){
+      if(id.tabPart[volume].free_file_count != id.tabPart[volume].max_file_count){
+	int position = id.tabPart[volume].num_first_block;
+	if(id.tabPart[volume].first_free_file==0){
 	  read_block(id,&description_block,int_to_little(position));
 	  fill_block(&description_block,file,28);
 	  fill_block(&description_block,1,24);
-	  id.taillePart[volume].free_file_count=1;
-	  id.taillePart[volume].first_free_file=file;
+	  id.tabPart[volume].free_file_count=1;
+	  id.tabPart[volume].first_free_file=file;
 	  write_block(id,description_block,int_to_little(position));
 	  position=position+(file)/16+1;
 	  read_block(id,&filetable,int_to_little(position));
-	  id.taillePart[volume].first_free_file = file;
+	  id.tabPart[volume].first_free_file = file;
 	  fill_block(&filetable,file,(((file*64)%1024)-4));
 	  write_block(id,filetable,position);		 
 	  e.errnb = 0;
@@ -25,7 +99,7 @@ error add_free_file(disk_id id,int volume,int file){
 	}
 	else{
 	  int next;
-	  int current = id.taillePart[volume].first_free_file;
+	  int current = id.tabPart[volume].first_free_file;
 	  int pos_bloc = ((current/16)+1);
 	  read_block(id,&filetable,int_to_little(pos_bloc+position));
 	  readint_block(&filetable,&next,(((current*64)%1024)-4));
@@ -49,8 +123,8 @@ error add_free_file(disk_id id,int volume,int file){
 	  fill_block(&filetable,file,(((file*64)%1024)-4));
 	  write_block(id,filetable,int_to_little(pos_bloc+position));
 	  read_block(id,&description_block,int_to_little(position));
-	  id.taillePart[volume].free_file_count++;
-	  fill_block(&description_block,id.taillePart[volume].free_file_count,24);
+	  id.tabPart[volume].free_file_count++;
+	  fill_block(&description_block,id.tabPart[volume].free_file_count,24);
 	  e.errnb = 0;
 	}
       }
