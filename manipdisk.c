@@ -105,8 +105,8 @@ error start_disk(char *name,disk_id *id) {
 		int first_free_file;
 		readint_block(&firstPart,&first_free_file,28);
 		p.first_free_file=first_free_file;
-
-                id->taillePart[i]=p;
+		p.file_table_size=(max_file_count/16)+1;
+                id->tabPart[i]=p;
               }
             }
             id->name = malloc(strlen(name)*sizeof(char));

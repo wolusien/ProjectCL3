@@ -9,10 +9,10 @@ int main(int argc, char *argv[]){
 	disk_id *id=malloc(sizeof(disk_id));
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
-	  int partition =atoi(argv[2]);
+	  int partition =atoi(argv[2]); //la première partition à l'id 0
 	  if(0<partition && partition<=id->nbPart){
 	    int file_count=atoi(argv[4]);
-	    int taille=id->taillePart[partition].taille;
+	    int taille=id->tabPart[partition].taille; 
 	    int taille_descripteur=(file_count/16)+1;
 	    if(0<file_count && taille>(1+taille_descripteur+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
 	      //tout les tests sont faits, on commence a initialiser le premier bloc de la partition.
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
 	      //trouver l'indice du premier block de la partition.
 	      uint32_t id_first=1;
 	      for(i=0;i<partition; i++){
-		id_first+=id->taillePart[i].taille;
+		id_first+=id->tabPart[i].taille;
 	      }
 	      
 	      write_physical_block(*id, b,id_first); 
@@ -97,6 +97,7 @@ int main(int argc, char *argv[]){
 	    printf("tfs format : wrong arguments, no partition %d \n", partition);
 	  }
 	}
+	stop_disk(*id);
       }else{
 	printf("tfs format : wrong arguments, miss -mf \n");
       }

@@ -7,7 +7,7 @@ int main (int argc, char * argv[]){
   // printf("kjb %d \n", b->buff[0]);
   disk_id *id = malloc(sizeof(disk_id));
   start_disk("t.tfs",id);
-  printf("dudu : %d \n", id->taillePart[1].max_file_count);
+  printf("dudu : %d \n", id->tabPart[1].max_file_count);
   //stop_disk(*id);
   /*disk_id *id;
   int i;

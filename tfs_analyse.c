@@ -12,8 +12,8 @@ int main(int argc, char* argv[]){
       if((*disk).nbPart>0){
         fprintf(stdout,"Partition number : %d\n\n\tList of partitions : \n",(*disk).nbPart);
         for(i=0; i<(*disk).nbPart;i++){
-          used_space += (*disk).taillePart[i].taille;
-          fprintf(stdout,"Partition %d : \t%dB\n",(i+1),(*disk).taillePart[i].taille);
+          used_space += (*disk).tabPart[i].taille;
+          fprintf(stdout,"Partition %d : \t%dB\n",(i+1),(*disk).tabPart[i].taille);
         }
       }
       int free_space = (*disk).nbBlock - used_space;

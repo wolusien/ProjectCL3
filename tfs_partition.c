@@ -52,11 +52,11 @@ int main(int argc, char* argv[]) {
           for (i = 0; i < count; i++) {
 	    Part p;
 	    p.taille=partition[i];
-            (*disk).taillePart[i + ininbPart] = p;
+            (*disk).tabPart[i + ininbPart] = p;
           }
           nbBlock = 0;
           for (i = 0; i < (*disk).nbPart; i++) {
-            nbBlock += (*disk).taillePart[i].taille;
+            nbBlock += (*disk).tabPart[i].taille;
           }
           if(nbBlock < (*disk).nbBlock-1){
             uint32_t nbPart = int_to_little(count + ininbPart);
