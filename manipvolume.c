@@ -6,18 +6,18 @@ error add_free_file(disk_id id,int volume,int file){
   block description_block;
   if(volume<id.nbPart){
     if(file != 0){
-      if(id.taillePart[volume].free_file_count != id.taillePart[volume].max_file_count){
-	int position = id.taillePart[volume].num_first_block;
-	if(id.taillePart[volume].first_free_file==0){
+      if(id.tabPart[volume].free_file_count != id.tabPart[volume].max_file_count){
+	int position = id.tabPart[volume].num_first_block;
+	if(id.tabPart[volume].first_free_file==0){
 	  read_block(id,&description_block,int_to_little(position));
 	  fill_block(&description_block,file,28);
 	  fill_block(&description_block,1,24);
-	  id.taillePart[volume].free_file_count=1;
-	  id.taillePart[volume].first_free_file=file;
+	  id.tabPart[volume].free_file_count=1;
+	  id.tabPart[volume].first_free_file=file;
 	  write_block(id,description_block,int_to_little(position));
 	  position=position+(file)/16+1;
 	  read_block(id,&filetable,int_to_little(position));
-	  id.taillePart[volume].first_free_file = file;
+	  id.tabPart[volume].first_free_file = file;
 	  fill_block(&filetable,file,(((file*64)%1024)-4));
 	  write_block(id,filetable,position);		 
 	  e.errnb = 0;
@@ -25,7 +25,7 @@ error add_free_file(disk_id id,int volume,int file){
 	}
 	else{
 	  int next;
-	  int current = id.taillePart[volume].first_free_file;
+	  int current = id.tabPart[volume].first_free_file;
 	  int pos_bloc = ((current/16)+1);
 	  read_block(id,&filetable,int_to_little(pos_bloc+position));
 	  readint_block(&filetable,&next,(((current*64)%1024)-4));
@@ -49,8 +49,8 @@ error add_free_file(disk_id id,int volume,int file){
 	  fill_block(&filetable,file,(((file*64)%1024)-4));
 	  write_block(id,filetable,int_to_little(pos_bloc+position));
 	  read_block(id,&description_block,int_to_little(position));
-	  id.taillePart[volume].free_file_count++;
-	  fill_block(&description_block,id.taillePart[volume].free_file_count,24);
+	  id.tabPart[volume].free_file_count++;
+	  fill_block(&description_block,id.tabPart[volume].free_file_count,24);
 	  e.errnb = 0;
 	}
       }
@@ -74,49 +74,64 @@ error add_free_file(disk_id id,int volume,int file){
   return e;
 }
 
-/*
+
 error remove_free_file(disk_id id,int volume,int file){
   error e;
   block filetable;
   block description_block;
   if(volume<id.nbPart){
-    int position = id.taillePart[volume].num_first_block;
-    if(id.taillePart[volume].free_file_count != 0){
-      if(id.taillePart[volume].free_file_count !=1){
-	int current =  id.taillePart[volume].first_free_bloc;
+    int position = id.tabPart[volume].num_first_block;
+    if(id.tabPart[volume].free_file_count != 0){
+      if(id.tabPart[volume].free_file_count !=1){
+	int current =  id.tabPart[volume].first_free_block;
 	int past;
 	int pos_bloc=((current/16)+1);
-	while(current !=file && current != past){
+	int tour=0;
+	while(current !=file && current != past && tour<id.tabPart[volume].free_file_count){
 	  past=current;
 	  read_block(id,&filetable,int_to_little(pos_bloc+position));
 	  readint_block(&filetable,&current,(((past*64)%1024)-4));
 	  pos_bloc=((current/16)+1);
+	  tour++;
 	}
-	if(current == file){
+	if(current==file){
 	  int next;
 	  readint_block(&filetable,&next,(((current*64)%1024)-4));
 	  if(past==0){
-	    fill_block(&description_block,file,28);
-	    write_bloc(id,description_block,int_to_little(pos_bloc+position);
-	    e.errnb = 0;
+	    fill_block(&description_block,next,28);
+	    write_block(id,description_block,int_to_little(position));
+	    id.tabPart[volume].first_free_file=next;
 	  }
-	  else {
-	    
+	  else if(next==current){
+	    pos_bloc=((past/16)+1);
+	    read_block(id,&filetable,int_to_little(pos_bloc+position));
+	    fill_block(&filetable,past,(((past*64)%1024)-4));
+	    write_block(id,filetable,(pos_bloc+position));
 	  }
+	  else{
+	    pos_bloc=((past/16)+1);
+	    read_block(id,&filetable,int_to_little(pos_bloc+position));
+            fill_block(&filetable,next,(((past*64)%1024)-4));
+            write_block(id,filetable,(pos_bloc+position));
+	  }
+	  id.tabPart[volume].free_file_count--;
+	  fill_block(&filetable,id.tabPart[volume].free_file_count,24);
+	  e.errnb=0;
 	}
 	else{
 	  e.errnb = -1;
 	  printf("file number %d isn't free",file);
+	  return e;
 	}
       }
       else{
 	read_block(id,&description_block,int_to_little(position));
 	fill_block(&description_block,0,28);
 	fill_block(&description_block,0,24);
-	id.taillePart[volume].free_file_count=1;
-	id.taillePart[volume].first_free_file=file;
+	id.tabPart[volume].free_file_count=0;
+	id.tabPart[volume].first_free_file=0;
 	write_block(id,description_block,int_to_little(position));
-	e.rrnb = 0;
+	e.errnb = 0;
       }
     }
     else{
@@ -132,11 +147,11 @@ error remove_free_file(disk_id id,int volume,int file){
   }
   return e;
 }
-*/
+
 /*name: name of the disk wich will be used
   id_f : number file on file Table  
   id_block : id of the block
-  id_part : id of the partition in taillePart*/
+  id_part : id of the partition in tabPart*/
 
 
 
@@ -145,7 +160,7 @@ error remove_free_file(disk_id id,int volume,int file){
 name: name of the disk wich will be used
 id_f : number file on file Table  
 id_block : id of the block
-id_part : id of the partition in taillePart
+id_part : id of the partition in tabPart
 */
 /*
 error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
@@ -158,7 +173,7 @@ error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   // supprimer un bloc de la liste des blocs libres
   //the block has been delete successfully from the free blocks list
   if(e1.errnb != -1){
-    Part p = (*disk).taillePart[id_part];
+    Part p = (*disk).tabPart[id_part];
     //fblock contains informations about the files (including the file that we want)(tfs_size,type ...)
     block fblock;
     //end (bytes) of file f on file table
@@ -247,3 +262,4 @@ error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   return e;
 }
 */
+
