@@ -28,6 +28,7 @@ typedef struct{
     int max_file_count;
     int free_file_count;
     int first_free_file;
+    int file_table_size;
 }Part;
 
 typedef struct{
@@ -36,7 +37,7 @@ typedef struct{
     int fd;
     int nbBlock;
     int nbPart;
-    Part taillePart[MAX_PART];
+    Part tabPart[MAX_PART];
 }disk_id;
 
 disk_id* disque_ouvert[MAX_DISQUE];
