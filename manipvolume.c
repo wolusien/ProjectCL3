@@ -312,12 +312,14 @@ id_f : number file on file Table
 id_block : id of the block
 id_part : id of the partition in tabPart
 */
-error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
+error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
   error e;
   error e1;
   error e2;
   int pBlock = 0;
   int i;
+
+  e1 = free_block(disk,id_block, id_part);
   //En attente de mettre un bloc dans la liste des blocs libres
   // supprimer un bloc de la liste des blocs libres
   //the block has been delete successfully from the free blocks list
