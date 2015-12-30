@@ -9,6 +9,7 @@
 struct iter{
   char *name;
   struct iter *next;
+  struct iter *prec;
 };
 typedef struct iter* iter;
 

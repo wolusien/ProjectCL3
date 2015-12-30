@@ -426,6 +426,7 @@ iter decomposition(char *path){
   while(token != NULL){
     iter next = malloc(sizeof(iter));
     next->name = token;
+    next->prec = it;
     it->next = next;
     it = it->next;
     token=strtok(NULL,separateur);
