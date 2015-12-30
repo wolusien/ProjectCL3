@@ -1,4 +1,4 @@
-#include "manip.h"
+#include "manipvolume.h"
 
 error free_block(disk_id *id, int numblock, int volume){
   error e;
@@ -229,6 +229,7 @@ id_f : number file on file Table
 id_block : id of the block
 id_part : id of the partition in tabPart
 */
+/*
 error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   error e;
   error e1;
@@ -327,4 +328,20 @@ error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   }
   return e;
 }
-
+*/
+iter decomposition(char *path){
+  char *separateur= "//";
+  char *token = strtok(path,separateur);
+  iter current = malloc(sizeof(iter));
+  current->name =token;
+  token=strtok(NULL,separateur);
+  iter it = current;
+  while(token != NULL){
+    iter next = malloc(sizeof(iter));
+    next->name = token;
+    it->next = next;
+    it = it->next;
+    token=strtok(NULL,separateur);
+  }
+  return current;
+}

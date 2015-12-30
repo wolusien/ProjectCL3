@@ -1,5 +1,4 @@
 #include "manip.h"
-
 int main (int argc, char * argv[]){
   // int f = open("tii.tfs",O_RDWR);
   // read(f,b->buff,1024);
