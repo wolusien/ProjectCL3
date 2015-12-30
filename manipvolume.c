@@ -52,22 +52,22 @@ error free_block(disk_id *id, int numblock, int volume){
 	  return e;
 	}else{
 	  e.errnb=-1;
-	  printf("free_block : wrong numblock : %d \n", numblock);
+	  fprintf(stderr,"free_block : wrong numblock : %d \n", numblock);
 	  return e;
 	}
       }else{
 	e.errnb=-1;
-	printf("free_block : volume hasn't been format  \n");
+	fprintf(stderr,"free_block : volume hasn't been format  \n");
 	return e;
       }
     }else{
       e.errnb=-1;
-      printf("free_block : no volume  : %d \n", volume);
+      fprintf(stderr,"free_block : no volume  : %d \n", volume);
       return e;
     }
   }else{
     e.errnb=-1;
-    printf("free_block : id NULL \n");
+    fprintf(stderr,"free_block : id NULL \n");
     return e;
   }
 }
@@ -111,7 +111,7 @@ error add_free_file(disk_id id,int volume,int file){
 	    }
 	    else{
 	      e.errnb = -1;
-	      printf("this file are already free");
+	      fprintf(stderr,"this file are already free");
 	      return e;
 	    }
 	  }
@@ -135,12 +135,12 @@ error add_free_file(disk_id id,int volume,int file){
     }
     else{
       e.errnb = -1;
-      printf("vous ne pouvez pas liberez le repertoire racine");
+      fprintf(stderr,"vous ne pouvez pas liberez le repertoire racine");
       return e;
     }
   }
   else{
-    printf("volume %d doesn't exist on %s",volume,id.name);
+    fprintf(stderr,"volume %d doesn't exist on %s",volume,id.name);
     e.errnb = -1;
     return e;
   }
@@ -193,7 +193,7 @@ error remove_free_file(disk_id id,int volume,int file){
 	}
 	else{
 	  e.errnb = -1;
-	  printf("file number %d isn't free",file);
+	  fprintf(stderr,"file number %d isn't free",file);
 	  return e;
 	}
       }
@@ -209,23 +209,17 @@ error remove_free_file(disk_id id,int volume,int file){
     }
     else{
       e.errnb = -1;
-      printf("there is no free files");
+      fprintf(stderr,"there is no free files");
       return e;
     }
   }
   else{
     e.errnb =-1;
-    printf("volume %d doesn't exist on %s",volume,id.name);
+    fprintf(stderr,"volume %d doesn't exist on %s",volume,id.name);
     return e;
   }
   return e;
 }
-
-/*name: name of the disk wich will be used
-  id_f : number file on file Table  
-  id_block : id of the block
-  id_part : id of the partition in tabPart*/
-
 
 
 
@@ -235,7 +229,6 @@ id_f : number file on file Table
 id_block : id of the block
 id_part : id of the partition in tabPart
 */
-/*
 error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   error e;
   error e1;
@@ -334,4 +327,4 @@ error add_file_block(disk_id disk,int id_part,int id_f, int id_block){
   }
   return e;
 }
-*/
+
