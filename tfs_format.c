@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 		   fill_block(&file_table, 0, 8);
 		   fill_block(&file_table, taille_descripteur+1, 12);
 		}else{
-		  fill_block(&file_table, 16*(i-1)+1, 63);
+		  fill_block(&file_table, 16*(i-1)+1, 60);
 		}
 		int j;
 		for(j=1; j<=15; j++){
@@ -55,17 +55,11 @@ int main(int argc, char *argv[]){
 		    if(16*(i-1)+j==file_count){
 		       fill_block(&file_table, (i-1)*16+j, j*64+60);
 		       printf("uu \n");
-		    }
+ 		    }
 		  }
 		}
 		write_physical_block(*id, file_table,i+id_first);
-		fill_block(&file_table,0,0);
-		fill_block(&file_table,0,4);  //on réinitialise le bloc file_table à 0
-		fill_block(&file_table,0,8);
-		fill_block(&file_table,0,12);
-		for(i=0; i<16; i++){
-		  fill_block(&file_table,0,i*64+60);
-		}
+		read_block(*id, &file_table, i+id_first+1); //on réinitialise le bloc file_table à 0
 	      }
 	      //initialisation du dossier racine
 	      block racine;

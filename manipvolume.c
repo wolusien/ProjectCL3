@@ -72,6 +72,89 @@ error free_block(disk_id *id, int numblock, int volume){
   }
 }
 
+error use_block(disk_id *id, int numblock, int volume){
+  error e;
+  if(id!=NULL){
+    if(0<=volume && volume<id->nbPart){
+      Part here=id->tabPart[volume];
+      if(here.file_table_size!=0){
+	if(numblock>1+here.file_table_size && numblock<here.taille){
+	  int prec=here.first_free_block;                   //on va chercher le block "numblock" pour le dechainer.
+	  if(prec!=0){
+	    block p;
+	    read_block(*id, &p, prec+here.num_first_block);
+	    int suiv;
+	    readint_block(&p,&suiv, 1020); 
+	    block s;
+	    block first;
+	    read_block(*id,&first,here.num_first_block);
+	    if( suiv==numblock){                                   //Cas ou numbloc est le premier bloc libre
+	      if(suiv==prec){                                    //Cas ou c'est le seul bloc libre
+		fill_block(&first, 0,12);
+		fill_block(&first, 0,16);
+		write_block((*id),first,here.num_first_block);
+		here.free_block_count=0;
+		here.first_free_block=0;
+	      }else{
+		fill_block(&first, (here.free_block_count-1),12);
+		fill_block(&first, suiv,16);
+		write_block((*id),first,here.num_first_block);
+		here.free_block_count-=1;
+		here.first_free_block=suiv;
+	      }
+	      e.errnb=0;
+	      return e;
+	    }else{                                             //sinon on cherche le prédécesseur de numbloc dans le chainage.
+	      while(prec!=suiv){                                    
+		if (suiv==numblock){      //on a trouvé numblock  	  
+		  int a;
+		  read_block(*id, &s, suiv+here.num_first_block);
+		  readint_block(&s,&a, 1020); 
+		  if(a==suiv){                   //cas ou le block "numblock" est le dernier du chainage.
+		    fill_block(&s,prec,1020);
+		  }
+		  write_block((*id),s,here.num_first_block+prec);
+		  fill_block(&first, here.free_block_count+1,12);
+		  write_block((*id),first,here.num_first_block);
+		  here.free_block_count-=1;
+		  e.errnb=0;
+		  return e;
+		}
+		prec=suiv;
+		read_block(*id, &p, prec+here.num_first_block);
+		readint_block(&p,&suiv, 1020); 
+	      }
+	      e.errnb=-1;
+	      printf("use_block : this block isn't free  : %d \n", numblock);
+	      return e;
+	    }
+	  }else{
+	    e.errnb=-1;
+	    printf("use_block : volume is full  : %d \n", numblock);
+	    return e;
+	  } 
+	}else{
+	  e.errnb=-1;
+	  printf("use_block : wrong numblock : %d \n", numblock);
+	  return e;
+	}
+      }else{
+	e.errnb=-1;
+	printf("use_block : volume hasn't been format  \n");
+	return e;
+      }
+    }else{
+      e.errnb=-1;
+      printf("use_block : no volume  : %d \n", volume);
+      return e;
+    }
+  }else{
+    e.errnb=-1;
+    printf("use_block : id NULL \n");
+    return e;
+  }
+}
+
 
 error add_free_file(disk_id id,int volume,int file){
   error e;
