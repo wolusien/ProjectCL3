@@ -319,7 +319,7 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
   if(id_f>0 && id_block>0 && id_part>0){
     Part p = (*disk).tabPart[id_part];
     if(p.taille>id_block){
-      e1 = use_block(disk,id_block,id_part);
+      e1 = free_block(disk,id_block,id_part);
       if(e1.errnb!=-1){
         uint32_t uid_block = int_to_little(id_block);
         unsigned char* bufid_block = (unsigned char*)(&uid_block);
@@ -631,7 +631,7 @@ error remove_file_block(disk_id* disk,int id_part, int id_f, int id_block){
 		block empty;
 		int idblock = little_to_int(uid_block);
 		write_block((*disk),empty,int_to_little(p.num_first_block + idblock));
-		free_block(disk,idblock,id_part);
+		error e1 = use_block(disk,idblock,id_part);
 	}else{
 		e.errnb = -1;
 		fprintf(stderr, "Wrong arguments\n");
