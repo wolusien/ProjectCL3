@@ -309,7 +309,7 @@ error remove_free_file(disk_id id,int volume,int file){
 /*
 disk: disk wich will be used
 id_f : number file on file Table  
-id_block : id of the block
+id_block : id of the block on partition
 id_part : id of the partition in tabPart
 */
 error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
@@ -319,7 +319,7 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
   if(id_f>0 && id_block>0 && id_part>0){
     Part p = (*disk).tabPart[id_part];
     if(p.taille>id_block){
-      e1 = free_block(disk,id_block,id_part);
+      e1 = use_block(disk,id_block,id_part);
       if(e1.errnb!=-1){
         uint32_t uid_block = int_to_little(id_block);
         unsigned char* bufid_block = (unsigned char*)(&uid_block);
@@ -456,7 +456,6 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
   return e;
 }
 
-
 iter decomposition(char *path){
   char *separateur= "//";
   char *token = strtok(path,separateur);
@@ -473,4 +472,169 @@ iter decomposition(char *path){
     token=strtok(NULL,separateur);
   }
   return current;
+}
+
+/*
+disk: disk wich will be used
+id_f : number file on file Table  
+id_block : id of the block for the file on file_Tab if direct 1<= id_block<=10 else id_block>=11
+id_part : id of the partition in tabPart
+*/
+error remove_file_block(disk_id* disk,int id_part, int id_f, int id_block){
+	error e;
+	int i;
+	if(id_part>0 && id_f>0 && id_block>0){
+		Part p = (*disk).tabPart[id_part];
+		//Get information on file_Tab about file
+		block blockf;
+		int deb_finfo = id_f * 64;
+		int numb_debfinfo = deb_finfo / 1024;
+		numb_debfinfo += p.num_first_block;
+		if(deb_finfo%1024>0){
+			numb_debfinfo += 1;	
+		}
+		read_block((*disk),(&blockf),(int_to_little(numb_debfinfo)));
+		int posf_on_blockf;
+		if((numb_debfinfo%16)>0){
+			posf_on_blockf = (numb_debfinfo%16)-1;
+		}else{
+			posf_on_blockf = 15;	
+		}
+		uint32_t uid_block;//Contains the num of the block on partition
+		unsigned char* bufid_block = (unsigned char*)(&uid_block);
+		uint32_t uprev_block;//Contains the previous block use by the file which we must change redirection bytes 
+		unsigned char* bufprev_block = (unsigned char*)(&uprev_block);
+		if(id_block<=10){
+			for(i=0; i<4; i++){
+				bufid_block[i] = blockf.buff[i + (posf_on_blockf * 64)];
+				printf("Val of 	blockf.buff[i + (posf_on_blockf * 64)] %d\n",i + (posf_on_blockf * 64));
+				bufprev_block[i] = blockf.buff[i + ((posf_on_blockf-1) * 64)];
+			}
+			int idb = little_to_int(uid_block);
+			printf("Val of idb %d\n",idb);
+			int previdb = little_to_int(uprev_block);
+			printf("Val of previdb %d\n",previdb);
+			block prev_b;
+			block b;
+			read_block((*disk),(&b),int_to_little(p.num_first_block + idb));
+			read_block((*disk),(&prev_b),int_to_little(p.num_first_block + previdb));
+			uint32_t redir;
+			unsigned char* bufredir = (unsigned char*)(&redir);
+			for(i=0; i<4; i++){ 
+				bufredir[i] = b.buff[i + 1020];
+				prev_b.buff[i+1020] = bufredir[i];
+			}
+			printf("Val of redir %d\n", little_to_int(redir));
+			write_block((*disk),prev_b,int_to_little(p.num_first_block + previdb));
+			unsigned char c[1024-(posf_on_blockf * 64)];
+			for(i = 0; i<1024-(posf_on_blockf * 64); i++){
+				c[i] = 	blockf.buff[i + (posf_on_blockf * 64)];
+				printf("Val of blockf.buff[i + (posf_on_blockf * 64)] %d\n",i + (posf_on_blockf * 64));
+			}
+			for(i=4; i < 1024-(posf_on_blockf * 64); i++){
+				blockf.buff[i-4 + (posf_on_blockf * 64)] = c[i];
+				printf("Val of blockf.buff[i + (posf_on_blockf * 64)] %d\n",i + (posf_on_blockf * 64));
+			}
+			write_block((*disk),blockf,int_to_little(numb_debfinfo));
+			e.errnb = 0; 
+		}else if(id_block<=266){
+			block indi_first;
+			uint32_t indi;
+			unsigned char* bufindi = (unsigned char*)(&indi);
+			for(i=0; i<4; i++){
+				bufindi[i] = blockf.buff[i + (posf_on_blockf * 64) + 52];
+				printf("Val of 	blockf.buff[i + (posf_on_blockf * 64) + 52] %d\n",i + (posf_on_blockf * 64) + 52);
+			}
+			int num_indi = little_to_int(indi);
+			read_block((*disk),(& indi_first),int_to_little(num_indi + p.num_first_block));
+			int o = id_block -11;
+			for(i=0; i<4; i++){
+				//Get the num of the block on partition
+				bufid_block[i] = indi_first.buff[i+(o*4)];
+				printf("Val of 	indi_first.buff[i+(o*4)] %d\n",i+(o*4));
+				//Get the previous block use by the file which we must change redirection bytes
+				bufprev_block[i] = indi_first.buff[i+((o-1)*4)];
+			}
+			int idb = little_to_int(uid_block);
+			printf("Val of idb %d\n",idb);
+			int previdb = little_to_int(uprev_block);
+			printf("Val of previdb %d\n",previdb);
+			block prev_b;
+			block b;
+			read_block((*disk),(&b),int_to_little(p.num_first_block + idb));
+			read_block((*disk),(&prev_b),int_to_little(p.num_first_block + previdb));
+			uint32_t redir;
+			unsigned char* bufredir = (unsigned char*)(&redir);
+			for(i=0; i<4; i++){ 
+				bufredir[i] = b.buff[i + 1020];
+				prev_b.buff[i+1020] = bufredir[i];
+			}
+			printf("Val of redir %d\n", little_to_int(redir));
+			write_block((*disk),prev_b,int_to_little(p.num_first_block + previdb));
+			unsigned char c[1024-(o * 4)];
+			for(i = 0; i<1024-(o * 4); i++){
+				c[i] = 	indi_first.buff[i + (o * 4)];
+				printf("Val of indi_first.buff[i + (o * 4)] %d\n",i + (o * 4));
+			}
+			for(i=4; i < 1024-(o*4); i++){
+				indi_first.buff[i-4 + (o*4)] = c[i];
+				printf("Val of indi_first.buff[i + (o*4)] %d\n",i + (o*4));
+			}
+			write_block((*disk),indi_first,int_to_little(numb_debfinfo));
+			e.errnb = 0; 
+		}else{
+			block indi_sec;
+			uint32_t indi;
+			unsigned char* bufindi = (unsigned char*)(&indi);
+			for(i=0; i<4; i++){
+				bufindi[i] = blockf.buff[i + (posf_on_blockf * 64) + 56];
+				printf("Val of 	blockf.buff[i + (posf_on_blockf * 64) + 56] %d\n",i + (posf_on_blockf * 64) + 56);
+			}
+			int num_indi = little_to_int(indi);
+			read_block((*disk),(&indi_sec),int_to_little(num_indi + p.num_first_block));
+			int o = id_block -266;
+			for(i=0; i<4; i++){
+				//Get the num of the block on partition
+				bufid_block[i] = indi_sec.buff[i+(o*4)];
+				printf("Val of 	indi_sec.buff[i+(o*4)] %d\n",i+(o*4));
+				//Get the previous block use by the file which we must change redirection bytes
+				bufprev_block[i] = indi_sec.buff[i+((o-1)*4)];
+			}
+			int idb = little_to_int(uid_block);
+			printf("Val of idb %d\n",idb);
+			int previdb = little_to_int(uprev_block);
+			printf("Val of previdb %d\n",previdb);
+			block prev_b;
+			block b;
+			read_block((*disk),(&b),int_to_little(p.num_first_block + idb));
+			read_block((*disk),(&prev_b),int_to_little(p.num_first_block + previdb));
+			uint32_t redir;
+			unsigned char* bufredir = (unsigned char*)(&redir);
+			for(i=0; i<4; i++){ 
+				bufredir[i] = b.buff[i + 1020];
+				prev_b.buff[i+1020] = bufredir[i];
+			}
+			printf("Val of redir %d\n", little_to_int(redir));
+			write_block((*disk),prev_b,int_to_little(p.num_first_block + previdb));
+			unsigned char c[1024-(o * 4)];
+			for(i = 0; i<1024-(o * 4); i++){
+				c[i] = 	indi_sec.buff[i + (o * 4)];
+				printf("Val of indi_sec.buff[i + (o * 4)] %d\n",i + (o * 4));
+			}
+			for(i=4; i < 1024-(o*4); i++){
+				indi_sec.buff[i-4 + (o*4)] = c[i];
+				printf("Val of indi_sec.buff[i + (o*4)] %d\n",i + (o*4));
+			}
+			write_block((*disk),indi_sec,int_to_little(numb_debfinfo));
+			e.errnb = 0;
+		}
+		block empty;
+		int idblock = little_to_int(uid_block);
+		write_block((*disk),empty,int_to_little(p.num_first_block + idblock));
+		free_block(disk,idblock,id_part);
+	}else{
+		e.errnb = -1;
+		fprintf(stderr, "Wrong arguments\n");
+	}
+	return e;
 }
