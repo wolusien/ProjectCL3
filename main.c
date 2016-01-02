@@ -1,13 +1,22 @@
 #include "manip.h"
+#include "manipsystem.h"
 
 int main (int argc, char * argv[]){
+  disk_id *id = malloc(sizeof(disk_id));
+  start_disk("t.tfs",id);
+  printf("taille : %d \n",id->tabPart[0].free_block_count);
+  use_block(disque_ouvert[0], 14,  0);
+  //use_block(disque_ouvert[0], 6,  0);
+  //use_block(disque_ouvert[0], 8,  0);
+  use_block(disque_ouvert[0], 14,  0);
+  free_block(disque_ouvert[0], 14,  0);
   // int f = open("tii.tfs",O_RDWR);
   // read(f,b->buff,1024);
   //printf("kjb %d \n", b->buff[0]);
   // printf("kjb %d \n", b->buff[0]);
-  disk_id *id = malloc(sizeof(disk_id));
-  start_disk("t.tfs",id);
-  printf("dudu : %d \n", id->tabPart[1].max_file_count);
+  //disk_id *id = malloc(sizeof(disk_id));
+  //start_disk("t.tfs",id);
+  //printf("dudu : %d \n", id->tabPart[1].max_file_count);
   //stop_disk(*id);
   /*disk_id *id;
   int i;

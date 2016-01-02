@@ -86,11 +86,11 @@ error start_disk(char *name,disk_id *id) {
                 }
 		Part p;
 		p.taille=little_to_int(n);
-		id_first+=p.taille;
 		p.num_first_block=id_first;
+		id_first+=p.taille;
 		block firstPart;
-		read_block(*id,&firstPart,id_first);
-		int free_block_count;
+		read_block(*id,&firstPart,p.num_first_block);
+		int free_block_count;  
 		readint_block(&firstPart,&free_block_count,12);
 		p.free_block_count=free_block_count;
 		int first_free_block;

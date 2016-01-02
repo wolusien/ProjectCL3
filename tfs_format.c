@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
 	error err = start_disk(argv[argc-1], id);
 	if(err.errnb==0){
 	  int partition =atoi(argv[2]); //la première partition à l'id 0
-	  if(0<partition && partition<=id->nbPart){
+	  if(0<=partition && partition<=id->nbPart){
 	    int file_count=atoi(argv[4]);
 	    int taille=id->tabPart[partition].taille;
 	    int taille_descripteur=((file_count-1)/16)+1;
