@@ -473,7 +473,7 @@ iter decomposition(char *path){
   }
   return current;
 }
-
+//lol
 /*
 disk: disk wich will be used
 id_f : number file on file Table  
