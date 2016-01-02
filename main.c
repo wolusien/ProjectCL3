@@ -1,6 +1,4 @@
 #include "manip.h"
-#include "manipsystem.h"
-
 int main (int argc, char * argv[]){
   disk_id *id = malloc(sizeof(disk_id));
   start_disk("t.tfs",id);

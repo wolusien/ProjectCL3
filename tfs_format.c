@@ -39,23 +39,24 @@ int main(int argc, char *argv[]){
 	      block file_table;
 	      for(i=1; i<=taille_descripteur; i++){
 		if(i==1){
-		   fill_block(&file_table, 64, 0);
-		   fill_block(&file_table, 1, 4);
-		   fill_block(&file_table, 0, 8);
-		   fill_block(&file_table, taille_descripteur+1, 12);
+		  fill_block(&file_table, 64, 0);
+		  fill_block(&file_table, 1, 4);
+		  fill_block(&file_table, 0, 8);
+		  fill_block(&file_table, taille_descripteur+1, 12);
 		}else{
 		  fill_block(&file_table, 16*(i-1)+1, 60);
 		}
 		int j;
 		for(j=1; j<=15; j++){
 		  if((16*(i-1)+j)<file_count){
-		       printf("ujh \n");
-		  fill_block(&file_table, (i-1)*16+j+1, j*64+60);
+		    printf("ujh \n");
+		    fill_block(&file_table, (i-1)*16+j+1, j*64+60);
 		  }else{
 		    if(16*(i-1)+j==file_count){
 		       fill_block(&file_table, (i-1)*16+j, j*64+60);
 		       printf("uu \n");
  		    }
+
 		  }
 		}
 		write_physical_block(*id, file_table,i+id_first);
