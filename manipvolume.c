@@ -515,6 +515,33 @@ int name_in_block(disk_id id,int volume,int num_block,char *name){
         return -1;
     }
 }
+
+int name_in_dir(disk_id id,int volume,int dir,char *name){
+    if(id.nbPart>volume){
+        if(dir<id.tabPart[volume].max_file_count){
+            int pos=id.tabPart[volume].file_table_size+(dir/16)+1;
+            block b1;
+            read_block(id,&b1,pos);
+            int i;
+            for(int i=0;i<10;i++){
+                int numb;
+                readint_block(&b1,numb,(dir%16)*64+12+i) //début des numéros de blocs contenant des données du fichier
+                if(name_in_bloc(id,volume,numb,name)!=-1)
+                    return numb;
+            }
+            
+        }
+        else{
+           fprintf(stderr,"dir number %d doesn't exist on volume number %d"volume);
+           return -1;  
+        }
+        
+    }
+    else{
+       fprintf(stderr,"volume %d doesn't exist on %s",volume,id.name);
+       return -1; 
+    }
+}
 error give_current(char *path, disk_id *disk, int *volume, int *place){
   error e;
   iter i=decomposition(path);
