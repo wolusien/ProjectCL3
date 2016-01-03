@@ -25,7 +25,6 @@ tfs_analyse : $(OBJECTS) tfs_analyse.o
 clean:
 	rm -f *.o
 	rm -f *~
-
 proper:	
 	rm -f $(EXEC)
 	rm disk.tfs
