@@ -19,7 +19,7 @@ error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veu
   }
 }
 
-error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on veut lire l'entier que l'on écritdans a.
+error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on veut lire l'entier que l'on écrit dans a.
   int i;
   if(loc>=0 && loc<=1020){
     uint32_t n;
@@ -38,6 +38,7 @@ error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on
     return e;
   }
 }
+
 
 error start_disk(char *name,disk_id *id) {
   error e;

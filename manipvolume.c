@@ -473,7 +473,84 @@ iter decomposition(char *path){
   }
   return current;
 }
-//lol
+
+error readname_rep(block b, char *a,int loc){ //loc est l'endroit du bloc ou on veut lire le nom que l'on écrit dans a.
+  int i;
+  if(loc>=0 && loc<=996){
+    char nom[28];
+    for(i=0; i<28; i++){
+      nom[i]=b.buff[loc+i];
+    }
+    a=nom;
+    error e;
+    e.errnb=0;
+    return e;
+  }else{
+    error e;
+    e.errnb=-1;
+    fprintf(stderr,"readname_rep : wrong argument loc : %d", loc);
+    return e;
+  }
+}
+
+error give_current(char *path, disk_id *disk, int *volume, int *place){
+  error e;
+  iter i=decomposition(path);
+  if(strcmp(i->name, "FILE:")==0){
+    if(i->next!=NULL){
+      i=i->next;
+      if(strcmp(i->name, "HOST")==0){
+	e.errnb=1;
+	return e;
+      }else{
+	error err=start_disk(i->name,disk);
+	if(err.errnb==-1){
+	  return err;
+	}else{
+	  if(i->next!=NULL){
+	    i=i->next;
+	    int part = atoi(i->name);
+      	    if(part>=0 && part<disk->nbPart){
+	      Part here=disk->tabPart[part];
+	      if(i->next!=NULL){
+		char *nom=i->name;
+		int idrep=0;
+		int bool =1;
+		while(bool==1){
+		  int idblockrep=(idrep-1)/16+1;
+		  int idtablerep=(idrep % 16);
+		  block b;
+		  read_block(*disk, &b, here.num_first_block+idblockrep);
+		  int j;
+		  for(j=0; j<10; j++){
+		    block b2;
+		    int a;
+		    readint_block(&b, &a, 12+(4*j)+64*idtablerep);
+		    read_block(*disk, &b2, here.num_first_block+a);
+		    int k;
+		    for(k=0; k<32; k++){
+		    }
+		  }
+		}
+	      }
+	    }else{
+	      e.errnb=-1;
+	      fprintf(stderr, "wrong path :  partition dosen't exist %d \n", part);
+	      return e;
+	    }
+	  }
+	}
+      }
+    }else{
+      e.errnb=-1;
+      fprintf(stderr,"wrong path");
+      return e;
+    }
+  }else{
+
+  }
+}
+
 /*
 disk: disk wich will be used
 id_f : number file on file Table  
@@ -637,4 +714,40 @@ error remove_file_block(disk_id* disk,int id_part, int id_f, int id_block){
 		fprintf(stderr, "Wrong arguments\n");
 	}
 	return e;
+}
+
+error free_file_blocks(disk_id* disk,int volume, int id_f){
+  error e;
+  if(disk!=NULL){
+    if(0<=volume && volume<disk->nbPart){
+      Part here = (*disk).tabPart[volume];
+      if(id_f>0 && id_f<here.max_file_count){
+	error err;
+	int i=1;
+	err=remove_file_block(disk,volume,id_f,i);
+	while(err.errnb==0){
+	  err=remove_file_block(disk,volume, id_f, i); 
+	  i+=1;
+	}
+	if(err.errnb==-2){
+	  e.errnb=0;
+	  return e;
+	}else{
+	  return err;
+	}
+      }else{
+	e.errnb=-1;
+	fprintf(stderr, "free_file_blocks : no file %d \n", id_f);
+	return e;
+      }
+    }else{
+      e.errnb=-1;
+      fprintf(stderr,"free_block : no volume  : %d \n", volume);
+      return e;
+    }
+  }else{
+    e.errnb=-1;
+    fprintf(stderr,"free_block : id NULL \n");
+    return e;
+  }
 }

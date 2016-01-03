@@ -14,7 +14,7 @@
 #define SIZEBLOCK 1024
 #define MINBLOCK 3
 #define BUFSIZE 256
-#define MAX_DISQUE 100
+#define MAX_DISQUE 5
 #define DEFAULT_SIZE_TFS 50
 #define MAX_PART 254
 #define MAGIC_NUMBER 31534654
