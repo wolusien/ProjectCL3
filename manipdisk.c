@@ -111,7 +111,6 @@ error start_disk(char *name,disk_id *id) {
               }
             }
             id->name = malloc(strlen(name)*sizeof(char));
-            printf("j'alloue name\n");
             id->name= name;
             disque_ouvert[nbrcurs]=id;
             e.errnb = 0;
@@ -160,10 +159,8 @@ error stop_disk(disk_id id){
   if(disque_ouvert[id.id]!=NULL){
     er.errnb = close(id.fd);
     if(er.errnb != -1){
-      printf("Je vais free name\n");
       id.name = NULL;
       free(id.name);
-      printf("Je vais disque_ouvert[id.id]=NULL\n");
       disque_ouvert[id.id]=NULL;
     }
   }

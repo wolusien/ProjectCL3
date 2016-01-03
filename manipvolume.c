@@ -638,3 +638,38 @@ error remove_file_block(disk_id* disk,int id_part, int id_f, int id_block){
 	}
 	return e;
 }
+
+void file_tableau(int *tab[16],disk_id id,int volume){
+    if(volume<id.nbPart){
+        int position = id.tabPart[volume].num_first_block;
+        int maxf = id.tabPart[volume].max_file_count;
+        tab = malloc(sizeof(int)*maxf);
+        int fts =id.tabPart[volume].file_table_size;
+        int i;
+        block ft;
+        for(i=0;i<fts;i++){
+            read_block(id,&ft,position+1+i);
+            int j;
+            int max;
+            if(i==fts-1){
+                max=maxf-16*i;
+            }
+            else{
+                max=16;
+            }
+                for(j=0;j<max;j++){
+                    int k;
+                for(k=0;k<16;k++){
+                    int nombre;
+                    readint_block(&ft,&nombre,k*4);
+                    tab[j+i*16][k]=nombre;
+               }
+           }
+       } 
+        
+    }
+    else{
+        printf("le volume n'existe pas");
+    }
+    
+}
