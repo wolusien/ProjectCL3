@@ -476,10 +476,11 @@ iter decomposition(char *path){
 
 error readname_rep(block b, char *a,int loc){ //loc est l'endroit du bloc ou on veut lire le nom que l'on écrit dans a.
   int i;
-  if(loc>=0 && loc<=996){
+  if(loc>=0 && loc<=992){
     char nom[28];
-    for(i=0; i<28; i++){
-      nom[i]=b.buff[loc+i];
+    for(i=4; i<32; i++){
+        if(b.buff)
+        nom[i]=b.buff[loc+i];
     }
     a=nom;
     error e;
@@ -492,7 +493,28 @@ error readname_rep(block b, char *a,int loc){ //loc est l'endroit du bloc ou on 
     return e;
   }
 }
-
+int name_in_block(disk_id id,int volume,int num_block,char *name){
+    if(id.nbPart>volume){
+        int pos = id.tabPart[volume].num_first_block+num_block;
+        block b;
+        read_block(id,&b,int_to_little(pos));
+        char namefile;
+        int i;
+        for(i=0;i<1024;i=i+32){
+            readname_rep(b,&namefile,i);
+            if(strcmp(&namefile,name)!=-1){
+                readint_block(&b,&pos,i);
+                return pos;
+            }
+        }
+        fprintf(stderr,"%s is not on this block",name);
+        return -1;
+    }
+    else{
+        fprintf(stderr,"volume %d doesn't exist on %s",volume,id.name);
+        return -1;
+    }
+}
 error give_current(char *path, disk_id *disk, int *volume, int *place){
   error e;
   iter i=decomposition(path);
