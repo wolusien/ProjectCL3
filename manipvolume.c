@@ -419,7 +419,7 @@ error add_free_file(disk_id id, int volume, int file) {
     }
 
 
-error give_current(iter i,char *path, disk_id *disk, int *volume, int *place){
+error find_name(iter i, disk_id *disk, int *volume, int *place){
   error e;
   i=i->next;
   if(i->next!=NULL){
