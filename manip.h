@@ -20,14 +20,14 @@
 #define MAGIC_NUMBER 31534654
 
 typedef struct{
-    int taille;
+    int taille;//number of blocks
     int num_first_block;//number of the first block in the disk
     int free_block_count;
     int first_free_block;
     int max_file_count;
     int free_file_count;
     int first_free_file;
-    int file_table_size;
+    int file_table_size;//number of blocks
 }Part;
 
 typedef struct{
