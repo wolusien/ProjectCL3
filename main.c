@@ -1,6 +1,19 @@
-#include "manip.h"
+#include "manipvolume.h"
 int main (int argc, char * argv[]){
   disk_id *id = malloc(sizeof(disk_id));
+  block b;
+  b.buff[0]='E';
+  b.buff[1]='N';
+  b.buff[2]='F';
+  b.buff[3]='O';
+  for(int i=4;i<1024;i++){
+    b.buff[i]='\0';
+  }
+  int d;
+  readint_block(&b,&d,0);
+  printf("%d\n",d);
+  readint_block(&b,&d,4);
+  printf("%d\n",d);
   start_disk("t.tfs",id);
   printf("taille : %d \n",id->tabPart[0].free_block_count);
   use_block(disque_ouvert[0], 14,  0);

@@ -359,31 +359,38 @@ int name_in_dir(disk_id id, int volume, int dir, char *name) {
             int numb;
             for (i = 0; i < 10; i++) {
                 readint_block(&b1, &numb, (dir % 16)*64 + 12 + i); //début des numéros de blocs contenant des données du fichier
-                if ((numfic = name_in_block(id, volume, numb, name)) != -1)
+                if(numb==0)
+		  return -1;
+		if ((numfic = name_in_block(id, volume, numb, name)) != -1)
                     return numfic;
             }
             readint_block(&b1, &numb, (dir % 16)*64 + 52);
-            pos = id.tabPart[volume].num_first_block + numb;
+            if(numb==0) return -1;
+	    pos = id.tabPart[volume].num_first_block + numb;
             block b2;
             read_block(id, &b2, pos);
             for (i = 0; i < 1024; i = i + 4) {
                 readint_block(&b2, &numb, i);
-                if ((numfic = name_in_block(id, volume, numb, name))) {
+                if(numb==0) return -1;
+		if ((numfic = name_in_block(id, volume, numb, name))) {
                     return numfic;
                 }
             }
             readint_block(&b1, &numb, (dir % 16)*64 + 56);
-            pos = id.tabPart[volume].num_first_block+numb;
+            if(numb == 0)return -1;
+	    pos = id.tabPart[volume].num_first_block+numb;
             read_block(id,&b2,pos);
             int pos2;
             block b3;
             for(i=0;i<1024;i=i+4){
                 readint_block(&b2,&numb,i);
+		if(numb==0) return -1;
                 pos2 = id.tabPart[volume].num_first_block+numb;
                 read_block(id,&b3,numb);
                 int j;
                 for(j=0;i<1024;j++){
                     readint_block(&b3,&numb,i);
+		    if(numb==0) return -1;
                     if((numfic = name_in_block(id,volume,numb,name)))
                         return numfic;
                 }
