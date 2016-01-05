@@ -3,11 +3,11 @@ int main (int argc, char * argv[]){
   disk_id *id = malloc(sizeof(disk_id));
   start_disk("t.tfs",id);
   printf("taille : %d \n",id->tabPart[0].max_file_count);
-  use_block(disque_ouvert[0], 14,  0);
+  // use_block(disque_ouvert[0], 14,  0);
   //use_block(disque_ouvert[0], 6,  0);
   //use_block(disque_ouvert[0], 8,  0);
-  use_block(disque_ouvert[0], 14,  0);
-  free_block(disque_ouvert[0], 14,  0);
+  //use_block(disque_ouvert[0], 14,  0);
+  //free_block(disque_ouvert[0], 14,  0);
   // int f = open("tii.tfs",O_RDWR);
   // read(f,b->buff,1024);
   //printf("kjb %d \n", b->buff[0]);
