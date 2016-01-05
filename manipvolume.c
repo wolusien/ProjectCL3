@@ -349,7 +349,7 @@ int name_in_block(disk_id id,int volume,int num_block,char *name){
         char namefile;
         int i;
         for(i=0;i<1024;i=i+32){
-            readname_rep(b,&namefile,i);
+            readname_rep(b,&namefile,i+4);
             if(strcmp(&namefile,name)!=-1){
                 readint_block(&b,&pos,i);
                 return pos;
@@ -371,9 +371,9 @@ int name_in_dir(disk_id id,int volume,int dir,char *name){
             block b1;
             read_block(id,&b1,pos);
             int i;
-            for(int i=0;i<10;i++){
+            for(0;i<10;i++){
                 int numb;
-                readint_block(&b1,numb,(dir%16)*64+12+i) //début des numéros de blocs contenant des données du fichier
+                readint_block(&b1,numb,(dir%16)*64+12+i); //début des numéros de blocs contenant des données du fichier
                 if(name_in_bloc(id,volume,numb,name)!=-1)
                     return numb;
             }
@@ -410,42 +410,54 @@ error give_current(char *path, disk_id *disk, int *volume, int *place){
       	    if(part>=0 && part<disk->nbPart){
 	      Part here=disk->tabPart[part];
 	      if(i->next!=NULL){
+		i=i->next;
 		char *nom=i->name;
-		int idrep=0;
+		int idtable=0;
 		int bool =1;
 		while(bool==1){
-		  int idblockrep=(idrep-1)/16+1;
-		  int idtablerep=(idrep % 16);
-		  block b;
-		  read_block(*disk, &b, here.num_first_block+idblockrep);
-		  int j;
-		  for(j=0; j<10; j++){
-		    block b2;
+		  if(i->next!=NULL){
+		    block b;
+		    read_block(*disk, &b, here.num_first_block+(idrep-1)/16+1);
 		    int a;
-		    readint_block(&b, &a, 12+(4*j)+64*idtablerep);
-		    read_block(*disk, &b2, here.num_first_block+a);
-		    int k;
-		    for(k=0; k<32; k++){
+		    readint_block(&b, &a, 64*(idrep%16)+4);
+		    if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
+		      if(name_in_dir(disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
+			idtable=name_in_dir(disk,part,idtable,nom);
+			i=i->next;
+			nom=i->name;
+		      }else{
+			e.errnb=-1;
+			fprintf(stderr,"wrong path");
+			return e;
+		      }
+		    }else{
+		      e.errnb=-1;
+		      fprintf(stderr,"wrong path");
+		      return e;
 		    }
-		  }
+		  }else{
+		    idtable=name_in_dir(*disk,part,idtable,nom);
+		    if(idtable!=-1){
+		      *place=idtable;
+		      e.errnb=0;
+		      return e;
+		    }else{
+		      e.errnb=-1;
+		      fprintf(stderr,"wrong path");
+		      return e;
+		    }
+		  } 
 		}
 	      }
-	    }else{
-	      e.errnb=-1;
-	      fprintf(stderr, "wrong path :  partition dosen't exist %d \n", part);
-	      return e;
 	    }
 	  }
 	}
       }
-    }else{
-      e.errnb=-1;
-      fprintf(stderr,"wrong path");
-      return e;
     }
-  }else{
-
   }
+  e.errnb=-1;
+  fprintf(stderr,"wrong path");
+  return e;
 }
 
 
