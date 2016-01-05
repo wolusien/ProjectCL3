@@ -219,6 +219,8 @@ error add_free_file(disk_id id, int volume, int file) {
         }
         return e;
     }
+    e.errnb = -1;
+    return e;
 }
 
     error remove_free_file(disk_id id, int volume, int file) {
@@ -282,6 +284,8 @@ error add_free_file(disk_id id, int volume, int file) {
             }
             return e;
         }
+        e.errnb=-1;
+        return e;
     }
 
     iter decomposition(char *path) {
