@@ -413,7 +413,7 @@ error add_free_file(disk_id id, int volume, int file) {
         }
 
     }
-}
+
 
 error give_current(char *path, disk_id *disk, int *volume, int *place){
   error e;
@@ -442,12 +442,12 @@ error give_current(char *path, disk_id *disk, int *volume, int *place){
 		while(bool==1){
 		  if(i->next!=NULL){
 		    block b;
-		    read_block(*disk, &b, here.num_first_block+(idrep-1)/16+1);
+		    read_block(*disk, &b, here.num_first_block+(idtable-1)/16+1);
 		    int a;
-		    readint_block(&b, &a, 64*(idrep%16)+4);
+		    readint_block(&b, &a, 64*(idtable%16)+4);
 		    if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
-		      if(name_in_dir(disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
-			idtable=name_in_dir(disk,part,idtable,nom);
+		      if(name_in_dir(*disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
+			idtable=name_in_dir(*disk,part,idtable,nom);
 			i=i->next;
 			nom=i->name;
 		      }else{
