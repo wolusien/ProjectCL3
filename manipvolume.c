@@ -419,67 +419,52 @@ error add_free_file(disk_id id, int volume, int file) {
     }
 
 
-error give_current(char *path, disk_id *disk, int *volume, int *place){
+error give_current(iter i,char *path, disk_id *disk, int *volume, int *place){
   error e;
-  iter i=decomposition(path);
-  if(strcmp(i->name, "FILE:")==0){
-    if(i->next!=NULL){
-      i=i->next;
-      if(strcmp(i->name, "HOST")==0){
-	e.errnb=1;
-	return e;
-      }else{
-	error err=start_disk(i->name,disk);
-	if(err.errnb==-1){
-	  return err;
-	}else{
+  i=i->next;
+  if(i->next!=NULL){
+    i=i->next;
+    int part = atoi(i->name);
+    if(part>=0 && part<disk->nbPart){
+      Part here=disk->tabPart[part];
+      if(i->next!=NULL){
+	i=i->next;
+	char *nom=i->name;
+	int idtable=0;
+	int bool =1;
+	while(bool==1){
 	  if(i->next!=NULL){
-	    i=i->next;
-	    int part = atoi(i->name);
-      	    if(part>=0 && part<disk->nbPart){
-	      Part here=disk->tabPart[part];
-	      if(i->next!=NULL){
+	    block b;
+	    read_block(*disk, &b, here.num_first_block+(idtable-1)/16+1);
+	    int a;
+	    readint_block(&b, &a, 64*(idtable%16)+4);
+	    if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
+	      if(name_in_dir(*disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
+		idtable=name_in_dir(*disk,part,idtable,nom);
 		i=i->next;
-		char *nom=i->name;
-		int idtable=0;
-		int bool =1;
-		while(bool==1){
-		  if(i->next!=NULL){
-		    block b;
-		    read_block(*disk, &b, here.num_first_block+(idtable-1)/16+1);
-		    int a;
-		    readint_block(&b, &a, 64*(idtable%16)+4);
-		    if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
-		      if(name_in_dir(*disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
-			idtable=name_in_dir(*disk,part,idtable,nom);
-			i=i->next;
-			nom=i->name;
-		      }else{
-			e.errnb=-1;
-			fprintf(stderr,"wrong path");
-			return e;
-		      }
-		    }else{
-		      e.errnb=-1;
-		      fprintf(stderr,"wrong path");
-		      return e;
-		    }
-		  }else{
-		    idtable=name_in_dir(*disk,part,idtable,nom);
-		    if(idtable!=-1){
-		      *place=idtable;
-		      e.errnb=0;
-		      return e;
-		    }else{
-		      e.errnb=-1;
-		      fprintf(stderr,"wrong path");
-		      return e;
-		    }
-		  } 
-		}
+		nom=i->name;
+	      }else{
+		e.errnb=-1;
+		fprintf(stderr,"wrong path");
+		return e;
 	      }
+	    }else{
+	      e.errnb=-1;
+	      fprintf(stderr,"wrong path");
+	      return e;
 	    }
-	  }
+	  }else{
+	    idtable=name_in_dir(*disk,part,idtable,nom);
+	    if(idtable!=-1){
+	      *place=idtable;
+	      e.errnb=0;
+	      return e;
+	    }else{
+	      e.errnb=-1;
+	      fprintf(stderr,"wrong path");
+	      return e;
+	    }
+	  } 
 	}
       }
     }
