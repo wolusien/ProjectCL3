@@ -155,7 +155,6 @@ error use_block(disk_id *id, int numblock, int volume){
   }
 }
 
-
 error add_free_file(disk_id id,int volume,int file){
   error e;
   block filetable;
@@ -229,7 +228,6 @@ error add_free_file(disk_id id,int volume,int file){
   }
   return e;
 }
-
 
 error remove_free_file(disk_id id,int volume,int file){
   error e;
@@ -341,6 +339,8 @@ error readname_rep(block b, char *a,int loc){ //loc est l'endroit du bloc ou on 
     return e;
   }
 }
+
+
 int name_in_block(disk_id id,int volume,int num_block,char *name){
     if(id.nbPart>volume){
         int pos = id.tabPart[volume].num_first_block+num_block;
@@ -390,6 +390,7 @@ int name_in_dir(disk_id id,int volume,int dir,char *name){
        return -1; 
     }
 }
+
 error give_current(char *path, disk_id *disk, int *volume, int *place){
   error e;
   iter i=decomposition(path);
@@ -558,18 +559,19 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
 					nbBlock_size += 1;
 				}
 				printf("Val of nbBlock_size %d\n",nbBlock_size);
+				e1 = free_block(disk, id_block, id_part);
 				if(nbBlock_size<10){
-					e1 = free_block(disk, id_block, id_part);
 					if(e1.errnb ==0){
 						fill_block((&finfo),id_block, pos+11+(nbBlock_size*4));
 						printf("Val of  (((id_f-1)*64)+11+(nbBlock_size*4)) %d\n",pos+11+(nbBlock_size*4));
 						write_block((*disk),finfo,int_to_little(posf_part));
-						e.errnb=0;
+						e.errnb = 0;
+						return e;
 					}else{
 						e.errnb = -1;
+						return e;
 					}	
 				}else if(nbBlock_size<266){
-					e1 = free_block(disk, id_block, id_part);
 					if(e1.errnb ==0){
 						int ind1;
 						readint_block((&finfo),(&ind1),pos+52);
@@ -580,64 +582,60 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block){
 						printf("Val of pos_ind1*4 %d\n",pos_ind1*4);
 						fill_block((&indirect1), id_block, (pos_ind1*4));
 						write_block((*disk),indirect1,int_to_little(p.num_first_block + ind1));
-						e.errnb=0;
+						e.errnb = 0;
+						return e;
 					}else{
 						e.errnb = -1;
+						return e;
 					}
 				}else{
-					e1 = free_block(disk, id_block, id_part);
-					if(e1.errnb ==0){
+					if(e1.errnb == 0){
 						//on the block indirect2 which indirect2.indirect block is used
-						int useb=(nbBlock_size-266)/256;
+						int useb = (nbBlock_size-266)/256;
 						if((nbBlock_size-266)%256>0){
-							useb += 1;
+							useb = useb + 1;
 						}
 						int ind2;
 						readint_block((&finfo),(&ind2),pos+56);
 						printf("Val of ind1 %d\n",ind2);
+						/*We read block indirect2*/
 						block indirect2;
-						//We read block indirect2
 						read_block((*disk),(&(indirect2)),(int_to_little(p.num_first_block + ind2)));
-						int indi_indirect2;
-						readint_block((&indirect2),(&indi_indirect2),useb);
-						printf("Val of indi_indirect2 %d\n",indi_indirect2);
+						int indi_indirect;
+						readint_block(&(indirect2),(&indi_indirect),useb);
+						printf("Val of indi_indirect2 %d\n",indi_indirect);
 						//We read block indirect2.indirect
-						read_block((*disk),(&indirect2),int_to_little(p.num_first_block + indi_indirect2));
+						read_block((*disk),&(indirect2),(int_to_little(p.num_first_block + indi_indirect)));
 						int pos_block;
-						if((nbBlock_size-266)%256>0)
+						if(((nbBlock_size-266)%256) > 0){
 							pos_block = (nbBlock_size-266)%256;
-							fill_block((&indirect2),id_block,(pos_block*4));
+							fill_block(&indirect2,id_block,(pos_block*4));
 						}else{
-							fill_block((&indirect2),id_block,0);
+							fill_block(&indirect2,id_block,0);
 						}
-						write_block((*disk),indirect2,int_to_little(p.num_first_block + (indi_indirect2)));
+						write_block((*disk),indirect2,int_to_little(p.num_first_block + indi_indirect));
 						e.errnb=0;
-						return e;
 					}else{
 						e.errnb = -1;
-						return e;
 					}
-					return e;
 				}
 			}else{
 				fprintf(stderr,"Wrong argument for id_f of file\n");
 				e.errnb = -1;
-				return e;
-			}
-			return e;		
+			}		
 		}else{
 			fprintf(stderr,"Wrong argument for id_block of block\n");
 			e.errnb = -1;
-			return e;
 		}	
-		return e;
 	}else{
 		fprintf(stderr,"Wrong argument for id_part of partition\n");
 		e.errnb = -1;
-		return e;
 	}
 	return e;
 }
+
+
+
 //test if id_block contains the number id_blocktest
 int have_block(disk_id* disk, int id_block, int id_blocktest){
 	int result = -1;
@@ -666,7 +664,6 @@ error remove_file_block(disk_id* disk,int id_part,int id_f, int id_block){
 	error e1;
 	error e2;
 	int i;
-	int index = -1;
 	
 	if(id_part>-1 && id_part < (*disk).nbPart){
 		Part p = (*disk).tabPart[id_part];
