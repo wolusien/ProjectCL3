@@ -1,8 +1,24 @@
-#include "manip.h"
+#include "manipvolume.h"
+
 int main (int argc, char * argv[]){
   disk_id *id = malloc(sizeof(disk_id));
-  start_disk("t.tfs",id);
-  printf("taille : %d \n",id->tabPart[0].max_file_count);
+  error e = start_disk("disk.tfs",id);
+  if(e.errnb != -1){
+	error e1 = test_file(id,0,"pd");
+	if(e1.errnb != -1){
+		//printf("La création du disk a réussi\n");
+		error e2 = add_file_block(id,0,1,10);
+		if(e2.errnb != -1){
+			printf("Le add_file block a réussi\n");	
+		}else{
+			printf("Le add_file block a échoué\n");
+		}   
+	}else{
+		printf("La création du disk a échoué\n");
+	}
+  }else{
+	printf("Le start_disk a échoué\n");  
+  }
   // use_block(disque_ouvert[0], 14,  0);
   //use_block(disque_ouvert[0], 6,  0);
   //use_block(disque_ouvert[0], 8,  0);
