@@ -499,9 +499,9 @@ error free_file_blocks(disk_id* disk, int volume, int id_f) {
             if (id_f > 0 && id_f < here.max_file_count) {
                 error err;
                 int i = 1;
-                err = remove_file_block(disk, volume, id_f, i);
+                err = remove_file_block(disk, volume, id_f);
                 while (err.errnb == 0) {
-                    err = remove_file_block(disk, volume, id_f, i);
+                    err = remove_file_block(disk, volume, id_f);
                     i += 1;
                 }
                 if (err.errnb == -2) {
