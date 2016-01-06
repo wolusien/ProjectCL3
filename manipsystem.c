@@ -80,33 +80,53 @@ int tfs_mkdir(const char *path, mode_t mode){
 
 int tfs_rename(const char *old, const char *new){
   error e;
-  iter iter=decomposition(old);
-  if(strcmp(iter->name, "FILE:")==0){
-    if(iter->next!=NULL){
-      iter=iter->next;
-      if(strcmp(iter->name,"HOST")==0){
-	e.errnb=1;  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	return e;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      }else{
-	if(iter->next!=NULL){
-	  iter=iter->next;
-	  int i;
-	  for(i=0;i<MAX_DISQUE;i++){
-	    if(disque_ouvert[i]!=NULL){
-	      if(strcmp((disque_ouvert[i])->name,iter.name)==0){
-		
+  if(strlength(new)<28){
+    iter iter=decomposition(old);
+    if(strcmp(iter->name, "FILE:")==0){
+      if(iter->next!=NULL){
+	iter=iter->next;
+	if(strcmp(iter->name,"HOST")==0){
+	  e.errnb=1;  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	  return e;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	}else{
+	  if(iter->next!=NULL){
+	    iter=iter->next;
+	    int i;
+	    for(i=0;i<MAX_DISQUE;i++){
+	      if(disque_ouvert[i]!=NULL){
+		if(strcmp((disque_ouvert[i])->name,iter.name)==0){
+		  i=i->next;
+		  if(i->next!=NULL){
+		    i=i->next;
+		    int part = atoi(i->name);
+		    if(part>=0 && part<disk->nbPart){
+		      go_end(iter);
+		      char *oldname=iter.name;
+		      iter=iter.pred;
+		      iter.next=NULL;
+		      go_start(iter);
+		      int place;
+		      error e=find_name(iter,disque_ouvert[i],part, &place);
+		      if(e.errnb==0){
+			if(name_in_dir(disk_ouvert[i],part,place,oldname)!=-1){
+			  
+			}
+		      }
+		    }
+		  }
+		}
 	      }
 	    }
+	    e.errnb=-1;
+	    fprintf(stderr, "tfs_rename : no disk open");
+	    return e;
 	  }
-	  e.errnb=-1;
-	  fprintf(stderr, "tfs_rename : no disk open");
-	  return e;
 	}
+      }else{
+	e.errnb=-1;
+	fprintf(stderr, "tfs_rename : NULL pointeur");
+	return e;
       }
-    }else{
-      e.errnb=-1;
-      fprintf(stderr, "tfs_rename : NULL pointeur");
-      return e;
     }
   }
 }

@@ -338,7 +338,7 @@ int name_in_block(disk_id id, int volume, int num_block, char *name) {
             if (strcmp(&namefile, name) != -1) {
                 readint_block(&b, &pos, i);
                 return pos;
-            }
+             }
         }
         fprintf(stderr, "%s is not on this block", name);
         return -1;
@@ -348,65 +348,48 @@ int name_in_block(disk_id id, int volume, int num_block, char *name) {
     }
 }
 
-int name_in_dir(disk_id id, int volume, int dir, char *name) {
-    if (id.nbPart > volume) {
-        if (dir < id.tabPart[volume].max_file_count) {
-            int pos = id.tabPart[volume].num_first_block + (dir / 16) + 1;
-            block b1;
-            read_block(id, &b1, pos);
-            int i;
-            int numfic;
-            int numb;
-            for (i = 0; i < 10; i++) {
-                readint_block(&b1, &numb, (dir % 16)*64 + 12 + i); //début des numéros de blocs contenant des données du fichier
-                if(numb==0)
-		  return -1;
-		if ((numfic = name_in_block(id, volume, numb, name)) != -1)
-                    return numfic;
+    int name_in_dir(disk_id id, int volume, int dir, char *name) {
+        if (id.nbPart > volume) {
+            if (dir < id.tabPart[volume].max_file_count) {
+	      int pos = id.tabPart[volume].num_first_block + ((dir-1) / 16) + 1;
+	      block b1;
+	      read_block(id, &b1, pos);
+	      int a;
+	      readint_block(&b1, &a, 64*(dir%16)+4);
+	      if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
+		int i;
+		int numfic;
+		int numb;
+		for (i = 0; i < 10; i++) {
+		  readint_block(&b1, &numb, (dir % 16)*64 + 12 + i); //début des numéros de blocs contenant des données du fichier
+		  if ((numfic = name_in_block(id, volume, numb, name)) != -1)
+		    return numfic;
+		}
+		readint_block(&b1, &numb, (dir % 16)*64 + 53);
+		pos = id.tabPart[volume].num_first_block + numb;
+		read_block(id, &b1, pos);
+		for (i = 0; i < 1024; i = i + 4) {
+		  readint_block(&b1, &numb, i);
+		  if ((numfic = name_in_block(id, volume, numb, name))) {
+		    return numfic;
+		  }
+		}
+		return numfic;
+	      }else{
+		fprintf(stderr, "dir isn't a directory %d", dir);
+                return -1;
+	      }
+            } else {
+	      fprintf(stderr, "dir number %d doesn't exist on volume number %d", dir, volume);
+	      return -1;
             }
-            readint_block(&b1, &numb, (dir % 16)*64 + 52);
-            if(numb==0) return -1;
-	    pos = id.tabPart[volume].num_first_block + numb;
-            block b2;
-            read_block(id, &b2, pos);
-            for (i = 0; i < 1024; i = i + 4) {
-                readint_block(&b2, &numb, i);
-                if(numb==0) return -1;
-		if ((numfic = name_in_block(id, volume, numb, name))) {
-                    return numfic;
-                }
-            }
-            readint_block(&b1, &numb, (dir % 16)*64 + 56);
-            if(numb == 0)return -1;
-	    pos = id.tabPart[volume].num_first_block+numb;
-            read_block(id,&b2,pos);
-            int pos2;
-            block b3;
-            for(i=0;i<1024;i=i+4){
-                readint_block(&b2,&numb,i);
-		if(numb==0) return -1;
-                pos2 = id.tabPart[volume].num_first_block+numb;
-                read_block(id,&b3,numb);
-                int j;
-                for(j=0;i<1024;j++){
-                    readint_block(&b3,&numb,i);
-		    if(numb==0) return -1;
-                    if((numfic = name_in_block(id,volume,numb,name)))
-                        return numfic;
-                }
-            }
-            return numfic;
+	    
+	    
         } else {
-            fprintf(stderr, "dir number %d doesn't exist on volume number %d", dir, volume);
-            return -1;
+	  fprintf(stderr, "volume %d doesn't exist on %s", volume, id.name);
+	  return -1;
         }
-
-
-    } else {
-        fprintf(stderr, "volume %d doesn't exist on %s", volume, id.name);
-        return -1;
     }
-}
 
 void file_tableau(int *tab[16], disk_id id, int volume) {
     if (volume < id.nbPart) {
@@ -443,54 +426,36 @@ void file_tableau(int *tab[16], disk_id id, int volume) {
 
 
 
-error find_name(iter i, disk_id *disk, int *volume, int *place){
+error find_name(iter i, disk_id disk, int part, int *place){
   error e;
-  i=i->next;
   if(i->next!=NULL){
     i=i->next;
-    int part = atoi(i->name);
-    if(part>=0 && part<disk->nbPart){
-      Part here=disk->tabPart[part];
+    char *nom=i->name;
+    int idtable=0;
+    int bool =1;
+    while(bool==1){
       if(i->next!=NULL){
-	i=i->next;
-	char *nom=i->name;
-	int idtable=0;
-	int bool =1;
-	while(bool==1){
-	  if(i->next!=NULL){
-	    block b;
-	    read_block(*disk, &b, here.num_first_block+(idtable-1)/16+1);
-	    int a;
-	    readint_block(&b, &a, 64*(idtable%16)+4);
-	    if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
-	      if(name_in_dir(*disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
-		idtable=name_in_dir(*disk,part,idtable,nom);
-		i=i->next;
-		nom=i->name;
-	      }else{
-		e.errnb=-1;
-		fprintf(stderr,"wrong path");
-		return e;
-	      }
-	    }else{
-	      e.errnb=-1;
-	      fprintf(stderr,"wrong path");
-	      return e;
-	    }
-	  }else{
-	    idtable=name_in_dir(*disk,part,idtable,nom);
-	    if(idtable!=-1){
-	      *place=idtable;
-	      e.errnb=0;
-	      return e;
-	    }else{
-	      e.errnb=-1;
-	      fprintf(stderr,"wrong path");
-	      return e;
-	    }
-	  } 
+	if(name_in_dir(disk,part,idtable,nom)!=-1){ //on rebarde si nom est bien une entrée du repertoire idtable 
+	  idtable=name_in_dir(disk,part,idtable,nom);
+	  i=i->next;
+	  nom=i->name;
+	}else{
+	  e.errnb=-1;
+	  fprintf(stderr,"wrong path");
+	  return e;
 	}
-      }
+      }else{
+	idtable=name_in_dir(disk,part,idtable,nom);
+	if(idtable!=-1){
+	  *place=idtable;
+	  e.errnb=0;
+	  return e;
+	}else{
+	  e.errnb=-1;
+	  fprintf(stderr,"wrong path");
+	  return e;
+	}
+      } 
     }
   }
   e.errnb=-1;
