@@ -103,11 +103,11 @@ error start_disk(char *name,disk_id *id) {
 		int free_file_count;
 		readint_block(&firstPart,&free_file_count,24);
 		p.free_file_count=free_file_count;
-		p.taille_descripteur = ((max_file_count-1)/16)+1;
+		p.file_table_size = ((max_file_count-1)/16)+1;
 		int first_free_file;
 		readint_block(&firstPart,&first_free_file,28);
 		p.first_free_file=first_free_file;
-		p.file_table_size=(max_file_count/16)+1;
+		p.file_table_size = (max_file_count/16)+1;
                 id->tabPart[i]=p;
               }
             }
