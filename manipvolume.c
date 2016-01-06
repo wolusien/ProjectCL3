@@ -562,7 +562,7 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                 } else {
                     pos = 15 * 64;
                 }
-                printf("Val of pos %d_n", pos);
+                printf("Val of pos %d\n", pos);
                 int ftfs_size;
                 readint_block((&finfo), (&ftfs_size), pos);
                 printf("Val of ftfs_size %d\n", ftfs_size);
@@ -756,7 +756,7 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 error test_file(disk_id* disk, int id_part, char* name){
 		error e;
 			
-		if((*disk).nbPart > id_part && id_part > 0){
+		if((*disk).nbPart > id_part && id_part > -1){
 			Part p = (*disk).tabPart[id_part];
 			printf("Val of p.max_file_count dans test %d\n",p.max_file_count);
 			block b;
