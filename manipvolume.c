@@ -518,12 +518,14 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                 if ((64 * id_f) % 1024 > 0) {
                     posf_fTab += 1;
                 }
+                printf("Val of posf_fTab %d\n",posf_fTab);
                 int posf_part = posf_fTab + p.num_first_block;
+                printf("Val of posf_part %d\n",posf_part);
                 block finfo;
                 read_block((*disk), (&finfo), int_to_little(posf_part));
                 int pos;
                 if (id_f % 16 > 0) {
-                    pos = ((id_f % 16) - 1)*64;
+                    pos = (id_f % 16)*64;
                 } else {
                     pos = 15 * 64;
                 }
@@ -539,7 +541,6 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                 e1 = free_block(disk, id_block, id_part);
                 if (e1.errnb == 0) {
 					if (nbBlock_size < 10) {
-                    
                         fill_block((&finfo), id_block, pos + 11 + (nbBlock_size * 4));
                         printf("Val of  (((id_f-1)*64)+11+(nbBlock_size*4)) %d\n", pos + 11 + (nbBlock_size * 4));
                         write_block((*disk), finfo, int_to_little(posf_part));
@@ -752,6 +753,7 @@ error test_file(disk_id* disk, int id_part, char* name){
 					for(i = 0; i< 16; i++){
 						fill_block(&b,tab[i],64+(i*4));
 					}
+					write_block((*disk),b,int_to_little(p.num_first_block + 1));
 					block racine;
 					error e3 = read_block((*disk),&racine,int_to_little(p.num_first_block + p.file_table_size + 1));
 					if(e3.errnb != -1){
