@@ -9,7 +9,13 @@ int main (int argc, char * argv[]){
 		//printf("La création du disk a réussi\n");
 		error e2 = add_file_block(id,0,1,10);
 		if(e2.errnb != -1){
-			printf("Le add_file block a réussi\n");	
+			printf("Le add_file block a réussi\n");
+			error e3 = remove_file_block(id,0,1);
+			if(e3.errnb != -1){
+				printf("Le remove_file block a réussi\n");	
+			}else{
+				printf("Le remove_file block a échoué\n");	
+			}	
 		}else{
 			printf("Le add_file block a échoué\n");
 		}   
