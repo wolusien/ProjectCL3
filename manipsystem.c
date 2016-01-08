@@ -130,3 +130,14 @@ int tfs_rename(const char *old, const char *new){
     }
   }
 }
+
+error tfs_write( char* str[2]){
+	error e;
+	int ropen = atoi(str[0]);
+	if(ropen!=-1){
+		e.errnb = 0;
+	}else{
+		e.errnb = -1;
+	}
+	return e;
+}

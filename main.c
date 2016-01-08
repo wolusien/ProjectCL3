@@ -11,6 +11,10 @@ int main (int argc, char * argv[]){
 		error e2 = add_file_block(id,0,1,10);
 		if(e2.errnb != -1){
 			printf("Le add_file block a réussi\n");
+			error e4 = add_file_block(id,0,1,10);
+			if(e4.errnb != -1){
+				printf("Le add_file block deux a réussi\n");
+			}			
 			error e3 = remove_file_block(id,0,1);
 			if(e3.errnb != -1){
 				printf("Le remove_file block a réussi\n");	
@@ -31,7 +35,7 @@ int main (int argc, char * argv[]){
   //use_block(disque_ouvert[0], 8,  0);
   //use_block(disque_ouvert[0], 14,  0);
   //free_block(disque_ouvert[0], 14,  0);
-  start_disk("t.tfs",id);
+  /*start_disk("t.tfs",id);
   printf("taille : %d \n",id->tabPart[0].max_file_count);
   use_block(disque_ouvert[0], 14,  0);
   use_block(disque_ouvert[0], 6,  0);
@@ -48,7 +52,7 @@ int main (int argc, char * argv[]){
   //start_disk("t.tfs",id);
   //printf("dudu : %d \n", id->tabPart[1].max_file_count);
   //stop_disk(*id);
-  /*disk_id *id;
+  //disk_id *id;
   int i;
   char *path = "disk.tfs";
   id = malloc(sizeof(disk_id)); 
@@ -75,5 +79,6 @@ int main (int argc, char * argv[]){
   printf("Je vais exécuter stopdisk\n");
   stop_disk((*id));
   exit(0);*/
-  }
+  stop_disk((*id));
+}
    
