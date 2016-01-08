@@ -1,6 +1,22 @@
 #include "manip.h"
 #include "iter.h"
 
+
+
+#define TFS_READ = 1
+#define TFS_WRITE = 2
+#define TFS_RWRITE = 3
+#define TFS_APPEND = 4
+#define TFS_ORAPPEND = 5
+
+struct iter{
+  char *name;
+  struct iter *next;
+  struct iter *prec;
+};
+typedef struct iter* iter;
+
+
 error free_block(disk_id *id, int numblock, int volume);
 error use_block(disk_id *id, int numblock, int volume);
 error add_free_file(disk_id id,int volume,int file);

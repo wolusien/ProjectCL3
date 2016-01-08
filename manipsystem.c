@@ -1,5 +1,4 @@
-#include "manipvolume.h"
-
+#include "manipsystem.h"
 int isNumber(char *buf){
   int boolean;
   int i;
@@ -11,73 +10,9 @@ int isNumber(char *buf){
   }
   return boolean;
 }
+
 int tfs_mkdir(const char *path, mode_t mode){
-  char *separateur("//");
-  char *token;
-  token = strtok(path,separateur);
-  if(pointeur != NULL){
-    poiteur = strtok(NULL,separateur);
-    if(pointeur != NULL && strcmp(pointeur,"FILE:")==0){
-      pointeur = strtok(NULL,separateur);
-      if(pointeur != NULL){
-	if(strcmp(pointeur,"HOST") ==0){
-	}
-	else{
-	  disk_id *id = malloc(sizeof(disk_id));
-	  error e = startdisk(pointeur,id);
-	  if(e.errnb != -1){
-	    pointeur = strtok(NULL,separateur);
-	    if(pointeur != NULL){
-	      if(isNumber(pointeur)!=-1){
-		int volume = atoi(pointeur);
-		if(pos<id->nbPart){
-		  int pos = 1;
-		  int i;
-		  for(i=0;i<=volume;i++){
-		    pos = pos+id->taillePart[i];
-		  }
-		  block *b;
-		  read_block(*id,b,int_to_little(pos));
-		  uint32_t n;
-		  unsigned char *tab=(unsigned char *)(&n);
-		  for(i=0;i<4;i++){
-		    tab[i]=first.buff[i];
-		  }
-		  
-		}
-		else{
-		  printf("volume %d doesn't exist on %s",volume,id->name);
-		}
-	      }
-	      else{
-		printf("\'%s\' is not a good path",path);
-		return -1;
-	      }
-	    }
-	    else{
-	      printf("\'%s\' is not a good path",path);
-	      return -1;
-	    }
-	  }
-	  else{
-	    printf(" disk %s doesn't exist " pointeur);
-	    return -1
-	  }
-	}
-      }
-      else{
-	printf("\'%s\' is not a good path",path);
-	return -1;
-      }
-    }
-    else{
-      printf("\'%s\' is not a good path",path);
-      return -1;
-    }
-  }
-  else{
-    printf("\'%s\' is not a good path",path);
-  }
+  return 0;
 }
 
 int tfs_rename(const char *old, const char *new){
@@ -88,7 +23,7 @@ int tfs_rename(const char *old, const char *new){
       if(iter->next!=NULL){
 	iter=iter->next;
 	if(strcmp(iter->name,"HOST")==0){
-	  return 1;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	  return 1;  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}else{
 	  if(iter->next!=NULL){
 	    iter=iter->next;
@@ -97,15 +32,15 @@ int tfs_rename(const char *old, const char *new){
 	      if(disque_ouvert[i]!=NULL){
 		if(strcmp((disque_ouvert[i])->name,iter->name)==0){
 		  disk_id *disk=disque_ouvert[i];
-		  i=i->next;
-		  if(i->next!=NULL){
-		    i=i->next;
-		    int part = atoi(i->name);
+		  iter=iter->next;
+		  if(iter->next!=NULL){
+		    iter=iter->next;
+		    int part = atoi(iter->name);
 		    if(part>=0 && part<disk->nbPart){
 		      Part here=disk->tabPart[part];
 		      go_end(iter);
-		      char *oldname=iter.name;
-		      iter=iter->pred;
+		      char *oldname=iter->name;
+		      iter=iter->prec;
 		      iter->next=NULL;
 		      go_start(iter);
 		      int place;
@@ -153,7 +88,6 @@ int tfs_rename(const char *old, const char *new){
   return -1;
 }
 
-
 int tfs_open(const char *name,int oflag){
   iter iter=decomposition(strdup(name));
   if(strcmp(iter->name, "FILE:")==0){
@@ -162,42 +96,59 @@ int tfs_open(const char *name,int oflag){
       if(strcmp(iter->name,"HOST")==0){
 	return 1;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       }else{
-	if(iter->next!=NULL){
-	  iter=iter->next;
-	  int i;
-	  for(i=0;i<MAX_DISQUE;i++){
-	    if(disque_ouvert[i]!=NULL){
-	      if(strcmp((disque_ouvert[i])->name,iter->name)==0){
-		disk_id *disk=disque_ouvert[i];
-		i=i->next;
-		if(i->next!=NULL){
-		  i=i->next;
-		  int part = atoi(i->name);
-		  if(part>=0 && part<disk->nbPart){
-		    Part here=disk->tabPart[part];
-		    int place;
-		    error e=find_name(iter,*disk,part, &place);
-		    if(e.errnb==0){
-		      return place;
+	int i;
+	for(i=0;i<MAX_DISQUE;i++){
+	  if(disque_ouvert[i]!=NULL){
+	    if(strcmp((disque_ouvert[i])->name,iter->name)==0){
+	      disk_id *disk=disque_ouvert[i];
+	      if(iter->next!=NULL){
+		iter=iter->next;
+		int part = atoi(iter->name);
+		if(part>=0 && part<disk->nbPart){
+		  Part here=disk->tabPart[part];
+		  int place;
+		  error e=find_name(iter,*disk,part, &place);
+		  if(e.errnb==0){
+		    block b;
+		    read_block(*disk,&b, here.num_first_block+1+(place-1)/16);
+		    int a;
+		    readint_block(&b, &a,place%16+4);
+		    if(a==0){ //si num correspond a un fichier
+		      tfs_fd f;
+		      f.pdisk=disk;
+		      f.partition=part;
+		      f.pos=place;
+		      f.flag=oflag;
+		      f.path=strdup(name);
+		      int j;
+		      for(j=0; j<MAX_FICHIERS;j++){
+			if(fichiers_ouverts[i]==NULL){
+			  fichiers_ouverts[i]=&f;
+			  return i;
+			}
+		      }
+		      fprintf(stderr, "tfs_open : fichiers_ouverts is full \n");
+		    }else{
+		      fprintf(stderr, "tfs_open : nom correspond a un dossier \n");
 		    }
 		  }else{
-		    fprintf(stderr, "tfs_open : no part \n");
+		    fprintf(stderr, "tfs_open : wrong path \n");
 		  }
 		}else{
-		  fprintf(stderr, "tfs_open : wrong path \n");
+		  fprintf(stderr, "tfs_open : no part \n");
 		}
 	      }else{
-		  fprintf(stderr, "tfs_open : wrong path \n");
+		fprintf(stderr, "tfs_open : wrong path \n");
 	      }
 	    }else{
 	      fprintf(stderr, "tfs_open : wrong path \n");
 	    }
-	    return -1;
+	  }else{
+	    fprintf(stderr, "tfs_open : wrong path \n");
 	  }
-	  fprintf(stderr, "tfs_open : no disk open \n");
-	}else{
-	  fprintf(stderr, "tfs_open : wrong path \n");		     
+	  return -1;
 	}
+	fprintf(stderr, "tfs_open : no disk open \n");
       }
     }else{
       fprintf(stderr, "tfs_open : NULL pointeur");
@@ -208,18 +159,15 @@ int tfs_open(const char *name,int oflag){
   return -1;
 }
 
-
-int tfs_close(){
-  return 0;
+// prend en argument un indice d'un tfs_fd dans le tableau de fichiers_ouverts
+int tfs_close(int num){
+  if(num>=0 && num<MAX_FICHIERS){
+    free(fichiers_ouverts[num]->pdisk);
+    free(fichiers_ouverts[num]->path);
+    free(fichiers_ouverts[num]);
+    return 0;
+  }else{
+    return -1;	
+  }
 }
 
-error tfs_write( char* str[2]){
-	error e;
-	int ropen = atoi(str[0]);
-	if(ropen!=-1){
-		e.errnb = 0;
-	}else{
-		e.errnb = -1;
-	}
-	return e;
-}
