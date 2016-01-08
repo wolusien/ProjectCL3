@@ -9,12 +9,7 @@
 #define TFS_APPEND = 4
 #define TFS_ORAPPEND = 5
 
-struct iter{
-  char *name;
-  struct iter *next;
-  struct iter *prec;
-};
-typedef struct iter* iter;
+
 
 
 error free_block(disk_id *id, int numblock, int volume);
