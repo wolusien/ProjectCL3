@@ -15,5 +15,3 @@ DIR *opendir(const char *filename);
 struct dirent *readdir(DIR *dirp);
 void rewinddir(DIR *dirp);
 int closedir(DIR *dirp);
-error use_block(disk_id *id, int numblock, int volume);
-error free_block(disk_id *id, int numblock, int volume);

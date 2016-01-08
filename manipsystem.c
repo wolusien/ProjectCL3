@@ -1,4 +1,5 @@
-#include "manipdisk.h"
+#include "manivolume.h"
+
 int isNumber(char *buf){
   int boolean;
   int i;
@@ -80,7 +81,8 @@ int tfs_mkdir(const char *path, mode_t mode){
 
 int tfs_rename(const char *old, const char *new){
   error e;
-  if(strlength(new)<28){
+  int length=strlength(new);
+  if(length<28){
     iter iter=decomposition(old);
     if(strcmp(iter->name, "FILE:")==0){
       if(iter->next!=NULL){
@@ -95,21 +97,33 @@ int tfs_rename(const char *old, const char *new){
 	    for(i=0;i<MAX_DISQUE;i++){
 	      if(disque_ouvert[i]!=NULL){
 		if(strcmp((disque_ouvert[i])->name,iter.name)==0){
+		  disk_id *disk=disk_ouvert[i];
 		  i=i->next;
 		  if(i->next!=NULL){
 		    i=i->next;
 		    int part = atoi(i->name);
 		    if(part>=0 && part<disk->nbPart){
+		      Part here=disk->tabPart[part];
 		      go_end(iter);
 		      char *oldname=iter.name;
 		      iter=iter.pred;
 		      iter.next=NULL;
 		      go_start(iter);
 		      int place;
-		      error e=find_name(iter,disque_ouvert[i],part, &place);
+		      error e=find_name(iter,*disk,part, &place);
 		      if(e.errnb==0){
-			if(name_in_dir(disk_ouvert[i],part,place,oldname)!=-1){
-			  
+			int numblock;
+			int pos;
+			if(name_in_dir(*disk,part,place,oldname,&numblock, &pos)!=-1){
+			  block b;
+			  read_block(*disk, &b, numblock+here.num_first_block);
+			  int j;
+			  for(j=0; j<length; j++){
+			    b.buff[pos+4+j]=new[j];
+			  }
+			  for(j=length; j<28; j++){
+			    b.buff[j]='\0';
+			  }
 			}
 		      }
 		    }
