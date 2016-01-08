@@ -17,28 +17,28 @@ error free_block(disk_id *id, int numblock, int volume) {
                         while (prec != suiv) {
                             if (prec == numblock) {
                                 e.errnb = -1;
-                                fprintf(stderr,"free_block : block déja libre %d \n", numblock);
+                                fprintf(stderr, "free_block : block déja libre %d \n", numblock);
                                 return e;
                             }
                             prec = suiv;
                             read_block(*id, &b, prec + here.num_first_block);
                             readint_block(&b, &suiv, 1020);
                         } // on a trouvé le dernier block du chainage
-			if(numblock!=prec){
-			  fill_block(&b, numblock, 1020);
-			  write_block((*id), b, prec + here.num_first_block);
-			  write_block(*id, b, numblock + here.num_first_block);
-			  printf("%d   %d :\n", prec, numblock);
-			  here.free_block_count += 1;
-			  block first;
-			  read_block(*id, &first, here.num_first_block);
-			  fill_block(&first, here.free_block_count, 12);
-			  write_block((*id), first, here.num_first_block);
-			}else{
-			   e.errnb = -1;
-			   fprintf(stderr,"free_block : block déja libre %d \n", numblock);
-                                return e;
-			}
+                        if (numblock != prec) {
+                            fill_block(&b, numblock, 1020);
+                            write_block((*id), b, prec + here.num_first_block);
+                            write_block(*id, b, numblock + here.num_first_block);
+                            printf("%d   %d :\n", prec, numblock);
+                            here.free_block_count += 1;
+                            block first;
+                            read_block(*id, &first, here.num_first_block);
+                            fill_block(&first, here.free_block_count, 12);
+                            write_block((*id), first, here.num_first_block);
+                        } else {
+                            e.errnb = -1;
+                            fprintf(stderr, "free_block : block déja libre %d \n", numblock);
+                            return e;
+                        }
                     } else { // cas ou il n'y avait plus de blocks libres; on doit réinitialiser le chainage. 
                         block libre;
                         int i;
@@ -300,20 +300,18 @@ iter decomposition(char *path) {
     char *token = strtok(path, separateur);
     iter current = malloc(sizeof (iter));
     current->name = token;
-    current->next=NULL;
-    current->prec=NULL;
+    current->next = NULL;
+    current->prec = NULL;
     token = strtok(NULL, separateur);
     iter it = current;
-    int a = 1;
     while (token != NULL) {
         iter next = malloc(sizeof (iter));
         next->name = token;
         next->prec = it;
+        next->next = NULL;
         it->next = next;
-        next->next=NULL;
         it = it->next;
         token = strtok(NULL, separateur);
-        a++;
     }
     printf("fin\n");
     return current;
@@ -324,7 +322,7 @@ error readname_rep(block b, char *a, int loc) { //loc est l'endroit du bloc ou o
     if (loc >= 0 && loc <= 992) {
         char nom[28];
         for (i = 0; i < 28; i++) {
-                nom[i] = b.buff[loc + i+4];
+            nom[i] = b.buff[loc + i + 4];
         }
         a = nom;
         error e;
@@ -348,8 +346,8 @@ int name_in_block(disk_id id, int volume, int num_block, char *name) {
         for (i = 0; i < 1024; i = i + 32) {
             readname_rep(b, &namefile, i + 4);
             if (strcmp(&namefile, name) != -1) {
-	      return i;
-             }
+                return i;
+            }
         }
         fprintf(stderr, "%s is not on this block", name);
         return -1;
@@ -360,57 +358,57 @@ int name_in_block(disk_id id, int volume, int num_block, char *name) {
 }
 
 error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, int *posi) {
-  error e;
-  if (id.nbPart > volume) {
-    if (dir < id.tabPart[volume].max_file_count) {
-      int pos = id.tabPart[volume].num_first_block + ((dir-1) / 16) + 1;
-      block b1;
-      read_block(id, &b1, pos);
-      int a;
-      readint_block(&b1, &a, 64*(dir%16)+4);
-      if(a==1){  //on test si l'entrée correspondante a idtable représente bien un repertoire
-	int i;
-	int numfic;
-	int numb;
-	for (i = 0; i < 10; i++) {
-	  readint_block(&b1, &numb, (dir % 16)*64 + 12 + i*4); //début des numéros de blocs contenant des données du fichier
-	  if ((numfic = name_in_block(id, volume, numb, name)) != -1){
-	    *numblock=numb;
-	    *posi=numfic;
-	    e.errnb=0;
-	    return e;
-	  }
-	}
-	readint_block(&b1, &numb, (dir % 16)*64 + 52);
-	pos = id.tabPart[volume].num_first_block + numb;
-	read_block(id, &b1, pos);
-	for (i = 0; i < 1024; i = i + 4) {
-	  readint_block(&b1, &numb, i);
-	  if ((numfic = name_in_block(id, volume, numb, name))!=-1) {
-	    *numblock=numb;
-	    *posi=numfic;
-	    e.errnb=0;
-	    return e;
-	  }
-	}
-	e.errnb=-1;
-	fprintf(stderr, "no name in dir %d \n", dir);
-	return e;
-      }else{
-	e.errnb=-1;
-	fprintf(stderr, "dir isn't a directory %d \n", dir);
-	return e;
-      }
+    error e;
+    if (id.nbPart > volume) {
+        if (dir < id.tabPart[volume].max_file_count) {
+            int pos = id.tabPart[volume].num_first_block + ((dir - 1) / 16) + 1;
+            block b1;
+            read_block(id, &b1, pos);
+            int a;
+            readint_block(&b1, &a, 64 * (dir % 16) + 4);
+            if (a == 1) { //on test si l'entrée correspondante a idtable représente bien un repertoire
+                int i;
+                int numfic;
+                int numb;
+                for (i = 0; i < 10; i++) {
+                    readint_block(&b1, &numb, (dir % 16)*64 + 12 + i * 4); //début des numéros de blocs contenant des données du fichier
+                    if ((numfic = name_in_block(id, volume, numb, name)) != -1) {
+                        *numblock = numb;
+                        *posi = numfic;
+                        e.errnb = 0;
+                        return e;
+                    }
+                }
+                readint_block(&b1, &numb, (dir % 16)*64 + 52);
+                pos = id.tabPart[volume].num_first_block + numb;
+                read_block(id, &b1, pos);
+                for (i = 0; i < 1024; i = i + 4) {
+                    readint_block(&b1, &numb, i);
+                    if ((numfic = name_in_block(id, volume, numb, name)) != -1) {
+                        *numblock = numb;
+                        *posi = numfic;
+                        e.errnb = 0;
+                        return e;
+                    }
+                }
+                e.errnb = -1;
+                fprintf(stderr, "no name in dir %d \n", dir);
+                return e;
+            } else {
+                e.errnb = -1;
+                fprintf(stderr, "dir isn't a directory %d \n", dir);
+                return e;
+            }
+        } else {
+            e.errnb = -1;
+            fprintf(stderr, "dir number %d doesn't exist on volume number %d", dir, volume);
+            return e;
+        }
     } else {
-      e.errnb=-1;
-      fprintf(stderr, "dir number %d doesn't exist on volume number %d", dir, volume);
-      return e;
-    }   
-  } else {
-    e.errnb=-1;
-    fprintf(stderr, "volume %d doesn't exist on %s", volume, id.name);
-    return e;
-  }
+        e.errnb = -1;
+        fprintf(stderr, "volume %d doesn't exist on %s", volume, id.name);
+        return e;
+    }
 }
 
 void file_tableau(int *tab[16], disk_id id, int volume) {
@@ -448,48 +446,49 @@ void file_tableau(int *tab[16], disk_id id, int volume) {
 
 
 //on considère que iter correspond au premier dossier du chemin
-error find_name(iter i, disk_id disk, int part, int *place){
-  error e;
-  char *nom=i->name;
-  int idtable=0;
-  int bool =1;
-  while(bool==1){
-    if(i->next!=NULL){
-      int numblock;
-      int pos;
-      error err = name_in_dir(disk,part,idtable,nom, &numblock, &pos);
-      if(err.errnb!=-1){ //on regarde si nom est bien une entrée du repertoire idtable 
-	block b;
-	read_block(disk, &b, numblock);
-	readint_block(&b, &idtable, pos);
-	i=i->next;
-	nom=i->name;
-      }else{
-	e.errnb=-1;
-	fprintf(stderr,"wrong path");
-	return e;
-      }
-    }else{
-      int numblock;
-      int pos;
-      error err = name_in_dir(disk,part,idtable,nom, &numblock, &pos); 
-      if(err.errnb!=-1){
-	block b;
-	read_block(disk, &b, numblock);
-	readint_block(&b, &idtable, pos);
-	*place=idtable;
-	e.errnb=0;
-	return e;
-      }else{
-	e.errnb=-1;
-	fprintf(stderr,"wrong path");
-	return e;
-      }
-    } 
-  }
-  e.errnb=-1;
-  fprintf(stderr,"wrong path");
-  return e;
+
+error find_name(iter i, disk_id disk, int part, int *place) {
+    error e;
+    char *nom = i->name;
+    int idtable = 0;
+    int bool = 1;
+    while (bool == 1) {
+        if (i->next != NULL) {
+            int numblock;
+            int pos;
+            error err = name_in_dir(disk, part, idtable, nom, &numblock, &pos);
+            if (err.errnb != -1) { //on regarde si nom est bien une entrée du repertoire idtable 
+                block b;
+                read_block(disk, &b, numblock);
+                readint_block(&b, &idtable, pos);
+                i = i->next;
+                nom = i->name;
+            } else {
+                e.errnb = -1;
+                fprintf(stderr, "wrong path");
+                return e;
+            }
+        } else {
+            int numblock;
+            int pos;
+            error err = name_in_dir(disk, part, idtable, nom, &numblock, &pos);
+            if (err.errnb != -1) {
+                block b;
+                read_block(disk, &b, numblock);
+                readint_block(&b, &idtable, pos);
+                *place = idtable;
+                e.errnb = 0;
+                return e;
+            } else {
+                e.errnb = -1;
+                fprintf(stderr, "wrong path");
+                return e;
+            }
+        }
+    }
+    e.errnb = -1;
+    fprintf(stderr, "wrong path");
+    return e;
 }
 
 error free_file_blocks(disk_id* disk, int volume, int id_f) {
@@ -547,9 +546,9 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                 if ((64 * id_f) % 1024 > 0) {
                     posf_fTab += 1;
                 }
-                printf("Val of posf_fTab %d\n",posf_fTab);
+                printf("Val of posf_fTab %d\n", posf_fTab);
                 int posf_part = posf_fTab + p.num_first_block;
-                printf("Val of posf_part %d\n",posf_part);
+                printf("Val of posf_part %d\n", posf_part);
                 block finfo;
                 read_block((*disk), (&finfo), int_to_little(posf_part));
                 int pos;
@@ -569,12 +568,12 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                 printf("Val of nbBlock_size %d\n", nbBlock_size);
                 e1 = use_block(disk, id_block, id_part);
                 if (e1.errnb == 0) {
-					if (nbBlock_size < 10) {
+                    if (nbBlock_size < 10) {
                         fill_block((&finfo), id_block, pos + 11 + (nbBlock_size * 4));
                         printf("Val of  (((id_f-1)*64)+11+(nbBlock_size*4)) %d\n", pos + 11 + (nbBlock_size * 4));
                         write_block((*disk), finfo, int_to_little(posf_part));
                         e.errnb = 0;
-					} else if (nbBlock_size < 266) {
+                    } else if (nbBlock_size < 266) {
                         int ind1;
                         readint_block((&finfo), (&ind1), pos + 52);
                         printf("Val of ind1 %d\n", ind1);
@@ -585,8 +584,8 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                         fill_block((&indirect1), id_block, (pos_ind1 * 4));
                         write_block((*disk), indirect1, int_to_little(p.num_first_block + ind1));
                         e.errnb = 0;
-        
-					} else {
+
+                    } else {
                         //on the block indirect2 which indirect2.indirect block is used
                         int useb = (nbBlock_size - 266) / 256;
                         if ((nbBlock_size - 266) % 256 > 0) {
@@ -613,9 +612,9 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                         write_block((*disk), indirect2, int_to_little(p.num_first_block + indi_indirect));
                         e.errnb = 0;
                     }
-                }else{
-					e.errnb = -1;
-				}
+                } else {
+                    e.errnb = -1;
+                }
             } else {
                 fprintf(stderr, "Wrong argument for id_f of file\n");
                 e.errnb = -1;
@@ -642,183 +641,186 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
     error e1;
     error e2;
     int i;
-	if((*disk).nbPart>id_part){
-		Part p = (*disk).tabPart[id_part];
-		if(id_f > -1){
-			int posf_block = (64*id_f)/1024;
-			if((64*id_f)%1024 > 0){
-				posf_block += 1;
-			}
-			int posf_id;
-			if(posf_block%16 > 0){
-				posf_id = posf_block%16;	
-			} else{
-				posf_id = 16;	
-			}
-			printf("Val of posf_id %d et posf_block %d\n",posf_id,posf_block);
-			block finfo;
-			e1 = read_block((*disk),&finfo,int_to_little(p.num_first_block + posf_block));
-			if(e1.errnb != -1){
-				int tfs_size;
-				readint_block(&finfo, (&tfs_size), (posf_id)*64);
-				printf("Val of tfs_size %d\n",tfs_size);
-				if(tfs_size > 0){
-					int size = tfs_size / 1024;
-					if(tfs_size % 1024 > 0){
-						size += 1;	
-					}
-					printf("Val of size %d\n",size); 
-					if(size < 11){
-						printf("Val of (posf_id*64)+11+(4*(size-1)) %d\n",(posf_id*64)+12+(4*(size-1)));
-						int numblock_to_use;
-						readint_block(&finfo,&numblock_to_use,(posf_id*64)+12+(4*(size-1)));
-						printf("Val of numblock_to_use %d\n",numblock_to_use);
-						for(i=(posf_id*64)+11+(4*(size-1)); i< ((posf_id-1)*64)+11+(4*(size-1)); i++){
-							finfo.buff[i] = '\0';
-						}
-						write_block((*disk), finfo, int_to_little(p.num_first_block + posf_block));
-						printf("Val of size %d\n",size);
-						e2 = free_block(disk, numblock_to_use, id_part);
-						if(e2.errnb != -1){
-							e.errnb = 0;
-						}else{
-							e.errnb = -1;
-						}
-					}else if(size < 267){
-						int ind1;
-						readint_block(&finfo, (&ind1), (posf_id-1)*64 + 52);
-						printf("Val of ind1 %d\n",ind1);
-						block indirect1;
-						read_block((*disk), &indirect1, int_to_little(p.num_first_block + ind1));
-						int rsize = size - 10;
-						printf("Val of rsize %d\n",rsize);
-						int numblock_to_use;
-						readint_block(&indirect1,&numblock_to_use,(rsize-1)*4);
-						for(i = (rsize-1)*4; i<(rsize*4); i++){
-							indirect1.buff[i] = '\0';
-						}
-						printf("Val of numblock_to_use %d\n",numblock_to_use);   
-						write_block((*disk), indirect1, int_to_little(p.num_first_block + ind1));
-						printf("Val of size %d\n",size);
-						e2 = free_block(disk, size, id_part);
-						if(e2.errnb != -1){
-							e.errnb = 0;
-						}else{
-							e.errnb = -1;
-						}
-					}else{
-						int ind2 = -1;
-						readint_block(&finfo, (&ind2), (posf_id-1)*64 + 56);
-						printf("Val of ind2 %d\n",ind2);
-						block indirect2;
-						read_block((*disk), &indirect2, int_to_little(p.num_first_block + ind2));
-						int rsize = size - 266;
-						int dsize = (rsize/256) + (rsize%256);
-						int ind1;
-						readint_block(&indirect2,(&ind1),(dsize-1));
-						printf("Val of ind1 %d\n",ind1);
-						block indirect1;
-						read_block((*disk), &indirect1, int_to_little(p.num_first_block+ind1));
-						int ind_to_rem = dsize - (rsize/256);
-						printf("Val of ind_to_rem %d\n",ind_to_rem);
-						int numblock_to_use;				
-						if(ind_to_rem != 0 ){
-							readint_block(&indirect1,&numblock_to_use,(ind_to_rem -1)*4);
-							for(i=(ind_to_rem -1)*4; i<ind_to_rem*4; i++){
-								indirect1.buff[i] = '\0';
-							}
-						}else{
-							readint_block(&indirect1,&numblock_to_use,(dsize -1)*4);
-							for(i = (dsize -1)*4; i<(dsize*4); i++){
-								indirect1.buff[i] = '\0';
-							}
-						}
-						write_block((*disk), indirect1, int_to_little(p.num_first_block+ind1));
-						printf("Val of size %d\n",size);
-						e2 = free_block(disk, numblock_to_use, id_part);
-						if(e2.errnb != -1){
-							e.errnb = 0;
-						}else{
-							e.errnb = -1;
-						}
-					}
-				}else{
-					e.errnb = 0;
-					fprintf(stderr,"remove_file_block : File have 0 blocks\n");	
-				}	
-			}else{
-				e.errnb = -1;
-				fprintf(stderr,"remove_file_block : Problem with read_block\n");
-			}
-		}else{
-			e.errnb = -1;
-			fprintf(stderr,"remove_file_block : Problem with id_f of file %d\n",id_f);	
-		}
-	}else{
-		e.errnb = -1;
-		fprintf(stderr,"remove_file_block : Problem with id_part %d\n",id_part);
-	}
+    if ((*disk).nbPart > id_part) {
+        Part p = (*disk).tabPart[id_part];
+        if (id_f > -1) {
+            int posf_block = (64 * id_f) / 1024;
+            if ((64 * id_f) % 1024 > 0) {
+                posf_block += 1;
+            }
+            int posf_id;
+            if (posf_block % 16 > 0) {
+                posf_id = posf_block % 16;
+            } else {
+                posf_id = 16;
+            }
+            printf("Val of posf_id %d et posf_block %d\n", posf_id, posf_block);
+            block finfo;
+            e1 = read_block((*disk), &finfo, int_to_little(p.num_first_block + posf_block));
+            if (e1.errnb != -1) {
+                int tfs_size;
+                readint_block(&finfo, (&tfs_size), (posf_id)*64);
+                printf("Val of tfs_size %d\n", tfs_size);
+                if (tfs_size > 0) {
+                    int size = tfs_size / 1024;
+                    if (tfs_size % 1024 > 0) {
+                        size += 1;
+                    }
+                    printf("Val of size %d\n", size);
+                    if (size < 11) {
+                        printf("Val of (posf_id*64)+11+(4*(size-1)) %d\n", (posf_id * 64) + 12 + (4 * (size - 1)));
+                        int numblock_to_use;
+                        readint_block(&finfo, &numblock_to_use, (posf_id * 64) + 12 + (4 * (size - 1)));
+                        printf("Val of numblock_to_use %d\n", numblock_to_use);
+                        for (i = (posf_id * 64) + 11 + (4 * (size - 1)); i < ((posf_id - 1)*64) + 11 + (4 * (size - 1)); i++) {
+                            finfo.buff[i] = '\0';
+                        }
+                        write_block((*disk), finfo, int_to_little(p.num_first_block + posf_block));
+                        printf("Val of size %d\n", size);
+                        e2 = free_block(disk, numblock_to_use, id_part);
+                        if (e2.errnb != -1) {
+                            e.errnb = 0;
+                        } else {
+                            e.errnb = -1;
+                        }
+                    } else if (size < 267) {
+                        int ind1;
+                        readint_block(&finfo, (&ind1), (posf_id - 1)*64 + 52);
+                        printf("Val of ind1 %d\n", ind1);
+                        block indirect1;
+                        read_block((*disk), &indirect1, int_to_little(p.num_first_block + ind1));
+                        int rsize = size - 10;
+                        printf("Val of rsize %d\n", rsize);
+                        int numblock_to_use;
+                        readint_block(&indirect1, &numblock_to_use, (rsize - 1)*4);
+                        for (i = (rsize - 1)*4; i < (rsize * 4); i++) {
+                            indirect1.buff[i] = '\0';
+                        }
+                        printf("Val of numblock_to_use %d\n", numblock_to_use);
+                        write_block((*disk), indirect1, int_to_little(p.num_first_block + ind1));
+                        printf("Val of size %d\n", size);
+                        e2 = free_block(disk, size, id_part);
+                        if (e2.errnb != -1) {
+                            e.errnb = 0;
+                        } else {
+                            e.errnb = -1;
+                        }
+                    } else {
+                        int ind2 = -1;
+                        readint_block(&finfo, (&ind2), (posf_id - 1)*64 + 56);
+                        printf("Val of ind2 %d\n", ind2);
+                        block indirect2;
+                        read_block((*disk), &indirect2, int_to_little(p.num_first_block + ind2));
+                        int rsize = size - 266;
+                        int dsize = (rsize / 256) + (rsize % 256);
+                        int ind1;
+                        readint_block(&indirect2, (&ind1), (dsize - 1));
+                        printf("Val of ind1 %d\n", ind1);
+                        block indirect1;
+                        read_block((*disk), &indirect1, int_to_little(p.num_first_block + ind1));
+                        int ind_to_rem = dsize - (rsize / 256);
+                        printf("Val of ind_to_rem %d\n", ind_to_rem);
+                        int numblock_to_use;
+                        if (ind_to_rem != 0) {
+                            readint_block(&indirect1, &numblock_to_use, (ind_to_rem - 1)*4);
+                            for (i = (ind_to_rem - 1)*4; i < ind_to_rem * 4; i++) {
+                                indirect1.buff[i] = '\0';
+                            }
+                        } else {
+                            readint_block(&indirect1, &numblock_to_use, (dsize - 1)*4);
+                            for (i = (dsize - 1)*4; i < (dsize * 4); i++) {
+                                indirect1.buff[i] = '\0';
+                            }
+                        }
+                        write_block((*disk), indirect1, int_to_little(p.num_first_block + ind1));
+                        printf("Val of size %d\n", size);
+                        e2 = free_block(disk, numblock_to_use, id_part);
+                        if (e2.errnb != -1) {
+                            e.errnb = 0;
+                        } else {
+                            e.errnb = -1;
+                        }
+                    }
+                } else {
+                    e.errnb = 0;
+                    fprintf(stderr, "remove_file_block : File have 0 blocks\n");
+                }
+            } else {
+                e.errnb = -1;
+                fprintf(stderr, "remove_file_block : Problem with read_block\n");
+            }
+        } else {
+            e.errnb = -1;
+            fprintf(stderr, "remove_file_block : Problem with id_f of file %d\n", id_f);
+        }
+    } else {
+        e.errnb = -1;
+        fprintf(stderr, "remove_file_block : Problem with id_part %d\n", id_part);
+    }
     return e;
 
 }
 
-error test_file(disk_id* disk, int id_part, char* name){
-		error e;
-			
-		if((*disk).nbPart > id_part && id_part > -1){
-			Part p = (*disk).tabPart[id_part];
-			printf("Val of p.max_file_count dans test %d\n",p.max_file_count);
-			block b;
-			error e1 = read_block((*disk),&b,int_to_little(p.num_first_block + 1));
-			if(e1.errnb != -1){
-				int  fbloc = p.num_first_block + p.file_table_size + 2;
-				block c;
-				c.buff[0]='E';
-				c.buff[1]='n';
-				c.buff[2]='f';
-				c.buff[3]='o';
-				c.buff[4]='i';
-				c.buff[5]='r';
-				c.buff[6]='e';
-				c.buff[7]='!';
-				int i;
-				error e2 = write_block((*disk),c,int_to_little(fbloc));
-				if(e2.errnb != -1){
-					int tab[16];
-					i=0;
-					tab[i] = 1024;i++;
-					tab[i] = 0;i++;
-					tab[i] = 0;i++;
-					tab[i] = fbloc;
-					printf("Val of fbloc %d\n",fbloc);
-					for(i= 5; i<16; i++){
-						tab[i] = 0;
-					} 
-					for(i = 0; i< 16; i++){
-						fill_block(&b,tab[i],64+(i*4));
-					}
-					int erf;
-					readint_block(&b,&erf,64+12);
-					printf("Val of erf %d\n",erf);
-					write_block((*disk),b,int_to_little(p.num_first_block + 1));
-					block racine;
-					error e3 = read_block((*disk),&racine,int_to_little(p.num_first_block + p.file_table_size + 1));
-					if(e3.errnb != -1){
-						fill_block(&racine, 2, 0);
-						for(i=4; i<6; i++){
-							racine.buff[i] = name[i];
-						}
-						error e4 = write_block((*disk),racine, int_to_little(p.num_first_block + p.file_table_size + 1));
-						if(e4.errnb != -1){
-							//printf("L'écriture et la création du fichier a réussi\n");	
-							printf("Val of p.max_file_count dans test %d\n",p.max_file_count);
-							e.errnb=0;
-						}
-					}
-				}
-			}
-		}else{
-			e.errnb = -1;			
-		}
-		return e;
-	}
+error test_file(disk_id* disk, int id_part, char* name) {
+    error e;
+
+    if ((*disk).nbPart > id_part && id_part > -1) {
+        Part p = (*disk).tabPart[id_part];
+        printf("Val of p.max_file_count dans test %d\n", p.max_file_count);
+        block b;
+        error e1 = read_block((*disk), &b, int_to_little(p.num_first_block + 1));
+        if (e1.errnb != -1) {
+            int fbloc = p.num_first_block + p.file_table_size + 2;
+            block c;
+            c.buff[0] = 'E';
+            c.buff[1] = 'n';
+            c.buff[2] = 'f';
+            c.buff[3] = 'o';
+            c.buff[4] = 'i';
+            c.buff[5] = 'r';
+            c.buff[6] = 'e';
+            c.buff[7] = '!';
+            int i;
+            error e2 = write_block((*disk), c, int_to_little(fbloc));
+            if (e2.errnb != -1) {
+                int tab[16];
+                i = 0;
+                tab[i] = 1024;
+                i++;
+                tab[i] = 0;
+                i++;
+                tab[i] = 0;
+                i++;
+                tab[i] = fbloc;
+                printf("Val of fbloc %d\n", fbloc);
+                for (i = 5; i < 16; i++) {
+                    tab[i] = 0;
+                }
+                for (i = 0; i < 16; i++) {
+                    fill_block(&b, tab[i], 64 + (i * 4));
+                }
+                int erf;
+                readint_block(&b, &erf, 64 + 12);
+                printf("Val of erf %d\n", erf);
+                write_block((*disk), b, int_to_little(p.num_first_block + 1));
+                block racine;
+                error e3 = read_block((*disk), &racine, int_to_little(p.num_first_block + p.file_table_size + 1));
+                if (e3.errnb != -1) {
+                    fill_block(&racine, 2, 0);
+                    for (i = 4; i < 6; i++) {
+                        racine.buff[i] = name[i];
+                    }
+                    error e4 = write_block((*disk), racine, int_to_little(p.num_first_block + p.file_table_size + 1));
+                    if (e4.errnb != -1) {
+                        //printf("L'écriture et la création du fichier a réussi\n");	
+                        printf("Val of p.max_file_count dans test %d\n", p.max_file_count);
+                        e.errnb = 0;
+                    }
+                }
+            }
+        }
+    } else {
+        e.errnb = -1;
+    }
+    return e;
+}

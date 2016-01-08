@@ -1,3 +1,7 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 struct iter{
   char *name;
   struct iter *next;

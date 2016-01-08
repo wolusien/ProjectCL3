@@ -2,10 +2,8 @@
 #include "manipvolume.h"
 int main (int argc, char * argv[]){
 
-<<<<<<< HEAD
   char path[100]="je//suis//pas";
   iter i= decomposition(path);
-  //go_end(i);
   go_start(i);
   go_end(i);
   free_iter(i);
@@ -16,10 +14,8 @@ int main (int argc, char * argv[]){
 
   /*disk_id *id = malloc(sizeof(disk_id));
   error e = start_disk("t.tfs",id);
-=======
   disk_id *id = malloc(sizeof(disk_id));
   error e = start_disk("disk.tfs",id);
->>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26
   if(e.errnb != -1){
 	error e1 = test_file(id,0,"pd");
 	if(e1.errnb != -1){
@@ -41,12 +37,9 @@ int main (int argc, char * argv[]){
   //use_block(disque_ouvert[0], 8,  0);
   //use_block(disque_ouvert[0], 14,  0);
   //free_block(disque_ouvert[0], 14,  0);
-<<<<<<< HEAD
-=======
-  /*
+  
   printf("huhuhuhuh : \n");
->>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26
-  /*printf("huhuhuhuh : \n");
+  printf("huhuhuhuh : \n");
   disk_id *id = malloc(sizeof(disk_id));  
   start_disk("t.tfs",id);
   printf("taille : %d \n",id->tabPart[0].max_file_count);
@@ -68,7 +61,7 @@ int main (int argc, char * argv[]){
   //printf("dudu : %d \n", id->tabPart[1].max_file_count);
   //stop_disk(*id);
   //disk_id *id;
-  int i;
+  /*int i;
   char *path = "disk.tfs";
   id = malloc(sizeof(disk_id)); 
   start_disk(path,id);
@@ -93,12 +86,8 @@ int main (int argc, char * argv[]){
   printf("Voici votre nombre %d\n",int_to_little(nread));
   printf("Je vais exécuter stopdisk\n");
   stop_disk((*id));
-  exit(0);*/
-<<<<<<< HEAD
+  exit(0);
 
-
-=======
   stop_disk((*id));
 }
-   
->>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26
+ */  

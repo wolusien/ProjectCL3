@@ -3,27 +3,25 @@
 void free_iter(iter i){
   
   if(i != NULL){
-    iter next = i->next;
-    iter prec = i->prec;
-    i->name=NULL;
-    free(i->name);
-    i=NULL;
-    free(i);
-    if(next != NULL)
-      free_iter(next);
-    if(prec != NULL)
-      free_iter(prec);
+    go_start(i);
+    iter curr = i;
+    iter next;
+    while(curr->next != NULL){
+        next=curr->next;
+        curr=NULL;
+        free(curr);
+        curr=next;
+    }   
   }
 }
 void go_end(iter it){
-  iter cur =it;
-  if(cur !=NULL){
-    while(cur ->next!= NULL){
-      //printf("%s\n",cur->name);
-      cur=cur->next;
+    printf("debut");
+    if(it !=NULL){
+    while(it->next != NULL){
+      it=it->next;
     }
   }
-  printf("%s\n",cur->name);
+    printf("%s\n",it->name);
 }
 
 void go_start(iter it){
