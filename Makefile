@@ -3,7 +3,7 @@ CFLAGS=-Wall
 EXEC= main tfs_create tfs_format tfs_partition tfs_analyse
 HEADERS= $(wildcard *.h)
 OBJECTS = little.o manipdisk.o interne.o  
-OBJECTS2 = manipvolume.o iter.o
+OBJECTS2 = iter.o manipvolume.o manipsystem.o
 all: $(EXEC)
 
 
