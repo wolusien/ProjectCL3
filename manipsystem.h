@@ -1,5 +1,17 @@
 #include "manipvolume.h"
 
+#define MAX_FICHIERS 10
+
+typedef struct{
+  disk_id *pdisk;
+  int partition;
+  int pos;
+  int flag;
+  char *path;
+}tfs_fd;
+
+tfs_fd* fichiers_ouverts[MAX_FICHIERS];
+
 
 
 //int tfs_mkdir(const char *path, mode_t mode);
