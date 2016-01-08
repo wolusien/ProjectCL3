@@ -17,21 +17,28 @@ error free_block(disk_id *id, int numblock, int volume) {
                         while (prec != suiv) {
                             if (prec == numblock) {
                                 e.errnb = -1;
-                                printf("free_block : block déja libre \n");
+                                fprintf(stderr,"free_block : block déja libre %d \n", numblock);
                                 return e;
                             }
                             prec = suiv;
                             read_block(*id, &b, prec + here.num_first_block);
                             readint_block(&b, &suiv, 1020);
                         } // on a trouvé le dernier block du chainage
-                        fill_block(&b, numblock, 1020);
-                        write_block((*id), b, prec + here.num_first_block);
-                        write_block(*id, b, numblock + here.num_first_block);
-                        here.free_block_count += 1;
-                        block first;
-                        read_block(*id, &first, here.num_first_block);
-                        fill_block(&first, here.free_block_count, 12);
-                        write_block((*id), first, here.num_first_block);
+			if(numblock!=prec){
+			  fill_block(&b, numblock, 1020);
+			  write_block((*id), b, prec + here.num_first_block);
+			  write_block(*id, b, numblock + here.num_first_block);
+			  printf("%d   %d :\n", prec, numblock);
+			  here.free_block_count += 1;
+			  block first;
+			  read_block(*id, &first, here.num_first_block);
+			  fill_block(&first, here.free_block_count, 12);
+			  write_block((*id), first, here.num_first_block);
+			}else{
+			   e.errnb = -1;
+			   fprintf(stderr,"free_block : block déja libre %d \n", numblock);
+                                return e;
+			}
                     } else { // cas ou il n'y avait plus de blocks libres; on doit réinitialiser le chainage. 
                         block libre;
                         int i;
@@ -310,9 +317,8 @@ error readname_rep(block b, char *a, int loc) { //loc est l'endroit du bloc ou o
     int i;
     if (loc >= 0 && loc <= 992) {
         char nom[28];
-        for (i = 4; i < 32; i++) {
-            if (b.buff)
-                nom[i] = b.buff[loc + i];
+        for (i = 0; i < 28; i++) {
+                nom[i] = b.buff[loc + i+4];
         }
         a = nom;
         error e;
