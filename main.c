@@ -2,6 +2,7 @@
 #include "manipvolume.h"
 int main (int argc, char * argv[]){
 
+<<<<<<< HEAD
   char path[100]="je//suis//pas";
   iter i= decomposition(path);
   //go_end(i);
@@ -15,33 +16,36 @@ int main (int argc, char * argv[]){
 
   /*disk_id *id = malloc(sizeof(disk_id));
   error e = start_disk("t.tfs",id);
+=======
+  disk_id *id = malloc(sizeof(disk_id));
+  error e = start_disk("disk.tfs",id);
+>>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26
   if(e.errnb != -1){
 	error e1 = test_file(id,0,"pd");
 	if(e1.errnb != -1){
 		//printf("La création du disk a réussi\n");
-		error e2 = add_file_block(id,0,1,10);
-		if(e2.errnb != -1){
-			printf("Le add_file block a réussi\n");
-			error e3 = remove_file_block(id,0,1);
+		error e3 = remove_file_block(id,0,1);
 			if(e3.errnb != -1){
 				printf("Le remove_file block a réussi\n");	
 			}else{
 				printf("Le remove_file block a échoué\n");	
-			}	
-		}else{
-			printf("Le add_file block a échoué\n");
-		}   
+			}	   
 	}else{
 		printf("La création du disk a échoué\n");
 	}
   }else{
 	printf("Le start_disk a échoué\n");  
-	}*/
+  }
   // use_block(disque_ouvert[0], 14,  0);
   //use_block(disque_ouvert[0], 6,  0);
   //use_block(disque_ouvert[0], 8,  0);
   //use_block(disque_ouvert[0], 14,  0);
   //free_block(disque_ouvert[0], 14,  0);
+<<<<<<< HEAD
+=======
+  /*
+  printf("huhuhuhuh : \n");
+>>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26
   /*printf("huhuhuhuh : \n");
   disk_id *id = malloc(sizeof(disk_id));  
   start_disk("t.tfs",id);
@@ -54,6 +58,7 @@ int main (int argc, char * argv[]){
   free_block(disque_ouvert[0], 14,  0);
   free_block(disque_ouvert[0], 15,  0);
   free_block(disque_ouvert[0], 14,  0);
+  */
   // int f = open("tii.tfs",O_RDWR);
   // read(f,b->buff,1024);
   //printf("kjb %d \n", b->buff[0]);
@@ -62,7 +67,7 @@ int main (int argc, char * argv[]){
   //start_disk("t.tfs",id);
   //printf("dudu : %d \n", id->tabPart[1].max_file_count);
   //stop_disk(*id);
-  /*disk_id *id;
+  //disk_id *id;
   int i;
   char *path = "disk.tfs";
   id = malloc(sizeof(disk_id)); 
@@ -89,5 +94,11 @@ int main (int argc, char * argv[]){
   printf("Je vais exécuter stopdisk\n");
   stop_disk((*id));
   exit(0);*/
+<<<<<<< HEAD
 
 
+=======
+  stop_disk((*id));
+}
+   
+>>>>>>> cb35a0728fd0cfc1d5c7de77973ca4515e538b26

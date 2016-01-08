@@ -597,7 +597,7 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
                     nbBlock_size += 1;
                 }
                 printf("Val of nbBlock_size %d\n", nbBlock_size);
-                e1 = free_block(disk, id_block, id_part);
+                e1 = use_block(disk, id_block, id_part);
                 if (e1.errnb == 0) {
 					if (nbBlock_size < 10) {
                         fill_block((&finfo), id_block, pos + 11 + (nbBlock_size * 4));
@@ -690,7 +690,7 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 			e1 = read_block((*disk),&finfo,int_to_little(p.num_first_block + posf_block));
 			if(e1.errnb != -1){
 				int tfs_size;
-				readint_block(&finfo, (&tfs_size), (posf_id-1)*64);
+				readint_block(&finfo, (&tfs_size), (posf_id)*64);
 				printf("Val of tfs_size %d\n",tfs_size);
 				if(tfs_size > 0){
 					int size = tfs_size / 1024;
@@ -699,11 +699,16 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 					}
 					printf("Val of size %d\n",size); 
 					if(size < 11){
-						for(i=((posf_id-1)*64)+11+(4*(size-1)); i< ((posf_id-1)*64)+11+(4*size); i++){
+						printf("Val of (posf_id*64)+11+(4*(size-1)) %d\n",(posf_id*64)+12+(4*(size-1)));
+						int numblock_to_use;
+						readint_block(&finfo,&numblock_to_use,(posf_id*64)+12+(4*(size-1)));
+						printf("Val of numblock_to_use %d\n",numblock_to_use);
+						for(i=(posf_id*64)+11+(4*(size-1)); i< ((posf_id-1)*64)+11+(4*(size-1)); i++){
 							finfo.buff[i] = '\0';
 						}
 						write_block((*disk), finfo, int_to_little(p.num_first_block + posf_block));
-						e2 = use_block(disk, size, id_part);
+						printf("Val of size %d\n",size);
+						e2 = free_block(disk, numblock_to_use, id_part);
 						if(e2.errnb != -1){
 							e.errnb = 0;
 						}else{
@@ -716,11 +721,16 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 						block indirect1;
 						read_block((*disk), &indirect1, int_to_little(p.num_first_block + ind1));
 						int rsize = size - 10;
+						printf("Val of rsize %d\n",rsize);
+						int numblock_to_use;
+						readint_block(&indirect1,&numblock_to_use,(rsize-1)*4);
 						for(i = (rsize-1)*4; i<(rsize*4); i++){
 							indirect1.buff[i] = '\0';
-						}  
+						}
+						printf("Val of numblock_to_use %d\n",numblock_to_use);   
 						write_block((*disk), indirect1, int_to_little(p.num_first_block + ind1));
-						e2 = use_block(disk, size, id_part);
+						printf("Val of size %d\n",size);
+						e2 = free_block(disk, size, id_part);
 						if(e2.errnb != -1){
 							e.errnb = 0;
 						}else{
@@ -741,17 +751,21 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 						read_block((*disk), &indirect1, int_to_little(p.num_first_block+ind1));
 						int ind_to_rem = dsize - (rsize/256);
 						printf("Val of ind_to_rem %d\n",ind_to_rem);
+						int numblock_to_use;				
 						if(ind_to_rem != 0 ){
+							readint_block(&indirect1,&numblock_to_use,(ind_to_rem -1)*4);
 							for(i=(ind_to_rem -1)*4; i<ind_to_rem*4; i++){
 								indirect1.buff[i] = '\0';
 							}
 						}else{
+							readint_block(&indirect1,&numblock_to_use,(dsize -1)*4);
 							for(i = (dsize -1)*4; i<(dsize*4); i++){
 								indirect1.buff[i] = '\0';
 							}
 						}
 						write_block((*disk), indirect1, int_to_little(p.num_first_block+ind1));
-						e2 = use_block(disk, size, id_part);
+						printf("Val of size %d\n",size);
+						e2 = free_block(disk, numblock_to_use, id_part);
 						if(e2.errnb != -1){
 							e.errnb = 0;
 						}else{
@@ -806,12 +820,16 @@ error test_file(disk_id* disk, int id_part, char* name){
 					tab[i] = 0;i++;
 					tab[i] = 0;i++;
 					tab[i] = fbloc;
+					printf("Val of fbloc %d\n",fbloc);
 					for(i= 5; i<16; i++){
 						tab[i] = 0;
 					} 
 					for(i = 0; i< 16; i++){
 						fill_block(&b,tab[i],64+(i*4));
 					}
+					int erf;
+					readint_block(&b,&erf,64+12);
+					printf("Val of erf %d\n",erf);
 					write_block((*disk),b,int_to_little(p.num_first_block + 1));
 					block racine;
 					error e3 = read_block((*disk),&racine,int_to_little(p.num_first_block + p.file_table_size + 1));
