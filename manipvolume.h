@@ -13,6 +13,8 @@ struct iter{
 };
 typedef struct iter* iter;
 
+void printiter(iter i);
+void go_end(iter i);
 error free_block(disk_id *id, int numblock, int volume);
 error use_block(disk_id *id, int numblock, int volume);
 error add_free_file(disk_id id,int volume,int file);

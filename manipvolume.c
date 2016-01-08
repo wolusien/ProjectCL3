@@ -301,9 +301,35 @@ iter decomposition(char *path) {
         next->prec = it;
         it->next = next;
         it = it->next;
+        printf("%s\n",it->name);
         token = strtok(NULL, separateur);
     }
     return current;
+}
+void free_iter(iter i){
+    if(i != NULL){
+        iter next = i->next;
+        iter prec = i->prec;
+        i=NULL;
+        free(i);
+        free_iter(next);
+        free_iter(prec);
+    }
+}
+void go_end(iter it){
+    iter cur =it;
+    if(cur !=NULL){
+        while(cur ->next!= NULL){
+            printf("%s\n",cur->name);
+            cur=cur->next;
+        }
+    }
+}
+
+void go_start(iter it){
+    while(it->prec != NULL){
+        it=it->prec;
+    }
 }
 
 error readname_rep(block b, char *a, int loc) { //loc est l'endroit du bloc ou on veut lire le nom que l'on écrit dans a.
@@ -506,9 +532,9 @@ error free_file_blocks(disk_id* disk, int volume, int id_f) {
             if (id_f > 0 && id_f < here.max_file_count) {
                 error err;
                 int i = 1;
-                err = remove_file_block(disk, volume, id_f, i);
+            //    err = remove_file_block(disk, volume, id_f, i);
                 while (err.errnb == 0) {
-                    err = remove_file_block(disk, volume, id_f, i);
+              //      err = remove_file_block(disk, volume, id_f, i);
                     i += 1;
                 }
                 if (err.errnb == -2) {
