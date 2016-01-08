@@ -1,10 +1,11 @@
 #include "manip.h"
 
 
-
-
-
-
+#define TFS_READ = 1
+#define TFS_WRITE = 2
+#define TFS_RWRITE = 3
+#define TFS_APPEND = 4
+#define TFS_ORAPPEND = 5
 
 struct iter{
   char *name;
