@@ -49,7 +49,7 @@ error start_disk(char *name,disk_id *id) {
       if(disque_ouvert[i]!=NULL){
         if(strcmp((disque_ouvert[i])->name,name)==0){
             boolean =1;
-              break;
+            break;
           }
       }
     }

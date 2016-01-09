@@ -3,14 +3,14 @@
 void free_iter(iter i){
   
   if(i != NULL){
-    go_start(i);
+    go_start(i);//on ramene au début de l'itération
     iter curr = i;
-    iter next;
-    while(curr->next != NULL){
+    iter next;//on recupere le prochain
+    while(curr->next != NULL){//on refait l'opération jusqu'a qu'il n'y est plus d'itération
         next=curr->next;
         curr=NULL;
-        free(curr);
-        curr=next;
+        free(curr);//on free l'itération courante
+        curr=next;//et on lui attribut la valeur du prochain
     }   
   }
 }

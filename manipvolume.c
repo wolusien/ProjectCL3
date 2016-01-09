@@ -361,54 +361,111 @@ error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, in
     error e;
     if (id.nbPart > volume) {
         if (dir < id.tabPart[volume].max_file_count) {
-            int pos = id.tabPart[volume].num_first_block + ((dir - 1) / 16) + 1;
+            int pos;
+            if (dir == 0)
+                pos = 0;
+            else
+                pos = id.tabPart[volume].num_first_block + ((dir - 1) / 16) + 1;
             block b1;
             read_block(id, &b1, pos);
             int a;
             readint_block(&b1, &a, 64 * (dir % 16) + 4);
-            if (a == 1) { //on test si l'entrée correspondante a idtable représente bien un repertoire
+            if (a == 1) {
                 int i;
                 int numfic;
                 int numb;
-                for (i = 0; i < 10; i++) {
-                    readint_block(&b1, &numb, (dir % 16)*64 + 12 + i * 4); //début des numéros de blocs contenant des données du fichier
+                for (i = 0; i < 10; i = i + 4) {
+                    readint_block(&b1, &numb, (dir % 16)*64 + 12 + i); //début des numéros de blocs contenant des données du fichier
+                    if (numb == 0) {
+                        e.errnb = -1;
+                        fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                        return e;
+                    }
+
                     if ((numfic = name_in_block(id, volume, numb, name)) != -1) {
-                        *numblock = numb;
                         *posi = numfic;
+                        *numblock = numb;
                         e.errnb = 0;
                         return e;
                     }
+
                 }
                 readint_block(&b1, &numb, (dir % 16)*64 + 52);
+                if (numb == 0) {
+                    e.errnb = -1;
+                    fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                    return e;
+                }
                 pos = id.tabPart[volume].num_first_block + numb;
-                read_block(id, &b1, pos);
+                block b2;
+                read_block(id, &b2, pos);
                 for (i = 0; i < 1024; i = i + 4) {
-                    readint_block(&b1, &numb, i);
+                    readint_block(&b2, &numb, i);
+                    if (numb == 0) {
+                        e.errnb = -1;
+                        fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                        return e;
+                    }
+
                     if ((numfic = name_in_block(id, volume, numb, name)) != -1) {
-                        *numblock = numb;
                         *posi = numfic;
+                        *numblock = numb;
                         e.errnb = 0;
                         return e;
                     }
                 }
-                e.errnb = -1;
-                fprintf(stderr, "no name in dir %d \n", dir);
+                readint_block(&b1, &numb, (dir % 16)*64 + 56);
+                if (numb == 0) {
+                    e.errnb = -1;
+                    fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                    return e;
+                }
+                pos = id.tabPart[volume].num_first_block + numb;
+                read_block(id, &b2, pos);
+                int pos2;
+                block b3;
+                for (i = 0; i < 1024; i = i + 4) {
+                    readint_block(&b2, &numb, i);
+                    if (numb == 0) {
+                        e.errnb = -1;
+                        fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                        return e;
+                    }
+                    pos2 = id.tabPart[volume].num_first_block + numb;
+                    read_block(id, &b3, numb);
+                    int j;
+                    for (j = 0; i < 1024; j++) {
+                        readint_block(&b3, &numb, i);
+                        if (numb == 0) {
+                            e.errnb = -1;
+                            fprintf(stderr, "%s doesn't exit on directory number %d", name, dir);
+                            return e;
+                        }
+
+                        if ((numfic = name_in_block(id, volume, numb, name)) != -1) {
+                            *posi = numfic;
+                            *numblock = numb;
+                            e.errnb = 0;
+                            return e;
+                        }
+                    }
+                }
                 return e;
             } else {
                 e.errnb = -1;
-                fprintf(stderr, "dir isn't a directory %d \n", dir);
-                return e;
+                fprintf(stderr, "this is not a directory");
             }
         } else {
-            e.errnb = -1;
             fprintf(stderr, "dir number %d doesn't exist on volume number %d", dir, volume);
-            return e;
+            e.errnb = -1;
         }
+
+
     } else {
-        e.errnb = -1;
         fprintf(stderr, "volume %d doesn't exist on %s", volume, id.name);
-        return e;
+        e.errnb = -1;
     }
+    return e;
 }
 
 void file_tableau(int *tab[16], disk_id id, int volume) {
