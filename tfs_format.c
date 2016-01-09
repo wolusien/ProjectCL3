@@ -32,7 +32,6 @@ int main(int argc, char *argv[]){
 	      for(i=0;i<partition; i++){
 		id_first+=id->tabPart[i].taille;
 	      }
-	     
 	      write_block(*id, b,int_to_little(id_first)); 
 	      
 	      //initialisation file table
@@ -77,7 +76,7 @@ int main(int argc, char *argv[]){
 	      racine.buff[36]='.';
 	      racine.buff[37]='.';
 	      racine.buff[38]='0';
-	      write_block(*id, racine,id_first+taille_descripteur+1);
+	      write_block(*id, racine,int_to_little(id_first+taille_descripteur+1));
 
 	      //initialisation des blocs restants (chainage)
 	      block reste;
@@ -91,10 +90,10 @@ int main(int argc, char *argv[]){
 		} else{
 		  fill_block(&reste,i, 1020);
 		}
-		write_physical_block(*id, reste,id_first+i);
+		write_block(*id, reste,int_to_little(id_first+i));
 		fill_block(&reste,0, 1020);
 	      }
-
+	      
  	    }else{
 	      printf("tfs format : wrong arguments, too much files : %d \n", file_count);
 	    }

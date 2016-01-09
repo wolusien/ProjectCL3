@@ -67,7 +67,7 @@ error start_disk(char *name,disk_id *id) {
             id->fd=f;
             id->nbBlock=1;
             block first;
-            read_block((*id),&first,0);
+            read_block((*id),&first,int_to_little(0));
             uint32_t n;
             unsigned char *tab=(unsigned char *)(&n);
             for(i=0;i<4;i++){
@@ -90,7 +90,7 @@ error start_disk(char *name,disk_id *id) {
 		p.num_first_block=id_first;
 		id_first+=p.taille;
 		block firstPart;
-		read_block(*id,&firstPart,p.num_first_block);
+		read_block(*id,&firstPart,int_to_little(p.num_first_block));
 		int free_block_count;  
 		readint_block(&firstPart,&free_block_count,12);
 		p.free_block_count=free_block_count;
