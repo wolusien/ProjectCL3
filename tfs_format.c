@@ -32,11 +32,15 @@ int main(int argc, char *argv[]){
 	      for(i=0;i<partition; i++){
 		id_first+=id->tabPart[i].taille;
 	      }
-	      
-	      write_physical_block(*id, b,id_first); 
+	     
+	      write_block(*id, b,int_to_little(id_first)); 
 	      
 	      //initialisation file table
 	      block file_table;
+	      int k;
+	      for(k=0;k<1024;k++){
+		file_table.buff[k]='\0';
+	      }
 	      for(i=1; i<=taille_descripteur; i++){
 		if(i==1){
 		  fill_block(&file_table, 64, 0);
@@ -60,7 +64,9 @@ int main(int argc, char *argv[]){
 		  }
 		}
 		write_physical_block(*id, file_table,i+id_first);
-		read_block(*id, &file_table, i+id_first+1); //on réinitialise le bloc file_table à 0
+		for(k=0;k<1024;k++){
+		  file_table.buff[k]='\0';
+		}
 	      }
 	      //initialisation du dossier racine
 	      block racine;
@@ -71,11 +77,15 @@ int main(int argc, char *argv[]){
 	      racine.buff[36]='.';
 	      racine.buff[37]='.';
 	      racine.buff[38]='0';
-	      write_physical_block(*id, racine,id_first+taille_descripteur+1);
+	      write_block(*id, racine,id_first+taille_descripteur+1);
 
 	      //initialisation des blocs restants (chainage)
 	      block reste;
 	      for(i= taille_descripteur+2; i<taille;i++){
+		int k;
+                for(k=0;k<1024;k++){
+                  reste.buff[k]='\0';
+                }
 		if(i!=(taille-1)){
 		  fill_block(&reste,i+1, 1020);
 		} else{

@@ -91,9 +91,9 @@ int tfs_mkdir(const char *path, mode_t mode) {
 
                                                 } else if (id->tabPart[volume].free_block_count >= 2) {//sinon on regarde si il y assez de bloc pour en rajouter un au repertoire et en crée un 
                                                     free_place_dir = id->tabPart[volume].first_free_block;
-                                                    use_block(id, free_place_dir, volume);
-                                                    add_file_block(id, volume, place, free_place_dir);
-                                                    fill_block(&b2, id->tabPart[volume].first_free_file, 0);
+                                                    use_block(id, free_place_dir, volume);//on utilise un nouveau bloc
+                                                    add_file_block(id, volume, place, free_place_dir);//on ajoute ce bloc au repertoire sur lequel on crée un nouveau repertoire
+                                                    fill_block(&b2, id->tabPart[volume].first_free_file, 0);//on écrit le numéro du repertoire crée
                                                     for (j = 0; j < strlen(namedir); j++) {
                                                         b2.buff[j + 4] = namedir[j];
                                                     }
@@ -120,7 +120,18 @@ int tfs_mkdir(const char *path, mode_t mode) {
                                                 }
                                                 use_block(id,free_place_dir,volume);
                                                 write_block(*id,rep,id->tabPart[volume].num_first_block+free_place_dir);
-                                                remove_free_file(*id,volume,id->tabPart[volume].first_free_file);
+                                                int num_new_dir = id->tabPart[volume].first_free_file;
+                                                remove_free_file(*id,volume,num_new_dir);
+                                                posbloc = (num_new_dir-1)/16+id->tabPart[volume].num_first_block+1;
+                                                read_block(*id,&filet,int_to_little(posbloc));
+                                                fill_block(&filet,64,(num_new_dir%16)*64);
+                                                fill_block(&filet,1,(num_new_dir%16)*64+4);
+                                                fill_block(&filet,0,(num_new_dir%16)*64+8);
+                                                fill_block(&filet,free_place_dir,(num_new_dir%16)*64+12);
+                                                for(j=16;j<64;j++){
+                                                    filet.buff[j+(num_new_dir%16)*64]='\0';
+                                                }
+                                                write_block(*id,filet,int_to_little(posbloc));
                                                 return 0;
                                                 
                                             } else {

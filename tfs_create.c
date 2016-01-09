@@ -45,21 +45,12 @@ int main(int argc,char *argv[]){
   fichier = open(name,O_CREAT | O_EXCL | O_RDWR ,00700);
   if(fichier != -1){
     block first;
-    uint32_t u = int_to_little(size);
-    unsigned char *tab = (unsigned char *)(&u);
+    fill_block(&first,size,0);
+    fill_block(&first,0,4);
     int i;
-    for(i=0;i<4;i++){
-      first.buff[i]=tab[i];
-    }
-    uint32_t u2 = int_to_little(0);
-    unsigned char *tab2 = (unsigned char *)(&u2);
-    for(i=4;i<8;i++){
-      first.buff[i]=tab2[i];
-    }
-    for(i=4;i<1024;i++){
+    for(i=8;i<1024;i++){
       first.buff[i]='\0';
     }
-    fill_block(&first, size, 0);
 
     uint32_t position = int_to_little(0);
     disk_id disk;

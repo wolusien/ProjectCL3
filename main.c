@@ -1,13 +1,10 @@
 //#include "manip.h"
-#include "manipvolume.h"
+#include "manipsystem.h"
 int main (int argc, char * argv[]){
-
-  char path[100]="je//suis//pas";
-  iter i= decomposition(path);
-  go_start(i);
-  go_end(i);
-  free_iter(i);
-  exit(0);
+    disk_id *id = malloc(sizeof(disk_id));
+    start_disk("disk.tfs",id);
+    mkdir("FILE://disk.tfs//0//lalallala",O_CREAT);
+    stop_disk(*id);
 }
   
 
