@@ -10,7 +10,7 @@ error free_block(disk_id *id, int numblock, int volume) {
                     int prec = here.first_free_block; //on va chercher le dernier block du chainage pour le racorder.
                     if (prec != 0) { // si first_free_block vaut 0 alors il n'y a plus de block libres.
                         block b;
-                        read_block(*id, &b, prec + here.num_first_block);
+                        read_block(*id, &b, int_to_little(prec + here.num_first_block));
                         int suiv;
                         readint_block(&b, &suiv, 1020);
 
@@ -21,19 +21,19 @@ error free_block(disk_id *id, int numblock, int volume) {
                                 return e;
                             }
                             prec = suiv;
-                            read_block(*id, &b, prec + here.num_first_block);
+                            read_block(*id, &b,int_to_little( prec + here.num_first_block));
                             readint_block(&b, &suiv, 1020);
                         } // on a trouvé le dernier block du chainage
                         if (numblock != prec) {
                             fill_block(&b, numblock, 1020);
-                            write_block((*id), b, prec + here.num_first_block);
-                            write_block(*id, b, numblock + here.num_first_block);
+                            write_block((*id), b,int_to_little( prec + here.num_first_block));
+                            write_block(*id, b,int_to_little( numblock + here.num_first_block));
                             printf("%d   %d :\n", prec, numblock);
                             here.free_block_count += 1;
                             block first;
-                            read_block(*id, &first, here.num_first_block);
+                            read_block(*id, &first,int_to_little( here.num_first_block));
                             fill_block(&first, here.free_block_count, 12);
-                            write_block((*id), first, here.num_first_block);
+                            write_block((*id), first,int_to_little( here.num_first_block));
                         } else {
                             e.errnb = -1;
                             fprintf(stderr, "free_block : block déja libre %d \n", numblock);
@@ -46,14 +46,14 @@ error free_block(disk_id *id, int numblock, int volume) {
                             libre.buff[i] = '\0';
                         }
                         fill_block(&libre, numblock, 1020);
-                        write_block(*id, libre, numblock + here.num_first_block);
+                        write_block(*id, libre,int_to_little( numblock + here.num_first_block));
                         here.free_block_count += 1;
                         here.first_free_block = numblock;
                         block first;
-                        read_block(*id, &first, here.num_first_block);
+                        read_block(*id, &first,int_to_little( here.num_first_block));
                         fill_block(&first, here.free_block_count, 12);
                         fill_block(&first, here.first_free_block, 16);
-                        write_block((*id), first, here.num_first_block);
+                        write_block((*id), first,int_to_little( here.num_first_block));
                     }
                     e.errnb = 0;
                     return e;
@@ -89,23 +89,23 @@ error use_block(disk_id *id, int numblock, int volume) {
                     int prec = here.first_free_block; //on va chercher le block "numblock" pour le dechainer.
                     if (prec != 0) {
                         block p;
-                        read_block(*id, &p, prec + here.num_first_block);
+                        read_block(*id, &p,int_to_little( prec + here.num_first_block));
                         int suiv;
                         readint_block(&p, &suiv, 1020);
                         block s;
                         block first;
-                        read_block(*id, &first, here.num_first_block);
+                        read_block(*id, &first,int_to_little( here.num_first_block));
                         if (suiv == numblock) { //Cas ou numbloc est le premier bloc libre
                             if (suiv == prec) { //Cas ou c'est le seul bloc libre
                                 fill_block(&first, 0, 12);
                                 fill_block(&first, 0, 16);
-                                write_block((*id), first, here.num_first_block);
+                                write_block((*id), first,int_to_little( here.num_first_block));
                                 here.free_block_count = 0;
                                 here.first_free_block = 0;
                             } else {
                                 fill_block(&first, (here.free_block_count - 1), 12);
                                 fill_block(&first, suiv, 16);
-                                write_block((*id), first, here.num_first_block);
+                                write_block((*id), first,int_to_little( here.num_first_block));
                                 here.free_block_count -= 1;
                                 here.first_free_block = suiv;
                             }
@@ -115,20 +115,20 @@ error use_block(disk_id *id, int numblock, int volume) {
                             while (prec != suiv) {
                                 if (suiv == numblock) { //on a trouvé numblock  	  
                                     int a;
-                                    read_block(*id, &s, suiv + here.num_first_block);
+                                    read_block(*id, &s,int_to_little( suiv + here.num_first_block));
                                     readint_block(&s, &a, 1020);
                                     if (a == suiv) { //cas ou le block "numblock" est le dernier du chainage.
                                         fill_block(&s, prec, 1020);
                                     }
-                                    write_block((*id), s, here.num_first_block + prec);
+                                    write_block((*id), s,int_to_little( here.num_first_block + prec));
                                     fill_block(&first, here.free_block_count + 1, 12);
-                                    write_block((*id), first, here.num_first_block);
+                                    write_block((*id), first,int_to_little( here.num_first_block));
                                     here.free_block_count -= 1;
                                     e.errnb = 0;
                                     return e;
                                 }
                                 prec = suiv;
-                                read_block(*id, &p, prec + here.num_first_block);
+                                read_block(*id, &p,int_to_little( prec + here.num_first_block));
                                 readint_block(&p, &suiv, 1020);
                             }
                             e.errnb = -1;
@@ -459,7 +459,7 @@ error find_name(iter i, disk_id disk, int part, int *place) {
             error err = name_in_dir(disk, part, idtable, nom, &numblock, &pos);
             if (err.errnb != -1) { //on regarde si nom est bien une entrée du repertoire idtable 
                 block b;
-                read_block(disk, &b, numblock);
+                read_block(disk, &b,int_to_little( numblock));
                 readint_block(&b, &idtable, pos);
                 i = i->next;
                 nom = i->name;
@@ -474,7 +474,7 @@ error find_name(iter i, disk_id disk, int part, int *place) {
             error err = name_in_dir(disk, part, idtable, nom, &numblock, &pos);
             if (err.errnb != -1) {
                 block b;
-                read_block(disk, &b, numblock);
+                read_block(disk, &b,int_to_little( numblock));
                 readint_block(&b, &idtable, pos);
                 *place = idtable;
                 e.errnb = 0;
@@ -806,9 +806,10 @@ error test_file(disk_id* disk, int id_part, char* name) {
                 block racine;
                 error e3 = read_block((*disk), &racine, int_to_little(p.num_first_block + p.file_table_size + 1));
                 if (e3.errnb != -1) {
-                    fill_block(&racine, 2, 0);
-                    for (i = 4; i < 6; i++) {
+                    fill_block(&racine, 2, 64);
+                    for (i = 68; i < 70; i++) {
                         racine.buff[i] = name[i];
+			
                     }
                     error e4 = write_block((*disk), racine, int_to_little(p.num_first_block + p.file_table_size + 1));
                     if (e4.errnb != -1) {

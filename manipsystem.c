@@ -1,6 +1,6 @@
 #include "manipsystem.h"
 int isNumber(char *buf){
-  int boolean;
+  int boolean=0;
   int i;
   for(i=0;i<strlen(buf);i++){
     if(isdigit((int)buf[i])==0){
@@ -28,50 +28,62 @@ int tfs_rename(const char *old, const char *new){
 	  if(iter->next!=NULL){
 	    iter=iter->next;
 	    int i;
+	    disk_id *disk=NULL;
 	    for(i=0;i<MAX_DISQUE;i++){
 	      if(disque_ouvert[i]!=NULL){
 		if(strcmp((disque_ouvert[i])->name,iter->name)==0){
-		  disk_id *disk=disque_ouvert[i];
-		  iter=iter->next;
-		  if(iter->next!=NULL){
-		    iter=iter->next;
-		    int part = atoi(iter->name);
-		    if(part>=0 && part<disk->nbPart){
-		      Part here=disk->tabPart[part];
-		      go_end(iter);
-		      char *oldname=iter->name;
-		      iter=iter->prec;
-		      iter->next=NULL;
-		      go_start(iter);
-		      int place;
-		      error e=find_name(iter,*disk,part, &place);
-		      if(e.errnb==0){
-			int numblock;
-			int pos;
-			if(name_in_dir(*disk,part,place,oldname,&numblock, &pos).errnb!=-1){
-			  block b;
-			  read_block(*disk, &b, numblock+here.num_first_block);
-			  int j;
-			  for(j=0; j<length; j++){
-			    b.buff[pos+4+j]=new[j];
-			  }
-			  for(j=length; j<28; j++){
-			    b.buff[j]='\0';
-			  }
-			  return 0;
-			}
-		      }
-		    }else{
-		       fprintf(stderr, "tfs_rename : no part \n");
-		    }
-		  }else{
-		     fprintf(stderr, "tfs_rename : wrong path \n");
-		  }
+		  disk=disque_ouvert[i];
+		  break;
 		}
 	      }
-	      return -1;
 	    }
-	    fprintf(stderr, "tfs_rename : no disk open \n");
+	    if(disk!=NULL){
+	      iter=iter->next;
+	      if(iter->next!=NULL){
+		iter=iter->next;
+		int part = atoi(iter->name);
+		if(part>=0 && part<disk->nbPart){
+		  Part here=disk->tabPart[part];
+		  go_end(iter);
+		  char *oldname=iter->name;
+		  free(iter->name);
+		  iter=iter->prec;
+		  iter->next=NULL;
+		  free(iter->next);
+		  go_start(iter);
+		  iter=iter->next;
+		  iter=iter->next;
+		  iter=iter->next;
+		  int place;
+		  error e=find_name(iter,*disk,part, &place);
+		  free_iter(iter);
+		  if(e.errnb==0){
+		    int numblock;
+		    int pos;
+		    if(name_in_dir(*disk,part,place,oldname,&numblock, &pos).errnb!=-1){
+		      block b;
+		      read_block(*disk, &b,int_to_little( numblock+here.num_first_block));
+		      int j;
+		      for(j=0; j<length; j++){
+			b.buff[pos+4+j]=new[j];
+		      }
+		      for(j=length; j<28; j++){
+			b.buff[j]='\0';
+		      }
+		      return 0;
+		    }
+		  }else{
+		    fprintf(stderr, "tfs_rename : wrong path \n");
+		  }
+		}else{
+		  fprintf(stderr, "tfs_rename : no part \n");
+		}
+	      }else{
+		fprintf(stderr, "tfs_rename : wrong path \n");
+	      }			      
+	    }else{
+	      fprintf(stderr, "tfs_rename : no disk open \n");
+	    }
 	  }else{
 	    fprintf(stderr, "tfs_rename : wrong path \n");		     
 	  }
@@ -110,7 +122,7 @@ int tfs_open(const char *name,int oflag){
 		  error e=find_name(iter,*disk,part, &place);
 		  if(e.errnb==0){
 		    block b;
-		    read_block(*disk,&b, here.num_first_block+1+(place-1)/16);
+		    read_block(*disk,&b,int_to_little( here.num_first_block+1+(place-1)/16));
 		    int a;
 		    readint_block(&b, &a,place%16+4);
 		    if(a==0){ //si num correspond a un fichier

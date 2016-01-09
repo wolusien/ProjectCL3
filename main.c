@@ -1,44 +1,44 @@
 //#include "manip.h"
-#include "manipvolume.h"
+#include "manipsystem.h"
 int main (int argc, char * argv[]){
-
+  /*
   char path[100]="je//suis//pas";
   iter i= decomposition(path);
   go_start(i);
   go_end(i);
   free_iter(i);
   exit(0);
-}
+  }*/
   
 
 
-  /*disk_id *id = malloc(sizeof(disk_id));
-  error e = start_disk("t.tfs",id);
   disk_id *id = malloc(sizeof(disk_id));
-  error e = start_disk("disk.tfs",id);
+  error e = start_disk("t.tfs",id);
+
   if(e.errnb != -1){
-	error e1 = test_file(id,0,"pd");
-	if(e1.errnb != -1){
-		//printf("La création du disk a réussi\n");
-		error e3 = remove_file_block(id,0,1);
-			if(e3.errnb != -1){
-				printf("Le remove_file block a réussi\n");	
-			}else{
-				printf("Le remove_file block a échoué\n");	
-			}	   
-	}else{
-		printf("La création du disk a échoué\n");
-	}
+	error er =test_file(id,0,"pd");
+
+	  block bl;
+	  read_block(*id, &bl,int_to_little(6));
+	  char aa[28];
+	  readname_rep(bl, aa, 0 );
+	  printf("ggggg  %s \n",aa);
+
+	/*	const char * a="FILE://t.tfs/0/pj";
+	const char * b="OOOOOOOOOOOOO";
+	tfs_rename(a, b);*/
+
   }else{
 	printf("Le start_disk a échoué\n");  
   }
+}
   // use_block(disque_ouvert[0], 14,  0);
   //use_block(disque_ouvert[0], 6,  0);
   //use_block(disque_ouvert[0], 8,  0);
   //use_block(disque_ouvert[0], 14,  0);
   //free_block(disque_ouvert[0], 14,  0);
   
-  printf("huhuhuhuh : \n");
+  /*printf("huhuhuhuh : \n");
   printf("huhuhuhuh : \n");
   disk_id *id = malloc(sizeof(disk_id));  
   start_disk("t.tfs",id);
