@@ -1,5 +1,6 @@
 #include "manipvolume.h"
 #include <ctype.h>
+
 #define MAX_FICHIERS 10
 
 typedef struct{
