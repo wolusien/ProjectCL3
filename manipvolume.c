@@ -423,6 +423,7 @@ error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, in
                 pos = id.tabPart[volume].num_first_block + numb;
                 read_block(id, &b2, pos);
                 block b3;
+                int pos2;
                 for (i = 0; i < 1024; i = i + 4) {
                     readint_block(&b2, &numb, i);
                     if (numb == 0) {
@@ -431,7 +432,7 @@ error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, in
                         return e;
                     }
                     pos2 = id.tabPart[volume].num_first_block + numb;
-                    read_block(id, &b3, numb);
+                    read_block(id, &b3, pos2);
                     int j;
                     for (j = 0; i < 1024; j++) {
                         readint_block(&b3, &numb, i);
