@@ -359,7 +359,8 @@ int tfs_close(int num) {
  * \return Integer number of characters written
  * */
  
-ssize_t tfs_write(int fildes, void* buff, size_t nbytes){
+ssize_t tfs_write(int fildes, void* buff, size_t numbytes){
+	int nbytes = (int)(numbytes);
 	char* vuff = buff;
 	if(fildes>-1){
 		int i = 0;
@@ -488,7 +489,7 @@ ssize_t tfs_write(int fildes, void* buff, size_t nbytes){
 										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
 										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
 									}
-									int* tab = getindirect1(disk,id_part,fpos);
+									int* tab = get_indirect1(disk,id_part,fpos);
 									for(i=10; i<nb_wblock; i++){
 										if(tab[i-10] >0){
 											tab_block[i] = tab[i-10];
@@ -559,7 +560,7 @@ ssize_t tfs_write(int fildes, void* buff, size_t nbytes){
 										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
 										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
 									}
-									int* tab = getindirect1(disk,id_part,fpos);
+									int* tab = get_indirect1(disk,id_part,fpos);
 									for(i=10; i<nb_wblock; i++){
 										if(tab[i-10] >0){
 											tab_block[i] = tab[i-10];
@@ -600,7 +601,7 @@ ssize_t tfs_write(int fildes, void* buff, size_t nbytes){
 										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
 										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
 									}
-									int* tab = getindirect1(disk,id_part,fpos);
+									int* tab = get_indirect1(disk,id_part,fpos);
 									for(i=10; i<nb_wblock; i++){
 										if(tab[i-10] >0){
 											tab_block[i] = tab[i-10];
