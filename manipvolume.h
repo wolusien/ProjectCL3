@@ -3,11 +3,11 @@
 
 
 
-#define TFS_READ = 1
-#define TFS_WRITE = 2
-#define TFS_RWRITE = 3
-#define TFS_APPEND = 4
-#define TFS_ORAPPEND = 5
+#define TFS_READ 1
+#define TFS_WRITE 2
+#define TFS_RWRITE 3
+#define TFS_APPEND 4
+#define TFS_ORAPPEND 5
 
 
 
@@ -20,6 +20,9 @@ error add_file_block(disk_id* disk,int id_part,int id_f, int id_block);
 error remove_file_block(disk_id* disk,int id_part,int id_f);
 error test_file(disk_id* disk, int id_part, char* name);
 error free_file_blocks(disk_id* disk, int volume, int id_f);
+int* get_indirect1(disk_id* disk, int id_part, int id_f);
+error set_size_file(disk_id* disk, int id_part, int id_f, int no);
+int lastbf(disk_id* disk, int id_part, int id_f);
 
 iter decomposition(char *path);
 error readname_rep(block b, char *a, int loc);

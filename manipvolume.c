@@ -422,7 +422,6 @@ error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, in
                 }
                 pos = id.tabPart[volume].num_first_block + numb;
                 read_block(id, &b2, pos);
-                int pos2;
                 block b3;
                 for (i = 0; i < 1024; i = i + 4) {
                     readint_block(&b2, &numb, i);
@@ -820,7 +819,6 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
 
 error test_file(disk_id* disk, int id_part, char* name) {
     error e;
-
     if ((*disk).nbPart > id_part && id_part > -1) {
         Part p = (*disk).tabPart[id_part];
         printf("Val of p.max_file_count dans test %d\n", p.max_file_count);
@@ -882,3 +880,157 @@ error test_file(disk_id* disk, int id_part, char* name) {
     }
     return e;
 }
+
+/**
+ * Get the indirect1 blocks
+ * \param disk Disk_id disk of the partition where the file is located
+ * \param id_part Integer number of the partition on disk
+ * \param id_f Integer number of the file on files Table on partition
+ * \return Array of indirect1 blocks number
+ * */
+int* get_indirect1(disk_id* disk, int id_part, int id_f){
+	int i;
+	int* tab = malloc(sizeof(int)*256);
+	if((*disk).nbPart > id_part && id_part > -1 && id_f>-1){
+		Part p = (*disk).tabPart[id_part];
+		block finfo;
+		block indirect1;
+		int indi1;
+		int fpos = id_f*64;
+		int fposf = (id_f*64)/1024;
+		if(fpos%1024 > 0){
+			fposf +=1;
+		}
+		read_block((*disk),&finfo,int_to_little(fposf + p.num_first_block));
+		if(fpos%16 > 0){
+			fpos = (fpos%16)-1;
+		}else{
+			fpos = 15;
+		}
+		readint_block(&finfo,&indi1,fpos*64+52);
+		if(indi1>0){
+			read_block((*disk),&indirect1,int_to_little(indi1 + p.num_first_block));
+			for(i=0; i<256; i++){
+				fill_block(&indirect1, tab[i],i*4);
+			}
+		}else{
+			for(i=0; i<256; i++){
+				tab[i] = 0;
+			}	
+		}
+	}
+	return tab;
+}
+
+/**
+ * Set the size of file to no 
+ * \param disk
+ * \param id_part
+ * \param id_f
+ * \param no
+ * \return Error
+ * */
+error set_size_file(disk_id* disk, int id_part, int id_f, int no){
+	error e;
+	if(id_part>-1 && id_part<(*disk).nbPart && id_f>-1){
+		Part p = (*disk).tabPart[id_part];
+		int pos = (id_f*64);
+		int nbpos = (pos/1024);
+		if(pos%1024 > 0){
+			nbpos += 1;
+		}
+		block finfo;
+		error e1 = read_block((*disk),&finfo,int_to_little(p.num_first_block+nbpos));
+		if(e1.errnb != -1){
+			int fpos;
+			if(id_f%16 > 0){
+				fpos = (id_f%16)-1;
+			}else{
+				fpos = 15;
+			}
+			error e2 = fill_block(&finfo, no, (fpos*64));
+			if(e2.errnb != -1){
+				e.errnb = 0;
+			}else{
+				e.errnb =-1;
+			}
+		}else{
+			e.errnb = -1;	
+		}
+	}else{
+		e.errnb = -1;
+	}
+	return e;
+} 
+
+
+
+int lastbf(disk_id* disk, int id_part, int id_f){
+	if(id_part>-1 && id_part<(*disk).nbPart && id_f>-1){
+		Part p = (*disk).tabPart[id_part];
+		int fpos = id_f*64;
+		int fbpos = (fpos/1024);
+		if(fbpos % 1024 > 0){
+			fbpos += 1;
+		}
+		block finfo;
+		read_block((*disk),&finfo,int_to_little(p.num_first_block + fbpos));
+		int pos;
+		if(fpos % 16 >0){
+			pos = (fpos % 16)-1; 
+		}else{
+			pos = 15;
+		}
+		int fsize = 0;
+		fill_block(&finfo,fsize, pos*64);
+		int tfsize = fsize /1024;
+		if(fsize %1024 >0){
+			tfsize += 1;
+		}
+		if(tfsize<11){
+			int result = 0;
+			fill_block(&finfo,result, pos*64+12+(tfsize-1)*4);
+			if(result>0){
+				return result;
+			}
+		}else if(tfsize<266){
+			int indi1 = -1;
+			fill_block(&finfo,indi1, (pos-1)*64+12+(10*4));
+			block indirect1;
+			read_block((*disk),&indirect1,int_to_little(p.num_first_block + indi1));
+			tfsize -= 10;
+			int result = 0;
+			fill_block(&indirect1, result, (tfsize-1)*4);
+			if(result>0){
+				return result;
+			}
+		}else{
+			int ind2;
+			readint_block(&finfo, (&ind2), (pos-1)*64 + 56);
+			printf("Val of ind2 %d\n",ind2);
+			block indirect2;
+			read_block((*disk), &indirect2, int_to_little(p.num_first_block + ind2));
+			int rsize = tfsize - 266;
+			int dsize = (rsize/256) + (rsize%256);
+			int ind1;
+			readint_block(&indirect2,(&ind1),(dsize-1));
+			printf("Val of ind1 %d\n",ind1);
+			block indirect1;
+			read_block((*disk), &indirect1, int_to_little(p.num_first_block+ind1));
+			int ind_to_rem = dsize - (rsize/256);
+			printf("Val of ind_to_rem %d\n",ind_to_rem);
+			int numblock_to_use;
+			if(ind_to_rem != 0 ){
+				readint_block(&indirect1,&numblock_to_use,ind_to_rem*4);
+			}else{
+				readint_block(&indirect1,&numblock_to_use,dsize*4);
+			}
+			return numblock_to_use;				
+		
+		}
+	}else{
+		return -1;
+	}
+	return -1;
+}
+

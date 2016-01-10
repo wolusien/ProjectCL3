@@ -351,3 +351,358 @@ int tfs_close(int num) {
     }
 }
 
+/**
+ * Write a buffer into a normal file 
+ * \param fildes Integer index of file on the tab of open files
+ * \param buff Pointer characters which will be written on the file
+ * \param nbytes Size_t Number of character which must be written 
+ * \return Integer number of characters written
+ * */
+ 
+ssize_t tfs_write(int fildes, void* buff, size_t nbytes){
+	char* vuff = buff;
+	if(fildes>-1){
+		int i = 0;
+		int j = 0;
+		int k = 0;
+		int str_length = strlen(vuff);
+		tfs_fd* f = fichiers_ouverts[fildes];
+		disk_id* disk = (*f).pdisk;
+		int id_part = (*f).partition;		
+		Part p = (*disk).tabPart[id_part];
+		int fpos = (*f).pos;
+		printf("Val of (*f).pos %d\n",(*f).pos);
+		int fflag = (*f).flag;
+		printf("Val of (*f).flag %d\n",(*f).flag);
+		switch(fflag){
+			case TFS_READ : 
+				fprintf(stderr,"tfs_write : You can't use this flags for this function\n");
+				return -1;
+				break;
+																								
+			case TFS_WRITE : 
+				if(nbytes>0){
+					int nb_wblock = (nbytes/1024);
+					if(nbytes%1024 > 0){
+						nb_wblock += 1;
+					}
+					printf("Val of nb_wblock %d\n",nb_wblock);
+					int fpos_block = (fpos*64);
+					printf("Val of fpos_block %d\n",fpos_block);
+					int fblock = (fpos_block/1024);
+					if(fpos_block%1024 > 0){
+						fblock += 1;
+					}
+					fblock += p.num_first_block;
+					printf("Val of fblock %d\n",fblock);
+					block finfo;
+					read_block((*disk),&finfo,int_to_little(fblock));
+					int f_posf;
+					if(fpos_block % 16 > 0){
+						f_posf = 	fpos_block % 16;
+					}else{
+						f_posf = fpos_block / 16;
+					}
+					printf("Val of f_posf %d\n",f_posf);
+					int fsize;
+					readint_block(&finfo, &fsize, (f_posf-1)*64);
+					printf("Val of fsize %d\n",fsize);
+					int nb_bfsize = fsize/1024;
+					if(fsize%1024 > 0){
+						nb_bfsize += 1;
+					}
+					if(nb_bfsize>=0){
+						if(nb_bfsize < 11){
+							if(nb_wblock<11){
+								//Case where vuff which we write is bigger than the size file
+								if(nb_bfsize < nb_wblock){
+									for(i=0; i< nb_wblock-nb_bfsize; i++){
+										//We add blocks in order to write vuff
+										error e1 = add_file_block(disk,id_part,fpos,p.first_free_block);
+										if(e1.errnb == -1){
+											fprintf(stderr,"tfs_write : Problem with the udpate of size file (increase size)\n");
+											return -1;
+										}
+									} 
+									int tab_block[nb_wblock];
+									for(i=0; i<nb_wblock; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[i] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}else{
+									int tab_block[nb_wblock];
+									for(i=0; i<nb_wblock; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									for(i=0; i<	nb_bfsize-nb_wblock; i++){
+										error e1 = remove_file_block(disk,id_part,fpos);
+										if(e1.errnb == -1){
+											fprintf(stderr,"tfs_write : Problem with the udpate of size file\n");
+											return -1;
+										}  
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[k] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}
+							}else{
+								if(nb_wblock <266){
+									for(i = 0; i < nb_wblock - nb_bfsize; i++){
+										error e1 = add_file_block(disk, id_part, fpos, p.first_free_block); 
+										if(e1.errnb == -1){
+											return -1;
+										}
+									}
+									int tab_block[nb_wblock];
+									for(i=0; i<10; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									int* tab = getindirect1(disk,id_part,fpos);
+									for(i=10; i<nb_wblock; i++){
+										if(tab[i-10] >0){
+											tab_block[i] = tab[i-10];
+										}
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[i] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}else{
+									fprintf(stderr, "tfs_write : Your nbytes is too high compare to system capacity\n");	
+								}
+							}	
+						}else if(nb_bfsize <266){
+							if(nb_wblock<nb_bfsize){
+								if(nb_wblock <11){
+									int tab_block[nb_wblock];
+									for(i=0; i<nb_wblock; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									for(i=0; i<	nb_bfsize-nb_wblock; i++){
+										error e1 = remove_file_block(disk,id_part,fpos);
+										if(e1.errnb == -1){
+											fprintf(stderr,"tfs_write : Problem with the udpate of size file\n");
+											return -1;
+										}  
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[k] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}else if(nb_wblock <266){
+									int block_to_remove = nb_bfsize - nb_wblock;
+									for(i=0; i<block_to_remove; i++){
+										error e1 = remove_file_block(disk,id_part,fpos);
+										if(e1.errnb == -1){
+											fprintf(stderr,"tfs_write : Problem with the udpate of size file\n");
+											return -1;
+										}
+									}
+									int tab_block[nb_wblock];
+									for(i=0; i<10; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									int* tab = getindirect1(disk,id_part,fpos);
+									for(i=10; i<nb_wblock; i++){
+										if(tab[i-10] >0){
+											tab_block[i] = tab[i-10];
+										}
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[i] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}else{
+									fprintf(stderr,"tfs_write : Your nbytes is too high compare to system capacity\n");
+									return -1;
+								}
+							}else{
+								if(nb_wblock < 266){
+									int nbblock_to_add = nb_wblock-nb_bfsize;
+									for(i=0; i<nbblock_to_add; i++){
+										error e1 = add_file_block(disk,id_part,fpos,p.first_free_block);
+										if(e1.errnb == -1){
+											fprintf(stderr,"tfs_write : Problem with the udpate of size file (increase size)\n");
+											return -1;
+										}
+									}
+									int tab_block[nb_wblock];
+									for(i=0; i<10; i++){
+										fill_block(&finfo, tab_block[i], f_posf+12+(i*4));
+										printf("Val of tab_block[%d] %d\n",i,tab_block[i]);
+									}
+									int* tab = getindirect1(disk,id_part,fpos);
+									for(i=10; i<nb_wblock; i++){
+										if(tab[i-10] >0){
+											tab_block[i] = tab[i-10];
+										}
+									}
+									block bw;
+									for(k=0; k<nb_wblock; k ++){
+										if(tab_block[i] != 0){
+											for(i=0; i<str_length ; i++){
+												bw.buff[j] = vuff[i];
+												j++;
+												if(j == 1023){
+													write_block((*disk),bw,int_to_little(tab_block[k] + p.num_first_block));
+													j=0;
+													printf("Val of tab_block[%d] + p.num_first_block %d\n",k,tab_block[k] + p.num_first_block);
+												}
+											}
+										}
+									}
+									set_size_file(disk,id_part,fpos,(nbytes));
+									return (nbytes);
+								}else{
+									fprintf(stderr,"tfs_write : Your nbytes are too higher comparte to system capacity\n");
+									return -1;
+								}
+							}
+						}else{
+							fprintf(stderr,"tfs_write : Your nbytes are too higher comparte to system capacity\n");
+							return -1;								
+						}
+					}else{
+						fprintf(stderr,"tfs_write : Wrong argument for the file\n");
+						return -1;
+					} 
+				}else{
+					fprintf(stderr,"tfs_write : Wrong argument for nbytes %d\n",nbytes);
+					return -1;
+				}
+			case TFS_APPEND :
+				if(nbytes>0){
+					int nb_wblock = (nbytes/1024);
+					if(nbytes%1024 > 0){
+						nb_wblock += 1;
+					}
+					printf("Val of nb_wblock %d\n",nb_wblock);
+					int fpos_block = (fpos*64);
+					printf("Val of fpos_block %d\n",fpos_block);
+					int fblock = (fpos_block/1024);
+					if(fpos_block%1024 > 0){
+						fblock += 1;
+					}
+					fblock += p.num_first_block;
+					printf("Val of fblock %d\n",fblock);
+					block finfo;
+					read_block((*disk),&finfo,int_to_little(fblock));
+					int f_posf;
+					if(fpos_block % 16 > 0){
+						f_posf = 	fpos_block % 16;
+					}else{
+						f_posf = fpos_block / 16;
+					}
+					printf("Val of f_posf %d\n",f_posf);
+					int fsize;
+					readint_block(&finfo, &fsize, (f_posf-1)*64);
+					printf("Val of fsize %d\n",fsize);
+					int nb_bfsize = fsize/1024;
+					if(fsize%1024 > 0){
+						nb_bfsize += 1;
+					}
+					if(nb_wblock > nb_bfsize){
+						for(i=0; i< nb_bfsize - nb_wblock; i++){
+							error e1 = add_file_block(disk,id_part,fpos,p.first_free_block);
+							if(e1.errnb == -1){
+								fprintf(stderr,"tfs_write : Problem with the udpate of size file (increase size)\n");
+								return -1;
+							}
+						}
+					}
+					int u = 0;
+					while(u<nbytes){
+						int bck = lastbf(disk,id_part,fpos);
+						if(bck!=-1 && bck!= 0){
+							block bloc;
+							read_block((*disk),&bloc, int_to_little(p.num_first_block + bck));
+							for(i=0;i<1024; i++){
+								bloc.buff[i]=vuff[u];
+								u++;
+							}
+							write_block((*disk),bloc, int_to_little(p.num_first_block + bck));
+						}
+					}
+					set_size_file(disk,id_part,fpos,(nbytes+fsize));
+					return (nbytes);
+				}else{
+					fprintf(stderr,"tfs_write : Wrong argument for nbytes %d\n",nbytes);
+					return -1;
+				}
+		}
+		return 0;
+	}else{
+		return fildes;
+	}
+}
+
+
