@@ -22,29 +22,33 @@ int main(int argc, char *argv[]) {
                         return -1;
                     }
                 } else {
-                    printf("la");
+                    
                     if (i->next != NULL) {
                         i = i->next;
                         while (i->next != NULL) {
                             if (chdir(i->name) != -1) {
                                 i = i->next;
                             } else {
+                                fprintf(stderr,"can't");
                                 return -1;
                             }
                         }
-                        int a = mkdir(i->name, O_CREAT | O_RDWR);
+                        int a = mkdir(i->name, 0777);
+                        if(a==-1){
+                            printf("name %s already exist \n",i->name);
+                        }
                         return a;
                     }
                 }
 
             } else {
-                printf("wrong path");
+                fprintf(stderr,"wrong path\n");
             }
         } else {
-            printf("wrong path");
+            fprintf(stderr,"wrong path\n");
             exit(-1);
         }
     }
-    printf("wrong number arguments");
+    fprintf(stderr,"wrong number arguments");
     return -1;
 }

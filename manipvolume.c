@@ -313,7 +313,6 @@ iter decomposition(char *path) {
         it = it->next;
         token = strtok(NULL, separateur);
     }
-    printf("fin\n");
     return current;
 }
 
