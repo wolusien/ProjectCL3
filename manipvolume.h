@@ -1,6 +1,6 @@
 /**
  * \file manipvolume.h
- * \brief File contains fucntions and struct for partition and blocks
+ * \brief File contains functions and struct for partition and blocks
  * \author DJEBALI LABADENS HUMBERT
  **/
 

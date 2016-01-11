@@ -1,6 +1,6 @@
 /**
  * \file manipsystem.h
- * \brief File contains fucntions and struct for manage file and directory
+ * \brief File contains functions and struct for manage file and directory
  * \author DJEBALI LABADENS HUMBERT
  */
 
