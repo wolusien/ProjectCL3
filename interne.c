@@ -1,5 +1,13 @@
 #include "manip.h"
 
+/**
+ * \fn error read_physical_block(disk_id id,block *b,uint32_t num)
+ * \brief Read block on disk at position num
+ * \param id Disk_id* representing the disk which will be used
+ * \param b Block* will contain what whe have read
+ * \param num Int represents block positions on disk
+ * \return Error error's number value is 0 on success -1 on fail
+ * */
 error read_physical_block(disk_id id,block *b,uint32_t num){
     error e;
     if(id.id>=0 && id.id<MAX_DISQUE){
@@ -27,7 +35,14 @@ error read_physical_block(disk_id id,block *b,uint32_t num){
     return e;
 }
 
-
+/**
+ * \fn error write_physical_block(disk_id id,block b,uint32_t num)
+ * \brief Write block on disk at position num
+ * \param id Disk_id* representing the disk which will be used
+ * \param b Block* will contain what whe have to write
+ * \param num Int represents block positions on disk
+ * \return Error error's number value is 0 on success -1 on fail
+ * */
 error write_physical_block(disk_id id,block b,uint32_t num){
     error e;
     if(id.id>=0 && id.id<MAX_DISQUE){
