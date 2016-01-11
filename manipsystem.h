@@ -1,7 +1,15 @@
+/**
+ * \file manipsystem.h
+ * \brief File contains functions and struct for manage file and directory
+ * \author DJEBALI LABADENS HUMBERT
+ */
+
 #include "manipvolume.h"
 #include <ctype.h>
 
 #define MAX_FICHIERS 10
+
+\struct tfs_fd manipsystem.h "File_descriptor"	
 
 typedef struct{
   disk_id *pdisk;

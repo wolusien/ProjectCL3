@@ -1,6 +1,11 @@
+/**
+ * \file manipvolume.h
+ * \brief File contains functions and struct for partition and blocks
+ * \author DJEBALI LABADENS HUMBERT
+ **/
+
 #include "manip.h"
 #include "iter.h"
-
 
 
 #define TFS_READ 1

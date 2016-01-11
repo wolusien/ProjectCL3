@@ -354,7 +354,8 @@ int tfs_close(int num) {
 }
 
 /**
- * Write a buffer into a normal file 
+ * \fn ssize_t tfs_write(int fildes, void* buff, size_t numbytes)
+ * \brief Write a buffer into a normal file 
  * \param fildes Integer index of file on the tab of open files
  * \param buff Pointer characters which will be written on the file
  * \param nbytes Size_t Number of character which must be written 
@@ -707,5 +708,3 @@ ssize_t tfs_write(int fildes, void* buff, size_t numbytes){
 		return fildes;
 	}
 }
-
-

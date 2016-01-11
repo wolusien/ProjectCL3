@@ -157,10 +157,26 @@ error start_disk(char *name,disk_id *id) {
   }
   return e;
 }
+
+/**
+ * \fn error read_block(disk_id id,block *b,uint32_t num)
+ * \brief Read block on disk at position num
+ * \param id Disk_id* representing the disk which will be used
+ * \param b Block* will contain what whe have read
+ * \param num Int represents block positions on disk
+ * \return Error error's number value is 0 on success -1 on fail
+ * */
 error read_block(disk_id id,block *b,uint32_t num){
   return read_physical_block(id,b,num);
 }
-
+/**
+ * \fn error write_block(disk_id id,block b,uint32_t num)
+ * \brief Write block on disk at position num
+ * \param id Disk_id* representing the disk which will be used
+ * \param b Block* will contain what whe have to write
+ * \param num Int represents block positions on disk
+ * \return Error error's number value is 0 on success -1 on fail
+ * */
 error write_block(disk_id id,block b,uint32_t num){
   return write_physical_block(id,b,num);
 }

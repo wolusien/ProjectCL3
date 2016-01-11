@@ -169,6 +169,7 @@ error use_block(disk_id *id, int numblock, int volume) {
         return e;
     }
 }
+
 /**
  * \fn error add_free_file(disk_id id, int volume, int file)
  * \brief rajoute un fichier dans la liste des fichier libres en modifiant le chainage
@@ -178,6 +179,7 @@ error use_block(disk_id *id, int numblock, int volume) {
  * \param file le fichier qui vient d'être liberer
  * \return une erreur  
  */
+
 error add_free_file(disk_id id, int volume, int file) {
     error e;
     block filetable;
@@ -600,12 +602,15 @@ error free_file_blocks(disk_id* disk, int volume, int id_f) {
     }
 }
 
-/*
-disk: disk wich will be used
-id_f : num file on file Table  
-id_block : num of the block on partition
-id_part : num of the partition in tabPart
- */
+/**
+ *\fn error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) 
+ *\brief Add block to a file by adding num block on the file Table for the file 
+ *\param disk Disk_id* disk containing the file 
+ *\param id_part Int represents the number of the partition on teh disk
+ *\param id_f Int represents the number file on file Table
+ *\param id_block
+ *\return Error if the operation is a success e.errnb = 0 else -1 
+ * */
 error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
     error e;
     error e1;
@@ -703,12 +708,14 @@ error add_file_block(disk_id* disk, int id_part, int id_f, int id_block) {
     return e;
 }
 
-/*
- * Remove the last block of file
- *disk: disk wich will be used 
- *id_f : num file on file Table 
- * id_part : num of the partition in tabPart
- */
+/**
+ *\fn error remove_file_block(disk_id* disk, int id_part, int id_f) 
+ *\brief Remove the last block of file
+ *\param disk Disk_id* disk wich will be used 
+ *\param id_f Int num file on file Table 
+ *\param id_part Int num of the partition in tabPart
+ *\return Error Error if the operation is a success e.errnb = 0 else -1 
+ **/
 error remove_file_block(disk_id* disk, int id_part, int id_f) {
     error e;
     error e1;
@@ -831,7 +838,6 @@ error remove_file_block(disk_id* disk, int id_part, int id_f) {
         fprintf(stderr, "remove_file_block : Problem with id_part %d\n", id_part);
     }
     return e;
-
 }
 
 error test_file(disk_id* disk, int id_part, char* name) {
@@ -846,10 +852,10 @@ error test_file(disk_id* disk, int id_part, char* name) {
             block c;
             c.buff[0] = 'E';
             c.buff[1] = 'n';
-            c.buff[2] = 'f';
-            c.buff[3] = 'o';
-            c.buff[4] = 'i';
-            c.buff[5] = 'r';
+            c.buff[2] = 'c';
+            c.buff[3] = 'h';
+            c.buff[4] = 'a';
+            c.buff[5] = 'n';
             c.buff[6] = 'e';
             c.buff[7] = '!';
             int i;
@@ -899,7 +905,8 @@ error test_file(disk_id* disk, int id_part, char* name) {
 }
 
 /**
- * Get the indirect1 blocks
+ * \fn int* get_indirect1(disk_id* disk, int id_part, int id_f)
+ * \brief Get the indirect1 blocks of a file
  * \param disk Disk_id disk of the partition where the file is located
  * \param id_part Integer number of the partition on disk
  * \param id_f Integer number of the file on files Table on partition
@@ -940,11 +947,12 @@ int* get_indirect1(disk_id* disk, int id_part, int id_f){
 }
 
 /**
- * Set the size of file to no 
+ * \fn error set_size_file(disk_id* disk, int id_part, int id_f, int no)
+ * \brief Set the size of file to no 
  * \param disk
  * \param id_part
  * \param id_f
- * \param no
+ * \param no new size file
  * \return Error
  * */
 error set_size_file(disk_id* disk, int id_part, int id_f, int no){
@@ -981,7 +989,12 @@ error set_size_file(disk_id* disk, int id_part, int id_f, int no){
 } 
 
 
-
+/**
+ * \fn int lastbf(disk_id* disk, int id_part, int id_f)
+ * \brief Return the last block use by the file
+ * \param disk Disk_id* which containing the file
+ * \param id_part Int
+ * */
 int lastbf(disk_id* disk, int id_part, int id_f){
 	if(id_part>-1 && id_part<(*disk).nbPart && id_f>-1){
 		Part p = (*disk).tabPart[id_part];

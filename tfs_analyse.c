@@ -1,5 +1,11 @@
 #include "manip.h"
-
+/**
+ *\fn int main(int argc, char* argv[])
+ *\brief Command tfs_analyse Show a little description of a disk, the option -p is for a partition
+ *\param argc Integer represents strings number on argv 
+ *\param argv Array of string
+ *\return  Integer represents the result of the command
+ * */
 int main(int argc, char* argv[]){
   error e;
   int i;
