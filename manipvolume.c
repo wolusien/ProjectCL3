@@ -1,3 +1,11 @@
+/**
+ * \file manipvolume.c
+ * \brief fichier contenant les fonctios manipulant le volume
+ * \author Lucas.L Abel.H Wissam.D
+ *
+ * 
+ *
+ */
 #include "manipvolume.h"
 
 error free_block(disk_id *id, int numblock, int volume) {
@@ -161,7 +169,15 @@ error use_block(disk_id *id, int numblock, int volume) {
         return e;
     }
 }
-
+/**
+ * \fn error add_free_file(disk_id id, int volume, int file)
+ * \brief rajoute un fichier dans la liste des fichier libres en modifiant le chainage
+ * 
+ * \param id descripteur de disk sur lequel on doit travailler
+ * \param volume partition sur laquel on doit travailler
+ * \param file le fichier qui vient d'être liberer
+ * \return une erreur  
+ */
 error add_free_file(disk_id id, int volume, int file) {
     error e;
     block filetable;
@@ -230,6 +246,15 @@ error add_free_file(disk_id id, int volume, int file) {
     return e;
 }
 
+/**
+ * \fn error remove_free_file(disk_id id, int volume, int file)
+ * \brief enleve un fichier dans la liste des fichier libres en modifiant le chainage
+ * 
+ * \param id descripteur de disk sur lequel on doit travailler
+ * \param volume partition sur laquel on doit travailler
+ * \param file le fichier qui vient d'être utiliser
+ * \return une erreur  
+ */
 error remove_free_file(disk_id id, int volume, int file) {
     error e;
     block filetable;
@@ -294,7 +319,13 @@ error remove_free_file(disk_id id, int volume, int file) {
     e.errnb = -1;
     return e;
 }
-
+/**
+ * \fn iter decomposition(char *path)
+ * \brief decompose un chemin en itération en leur attribuant le nom des dossier du chemin 
+ * 
+ * \param path le chemin a décomposer
+ * \return  une iteration correspondant au début du chemin
+ */
 iter decomposition(char *path) {
     char *separateur = "//";
     char *token = strtok(path, separateur);
@@ -334,7 +365,16 @@ error readname_rep(block b, char *a, int loc) { //loc est l'endroit du bloc ou o
         return e;
     }
 }
-
+/**
+ * \fn int name_in_block(disk_id id, int volume, int num_block, char *name)
+ * \brief cherche le nom d'un fichier dans un bloc
+ * 
+ * \param id descripteur de disque sur lequel on travaille
+ * \param volume sur lequel on travaille
+ * \param num_block bloc sur lequel on travaille
+ * \param name nom du fichier 
+ * \return la place dans le bloc -1 sinon
+ */
 int name_in_block(disk_id id, int volume, int num_block, char *name) {
     if (id.nbPart > volume) {
         int pos = id.tabPart[volume].num_first_block + num_block;
@@ -355,6 +395,17 @@ int name_in_block(disk_id id, int volume, int num_block, char *name) {
         return -1;
     }
 }
+
+/**
+ * \fn error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, int *posi) 
+ * \param id descripteur de disque sur lequel on travaille
+ * \param volume sur lequel on travaille
+ * \param dir repertoire dans lequel on cherche
+ * \param name nom de fichier recherché
+ * \param numblock pointeur d'entier a remplir avec le numéro de bloc ou se trouve le fichier
+ * \param posi pointeur d'entier a remplire avec la position du fichier dans le bloc
+ * \return une erreur
+ */
 
 error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, int *posi) {
     error e;
@@ -467,41 +518,7 @@ error name_in_dir(disk_id id, int volume, int dir, char *name, int *numblock, in
     return e;
 }
 
-void file_tableau(int *tab[16], disk_id id, int volume) {
-    if (volume < id.nbPart) {
-        int position = id.tabPart[volume].num_first_block;
-        int maxf = id.tabPart[volume].max_file_count;
-        tab = malloc(sizeof (int)*maxf);
-        int fts = id.tabPart[volume].file_table_size;
-        int i;
-        block ft;
-        for (i = 0; i < fts; i++) {
-            read_block(id, &ft, position + 1 + i);
-            int j;
-            int max;
-            if (i == fts - 1) {
-                max = maxf - 16 * i;
-            } else {
-                max = 16;
-            }
-            for (j = 0; j < max; j++) {
-                int k;
-                for (k = 0; k < 16; k++) {
-                    int nombre;
-                    readint_block(&ft, &nombre, k * 4);
-                    tab[j + i * 16][k] = nombre;
-                }
-            }
-        }
 
-    } else {
-        printf("le volume n'existe pas");
-    }
-
-}
-
-
-//on considère que iter correspond au premier dossier du chemin
 
 error find_name(iter i, disk_id disk, int part, int *place) {
     error e;

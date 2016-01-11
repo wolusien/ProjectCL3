@@ -1,3 +1,11 @@
+/**
+ * \file manip.h
+ * \brief api de manipulation du disk
+ * \author Lucas.L Abel.H Wissam.D
+ *
+ * 
+ *
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,6 +27,11 @@
 #define MAX_PART 254
 #define MAGIC_NUMBER 31534654
 
+/**
+ * \struct Part
+ * \brief descripteur de partition
+ **/
+
 typedef struct{
     int taille;//number of blocks
     int num_first_block;//number of the first block in the disk
@@ -30,6 +43,12 @@ typedef struct{
     int file_table_size;//number of blocks
 }Part;
 
+/**
+ * \struct disk_id
+ * \brief descripteur de disk
+ * 
+ *  
+ */
 typedef struct{
     int id;
     char *name;

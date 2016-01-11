@@ -1,3 +1,11 @@
+/**
+ * \file manipdisk.c
+ * \brief api de manipulation du disk
+ * \author Lucas.L Abel.H Wissam.D
+ *
+ * Programme de manipulation de disque.
+ *
+ */
 #include "manip.h"
 
 error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
@@ -39,7 +47,14 @@ error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on
   }
 }
 
-
+/**
+ *\fn  start_disk(char *name,disk_id *id)
+ * \brief ouvre un disque et remplit son descripteur
+ * 
+ * \param name chaine de caractere représentant le nom du disk
+ * \param id un pointeur de disk_id qui est un pointeur à remplir
+ * \return renvoie une erreur
+ **/
 error start_disk(char *name,disk_id *id) {
   error e;
   if(name != NULL){
@@ -154,7 +169,13 @@ error sync_disk(disk_id id){
   error e;
   return e;
 }
-
+/**
+ * \fn error stop_disk(disk_id id)
+ *\brief ferme un disque et vide son descripteur de disque 
+ *
+ * \param id un disk_id
+ * \return une erreur avec errnb égal 0 sinon -1
+ */
 error stop_disk(disk_id id){
   error er;
   if(disque_ouvert[id.id]!=NULL){
