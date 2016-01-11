@@ -1,6 +1,9 @@
 #include "manip.h"
 
-
+/**
+ *\fn main(int argc, char *argv[]){
+ *\brief on initialise une partition, c'est a dire on remplie son premier block avec toutes les informations nécessaires, puis on construit le file table, avec le chainage des fichiers libres, puis on construit le dossier racine(on ajoute aussi son entrée dans la table des fichiers), et enfin on initialise le chainage des blocks libres.
+ **/
 int main(int argc, char *argv[]){
   int i; // i pour les for
   if(argc==6){
@@ -33,13 +36,15 @@ int main(int argc, char *argv[]){
 		id_first+=id->tabPart[i].taille;
 	      }
 	      write_block(*id, b,int_to_little(id_first)); 
-	      
+	 	      
 	      //initialisation file table
 	      block file_table;
 	      int k;
 	      for(k=0;k<1024;k++){
 		file_table.buff[k]='\0';
 	      }
+		printf("1 %d \n", taille_descripteur);
+		printf("2 %d \n", id_first);
 	      for(i=1; i<=taille_descripteur; i++){
 		if(i==1){
 		  fill_block(&file_table, 64, 0);
@@ -52,17 +57,16 @@ int main(int argc, char *argv[]){
 		int j;
 		for(j=1; j<=15; j++){
 		  if((16*(i-1)+j)<file_count){
-		    printf("ujh \n");
 		    fill_block(&file_table, (i-1)*16+j+1, j*64+60);
 		  }else{
 		    if(16*(i-1)+j==file_count){
 		       fill_block(&file_table, (i-1)*16+j, j*64+60);
-		       printf("uu \n");
- 		    }
+		    }
 
 		  }
 		}
 		write_physical_block(*id, file_table,i+id_first);
+		printf("aa %d \n", i+id_first);
 		for(k=0;k<1024;k++){
 		  file_table.buff[k]='\0';
 		}

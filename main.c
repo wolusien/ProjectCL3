@@ -1,12 +1,12 @@
 //#include "manip.h"
 #include "manipsystem.h"
 int main (int argc, char * argv[]){
-
+  /*
     disk_id *id = malloc(sizeof(disk_id));
     start_disk("disk.tfs",id);
     mkdir("FILE://disk.tfs//0//lalallala",O_CREAT);
     stop_disk(*id);
-}
+    }*/
   /*
   char path[100]="je//suis//pas";
   iter i= decomposition(path);
@@ -18,10 +18,11 @@ int main (int argc, char * argv[]){
 
   
 
-/*
 
-  if(e.errnb != -1){
-	error er =test_file(id,0,"pd");
+
+    disk_id *id = malloc(sizeof(disk_id));
+    start_disk("tt.tfs",id);
+	test_file(id,0,"pd");
 
 	  block bl;
 	  read_block(*id, &bl,int_to_little(6));
@@ -29,14 +30,12 @@ int main (int argc, char * argv[]){
 	  readname_rep(bl, aa, 0 );
 	  printf("ggggg  %s \n",aa);
 
-		const char * a="FILE://t.tfs/0/pj";
-	const char * b="OOOOOOOOOOOOO";
+	  const char * a="FILE://t.tfs/0/pj";
+	const char * b="MMMMMMMMMM";
 	tfs_rename(a, b);
 
-  }else{
-	printf("Le start_disk a échoué\n");  
-  }
-}*/
+  
+}
   // use_block(disque_ouvert[0], 14,  0);
   //use_block(disque_ouvert[0], 6,  0);
   //use_block(disque_ouvert[0], 8,  0);
