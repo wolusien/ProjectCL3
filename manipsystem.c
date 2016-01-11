@@ -1,5 +1,19 @@
+/**
+ * \file manipsysteme.c
+ * \brief fichier contenant les fonctios manipulant le volume
+ * \author Lucas.L Abel.H Wissam.D
+ *
+ * 
+ *
+ */
 #include "manipsystem.h"
-
+/**
+ * \fn int isNumber(char *buf)
+ * \brief verifie si une chaine de caractère est un nombre
+ * 
+ * \param buf chaine de caractere a verifie
+ * \return 0 si buf est un nombre 
+ */
 int isNumber(char *buf){
   int boolean=0;
   int i;
@@ -11,7 +25,14 @@ int isNumber(char *buf){
   }
   return boolean;
 }
-
+/**
+ * \fn int tfs_mkdir(const char *path, mode_t mode)
+ * \brief crée un fichier sur le disque 
+ * 
+ * \param path
+ * \param mode
+ * \return 0 si sa à fonctionner -1 sinon
+ */
 int tfs_mkdir(const char *path, mode_t mode) {
     iter i = decomposition((char *) path);
     if (strcmp("FILE:", i->name) == 0) {

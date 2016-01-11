@@ -1,5 +1,16 @@
+/**
+ * \file iter.c
+ * \brief fichier contenant les fonctions liées au itération
+ * \author DJEBALI LABADENS HUMBERT
+ */
 #include "iter.h"
-
+/**
+ * \fn void free_iter(iter i)
+ * \brief free toutes les itérations
+ * 
+ * \param i
+ * \return void
+ */
 void free_iter(iter i){
   
   if(i != NULL){
@@ -14,6 +25,13 @@ void free_iter(iter i){
     }   
   }
 }
+/**
+ * \fn iter go_end(iter it)
+ * \brief ramene a la fin du chemin
+ * 
+ * \param it itération qu'on veut ramener a celle du début
+ * \return une itération 
+ */
 iter go_end(iter it){
     iter current = it;
     if(current !=NULL){
@@ -25,6 +43,13 @@ iter go_end(iter it){
     return NULL;
 }
 
+/**
+ * \fn iter go_start(iter it)
+ * \brief ramene au début du chemin
+ * 
+ * \param it itération qu'on veut ramener a celle de fin
+ * \return une itération 
+ */
 iter go_start(iter it){
     iter current= it;
     if(current != NULL){
@@ -35,6 +60,13 @@ iter go_start(iter it){
   }
     return NULL;
 }
+/**
+ * \fn iter go_next(iter it)
+ * \brief avance dans le chemin
+ * 
+ * \param it 
+ * \return it->next
+ */
 iter go_next(iter it){
     iter current =it;
     if(current != NULL && it->next !=NULL){
@@ -43,7 +75,13 @@ iter go_next(iter it){
     }
     return NULL;
 }
-
+/**
+ * \fn iter go_prec(iter it)
+ * \brief recul dans le chemin
+ * 
+ * \param it 
+ * \return it->next
+ */
 iter go_prec(iter it){
     iter current = it;
     if(current != NULL && it->prec !=NULL){
