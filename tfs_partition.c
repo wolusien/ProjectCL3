@@ -1,6 +1,12 @@
 #include "manip.h"
 
-
+/**
+ *\fn int main(int argc, char* argv[])
+ *\brief Command tfs_partition Create partitions on disk given on tab argv 
+ *\param argc Integer represents strings number on argv 
+ *\param argv Array of string
+ *\return  Integer represents the result of the command
+ **/
 int main(int argc, char* argv[]) {
   error e;
   int i;
