@@ -25,7 +25,7 @@
 #define MAX_DISQUE 5
 #define DEFAULT_SIZE_TFS 50
 #define MAX_PART 254
-#define MAGIC_NUMBER 31534654
+#define MAGIC_NUMBER 0x31534654
 
 /**
  * \struct Part

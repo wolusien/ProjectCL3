@@ -1,7 +1,17 @@
+
+/**
+ * \file iter.h
+ * \brief 
+ * \author Lucas.l Abel.h Wissam.D
+ */
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+/**
+ *\struct  iter 
+ * 
+ * une itération est un objet chaine par son précédent et son suivant et représenté par un nom
+ */
 struct iter{
   char *name;
   struct iter *next;
