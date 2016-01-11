@@ -1,5 +1,13 @@
 #include "manipvolume.h"
 
+/**
+ * \fn free_block(disk_id *id, int numblock, int volume) {
+ * \brief on libère le block numblock(c'est à dire on l'ajoute dans la liste des blocks libres) de la partition volume du disk id.
+ * \param id est le disk
+ * \param numblock est le numéro du block
+ * \param volume le numéro du volume
+ * \return on retourne une erreur
+ * */
 error free_block(disk_id *id, int numblock, int volume) {
     error e;
     if (id != NULL) {
@@ -79,6 +87,14 @@ error free_block(disk_id *id, int numblock, int volume) {
     }
 }
 
+/**
+ * \fn use_block(disk_id *id, int numblock, int volume) {
+ * \brief on utilise le block numblock(c'est à dire on l'enlève dans la liste des blocks libres) du volume volume du disk id.
+ * \param id est le disk
+ * \param numblock est le numéro du block
+ * \param volume le numéro du volume
+ * \return on retourne une erreur
+ * */
 error use_block(disk_id *id, int numblock, int volume) {
     error e;
     if (id != NULL) {
@@ -501,7 +517,16 @@ void file_tableau(int *tab[16], disk_id id, int volume) {
 }
 
 
-//on considère que iter correspond au premier dossier du chemin
+
+/**
+ * \fn find_name(iter i, disk_id disk, int part, int *place) {
+ * \brief on cherche iter(qui correspond a un chemin) dans la partition part du disk , et on remplie place avec le numéro du fichier dans la table des fichiers.
+ * \param disk est le disk
+ * \param i est l'iterateur.
+ * \param part le numéro du volume
+ * \param place est l'entier qu'on va remplir.
+ * \return on retourne une erreur
+ * */
 
 error find_name(iter i, disk_id disk, int part, int *place) {
     error e;
@@ -547,6 +572,14 @@ error find_name(iter i, disk_id disk, int part, int *place) {
     return e;
 }
 
+/**
+ *\fn free_file_blocks(disk_id* disk, int volume, int id_f) {
+ *\brief cette fonction permet de libérer tout les blocks d'un fichier.
+ *\param disk
+ *\param volume
+ *\param id_f représente le numéro du fichier dans la table des fichiers dont on va libérer les blocks
+ *\return on retourne une erreur
+ **/
 error free_file_blocks(disk_id* disk, int volume, int id_f) {
     error e;
     if (disk != NULL) {

@@ -180,7 +180,13 @@ int tfs_mkdir(const char *path, mode_t mode) {
     return -1;
 }
 
-
+/**
+ * \fn tfs_rename(const char *old, const char *new){
+ * \brief tfs_rename renome le cichier désigné par le chenin old en lui donnant le nom new si c'est possible.
+ * \param old est le chemin du fichier
+ * \param new est le nouveau nom
+ * \return on retourne 0 si tout c'est bien passé  et -1 si il y a eu une erreur.
+ **/
 int tfs_rename(const char *old, const char *new){
   int length=strlen(new);
   if(length<28){
@@ -189,7 +195,7 @@ int tfs_rename(const char *old, const char *new){
       if(iter->next!=NULL){
 	iter=iter->next;
 	if(strcmp(iter->name,"HOST")==0){
-	  return 1;  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	  return 1; 
 	}else{
 	  if(iter->next!=NULL){
 	    iter=iter->next;
@@ -266,14 +272,20 @@ int tfs_rename(const char *old, const char *new){
   return -1;
 }
 
-
+/**
+ * \fn tfs_open(const char *name,int oflag){
+ * \brief tfs_open retourne l'indice dans la table des fichiers du fichier dont le path est donné en argument.
+ * \param name est le chemin du fichier
+ * \param oflag
+ * \return on retourne 0 si tout c'est bien passé  et -1 si il y a eu une erreur.
+ **/
 int tfs_open(const char *name,int oflag){
   iter iter=decomposition(strdup(name));
   if(strcmp(iter->name, "FILE:")==0){
     if(iter->next!=NULL){
       iter=iter->next;
       if(strcmp(iter->name,"HOST")==0){
-	return 1;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	return 1;  
       }else{
 	int i;
 	for(i=0;i<MAX_DISQUE;i++){

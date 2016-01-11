@@ -1,6 +1,14 @@
 #include "manip.h"
 
-error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veut écrire l'entier a en little indian.
+/**
+ * \fn fill_block(block *b, int a,int loc){
+ * \brief fill_block permet d'écrire un entier, qu'il va convertir en little-indian, sur un block.
+ * \param b est le pointeur sur le block sur lequel on va écrire
+ * \param a est l'entier a écrire
+ * \param loc est l'endroit dans le block ou on va l'écrire
+ * \return on retourne une erreur.
+ **/
+error fill_block(block *b, int a,int loc){
   if(loc>=0 && loc<=1020){
     uint32_t p=int_to_little(a);
     unsigned char *c=(unsigned char *)(&p);
@@ -19,7 +27,15 @@ error fill_block(block *b, int a,int loc){ //loc est l'endroit du bloc ou on veu
   }
 }
 
-error readint_block(block *b, int *a,int loc){ //loc est l'endroit du bloc ou on veut lire l'entier que l'on écrit dans a.
+/**
+ * \fn readint_block(block *b, int *a,int loc){
+ * \brief readint_block permet de lire un entier en little-indian, qu'il va convertir en int, sur un block.
+ * \param b est le block sur lequel on va lire
+ * \param a est un pointeur sur l'entier que l'on va lire
+ * \param loc est l'endroit dans le block ou on va lire
+ * \return on retourne une erreur.
+ **/
+error readint_block(block *b, int *a,int loc){
   int i;
   if(loc>=0 && loc<=1020){
     uint32_t n;
