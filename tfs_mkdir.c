@@ -1,5 +1,11 @@
+/**
+ * \file mkdir.c
+ * \brief fonction mkdir systeme et bloc(pas completement fonctionnel)
+ * \author DJEBALI LABADENS HUMBERT
+ */
 #include "manipsystem.h"
 #include <sys/stat.h>
+
 int main(int argc, char *argv[]) {
     if (argc == 2) {
         //printf("%s",argv[1]);
