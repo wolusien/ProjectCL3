@@ -8,9 +8,10 @@
 #include <ctype.h>
 
 #define MAX_FICHIERS 10
-
-\struct tfs_fd manipsystem.h "File_descriptor"	
-
+/**
+*\struct tfs_fd manipsystem.h "File_descriptor" 
+*	
+*/
 typedef struct{
   disk_id *pdisk;
   int partition;
@@ -23,7 +24,7 @@ tfs_fd* fichiers_ouverts[MAX_FICHIERS];
 
 
 
-//int tfs_mkdir(const char *path, mode_t mode);
+
 //int tfs_rmdir(const char *path);
 int tfs_rename(const char *old, const char *new);
 int tfs_open(const char *name,int oflag);
