@@ -10,5 +10,7 @@ struct iter{
 typedef struct iter* iter;
 
 void free_iter(iter i);
-void go_start(iter i);
-void go_end(iter i);
+iter go_start(iter i);
+iter go_end(iter i);
+iter go_next(iter i);
+iter go_prec(iter i);

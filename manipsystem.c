@@ -16,8 +16,8 @@ int tfs_mkdir(const char *path, mode_t mode) {
     iter i = decomposition((char *) path);
     if (strcmp("FILE:", i->name) == 0) {
         if (i->next != NULL) {
-            i = i->next;
-            if (strcmp("HOST", i->name)) {//dans ce cas on fait les opérations sur le systeme
+            i = go_next(i);
+            if (strcmp("HOST", i->name)==0) {//dans ce cas on fait les opérations sur le systeme
                 return 1;
             }
             char *name = i->name;
@@ -33,29 +33,31 @@ int tfs_mkdir(const char *path, mode_t mode) {
             }
             if (id != NULL) {//le disque est bien ouvert
                 if (i->next != NULL) {
-                    i = i->next;
+                    i = go_next(i);
                     if (isNumber(i->name) == 0) {
                         int volume = atoi(name);
                         if (volume < id->nbPart) {//on verifie si le volume existe sur le disque
                             if (id->tabPart[volume].free_file_count > 0) {//on verifie si on peut ajouter un autre fichier sur ce volume
-                                if (id->tabPart[volume].free_block_count == 0) {
-                                    go_end(i);
+                                if (id->tabPart[volume].free_block_count != 0) {
+                                    i = go_end(i);
                                     char *namedir = i->name; //on recupere le nom du dossier a creer
                                     if (strlen(namedir) <= 27) {
-                                        iter ni = i->prec;
+                                        iter ni = go_prec(i);
+                                        printf("%s\n",ni->name);
+                                        printf("%s\n",ni->prec->name);
                                         ni->next = NULL;
-                                        i = NULL;
-                                        free(i); //on supprime l'itération comprenant le nom
-                                        go_start(i);
-                                        i = i->next;
-                                        i = i->next;
+                                  
+                                        ni = go_start(ni);
+                                        printf("ici");
+                                        ni = go_next(ni);
+                                        ni = go_next(ni);
                                         int posbloc;
                                         int posinbloc;
                                         error e1;
                                         int place;
-                                        if (i->next != NULL) {// on regarge si le dossier sur lequel on doit creer notre dossier n'est pas le dossier racine
-                                            i = i->next;
-
+                                        if (ni->next != NULL) {// on regarge si le dossier sur lequel on doit creer notre dossier n'est pas le dossier racine
+                                            ni = go_next(ni);
+                                            printf("la\n");
                                             e1 = find_name(i, *id, volume, &place); //on  recherche le dossier sur lequel on doit creer le fichier
                                             posbloc = id->tabPart[volume].num_first_block + (place - 1) / 16 + 1;
                                             posinbloc = (place % 16)*64;
@@ -146,7 +148,7 @@ int tfs_mkdir(const char *path, mode_t mode) {
                                         return -1;
                                     }
                                 } else {
-                                    fprintf(stderr, "volume number %d is full", volume);
+                                    fprintf(stderr, "volume number %d is full\n", volume);
                                     return -1;
                                 }
                             } else {
@@ -163,7 +165,7 @@ int tfs_mkdir(const char *path, mode_t mode) {
                     }
 
                 } else {
-                    fprintf(stderr, "you must give a name to your new directory");
+                    fprintf(stderr, "you must give a name to your new directory\n");
                     return -1;
                 }
             } else {
@@ -171,7 +173,7 @@ int tfs_mkdir(const char *path, mode_t mode) {
                 return -1;
             }
         } else {
-            fprintf(stderr, "wrong path");
+            fprintf(stderr, "wrong path\n");
         }
     } else {
         fprintf(stderr, "Wrong path, miss \'FILE:\'\n");
@@ -187,12 +189,12 @@ int tfs_rename(const char *old, const char *new){
     iter iter=decomposition(strdup(old));
     if(strcmp(iter->name, "FILE:")==0){
       if(iter->next!=NULL){
-	iter=iter->next;
+	iter=go_next(iter);
 	if(strcmp(iter->name,"HOST")==0){
 	  return 1;  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	}else{
 	  if(iter->next!=NULL){
-	    iter=iter->next;
+	    iter=go_next(iter);
 	    int i;
 	    disk_id *disk=NULL;
 	    for(i=0;i<MAX_DISQUE;i++){
@@ -204,22 +206,22 @@ int tfs_rename(const char *old, const char *new){
 	      }
 	    }
 	    if(disk!=NULL){
-	      iter=iter->next;
+	      iter=go_next(iter);
 	      if(iter->next!=NULL){
-		iter=iter->next;
+		iter=go_next(iter);
 		int part = atoi(iter->name);
 		if(part>=0 && part<disk->nbPart){
 		  Part here=disk->tabPart[part];
 		  go_end(iter);
 		  char *oldname=iter->name;
 		  free(iter->name);
-		  iter=iter->prec;
+		  iter=go_prec(iter);
 		  iter->next=NULL;
 		  free(iter->next);
 		  go_start(iter);
-		  iter=iter->next;
-		  iter=iter->next;
-		  iter=iter->next;
+		  iter=go_next(iter);
+		  iter=go_next(iter);
+		  iter=go_next(iter);
 		  int place;
 		  error e=find_name(iter,*disk,part, &place);
 		  free_iter(iter);
@@ -271,7 +273,7 @@ int tfs_open(const char *name,int oflag){
   iter iter=decomposition(strdup(name));
   if(strcmp(iter->name, "FILE:")==0){
     if(iter->next!=NULL){
-      iter=iter->next;
+      iter=go_next(iter);
       if(strcmp(iter->name,"HOST")==0){
 	return 1;   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       }else{
@@ -281,7 +283,7 @@ int tfs_open(const char *name,int oflag){
 	    if(strcmp((disque_ouvert[i])->name,iter->name)==0){
 	      disk_id *disk=disque_ouvert[i];
 	      if(iter->next!=NULL){
-		iter=iter->next;
+		iter=go_next(iter);
 		int part = atoi(iter->name);
 		if(part>=0 && part<disk->nbPart){
 		  Part here=disk->tabPart[part];
