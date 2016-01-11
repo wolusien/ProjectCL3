@@ -20,7 +20,10 @@ int main(int argc, char *argv[]){
 	    if(0<file_count && taille>(1+taille_descripteur+file_count)){ //on vérifie qu'il y a bien assez de blocs dans la partition pour y mettre file_count fichiers.
 	      //tout les tests sont faits, on commence a initialiser le premier bloc de la partition.
 	      block b;
-	     	     
+	      int l;
+	      for(l=0;l<1024;l++){
+		b.buff[l]='\0';
+	      }	     	     
 	      fill_block(&b, MAGIC_NUMBER, 0);
 	      fill_block(&b, SIZEBLOCK, 4);
 	      fill_block(&b, taille, 8);
@@ -43,8 +46,8 @@ int main(int argc, char *argv[]){
 	      for(k=0;k<1024;k++){
 		file_table.buff[k]='\0';
 	      }
-		printf("1 %d \n", taille_descripteur);
-		printf("2 %d \n", id_first);
+	      printf("1 %d \n", taille_descripteur);
+	      printf("2 %d \n", id_first);
 	      for(i=1; i<=taille_descripteur; i++){
 		if(i==1){
 		  fill_block(&file_table, 64, 0);
@@ -66,13 +69,15 @@ int main(int argc, char *argv[]){
 		  }
 		}
 		write_physical_block(*id, file_table,i+id_first);
-		printf("aa %d \n", i+id_first);
 		for(k=0;k<1024;k++){
 		  file_table.buff[k]='\0';
 		}
 	      }
 	      //initialisation du dossier racine
 	      block racine;
+	      for(k=0;k<1024;k++){
+		racine.buff[k]='\0';
+	      }
 	      fill_block(&racine,0,0);
 	      racine.buff[4]='.';
 	      racine.buff[5]='0';
